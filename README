@@ -1,0 +1,30 @@
+DESCRIPTION
+-----------
+
+The Basic Meeting List Toolbox (BMLT) is a powerful, database-driven system for tracking NA meetings.
+It is NOT an official product of NA ( http://na.org ). Rather, it is a project designed and implemented by
+NA members, and meant to be used by official NA Service bodies.
+
+This project is a CMS "base." It has a lot of functionality built into it, such as administration and various
+renderers, but in a "CMS agnostic" fashion. The main class is designed to be extended (subclassed) for specific
+CMS implementations.
+
+REQUIREMENTS
+------------
+
+The project requires a functioning BMLT root server ( http://magshare.org/blog/installing-the-root-server/ ).
+It does not implement a root server, but connects to an existing one.
+It requires PHP 5.0 or above.
+
+This class uses the BMLT Satellite "Driver" Class, which is available on GitHub, here:
+
+    https://github.com/MAGSHARE/BMLT-Satellite-Driver
+
+INSTALLATION
+------------
+
+CHANGELIST
+----------
+= 1.0.7 =
+* June 19, 2011
+* First release as a factored project.

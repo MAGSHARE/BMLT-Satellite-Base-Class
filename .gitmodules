@@ -1,0 +1,3 @@
+[submodule "BMLT-Satellite-Driver"]
+	path = BMLT-Satellite-Driver
+	url = git://github.com/MAGSHARE/BMLT-Satellite-Driver.git
