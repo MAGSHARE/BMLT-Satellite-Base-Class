@@ -49,7 +49,7 @@ class BMLTUTestPlugin extends BMLTPlugin
     function __construct ()
         {
         // This line is customized for the developer's test environment. If you are debugging on a local machine, you may want to change the first choice.
-        self::$default_rootserver = strpos('localhost',$_SERVER['SERVER_NAME']) ? 'http://localhost/magshare.org/public_html/projects/BMLT-Root-Server/main_server' : 'http://bmlt.magshare.net/trunk/main_server';
+        self::$default_rootserver = ('localhost' == strtolower($_SERVER['SERVER_NAME'])) ? 'http://localhost/magshare.org/public_html/projects/BMLT-Root-Server/main_server' : 'http://bmlt.magshare.net/trunk/main_server';
         self::$default_gkey = 'ABQIAAAABCC8PsaKPPEsC3k649kYPRTayKsye0hTYG-iMuljzAHNM4JcxhSlV55ZKpjgC9b-QsLtlkYPMO6omg'; ///< This is for MAGSHARE. Change this to your own.
         self::$default_map_center_latitude = 41.37;
         self::$default_map_center_longitude = -73.18;
