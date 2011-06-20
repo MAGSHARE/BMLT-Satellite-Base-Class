@@ -49,7 +49,7 @@ class BMLTUTestPlugin extends BMLTPlugin
     function __construct ()
         {
         self::$default_rootserver = 'http://bmlt.magshare.net/trunk/main_server';
-        self::$default_gkey = 'local';
+        self::$default_gkey = 'ABQIAAAABCC8PsaKPPEsC3k649kYPRTayKsye0hTYG-iMuljzAHNM4JcxhSlV55ZKpjgC9b-QsLtlkYPMO6omg'; ///< This is for MAGSHARE. Change this to your own.
         self::$default_map_center_latitude = 41.37;
         self::$default_map_center_longitude = -73.18;
         self::$default_map_zoom = 8;
