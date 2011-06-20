@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 1.0.8 =
+* June 20, 2011
+* Added a connection to a specific localhost BMLT root as a default, if the server is localhost (specific to the development machine).
+
 = 1.0.7 =
 * June 19, 2011
 * First release as a factored project.
