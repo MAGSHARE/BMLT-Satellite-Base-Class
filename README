@@ -25,9 +25,9 @@ INSTALLATION
 
 CHANGELIST
 ----------
-= 1.0.9 =
+= 1.1.0 =
 * June 25, 2011
-* Updated to the latest satellite (1.0.5).
+* Added the capability to specify changes.
 
 = 1.0.8 =
 * June 20, 2011

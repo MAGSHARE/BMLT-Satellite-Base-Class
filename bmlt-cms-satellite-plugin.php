@@ -3,27 +3,27 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 1.0.9                                                                          *
+*   \version 1.1.0                                                                          *
 *                                                                                           *
-    This file is part of the BMLT Common Satellite Base Class Project. The project GitHub
-    page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class
-    
-    This file is part of the Basic Meeting List Toolbox (BMLT).
-    
-    Find out more at: http://magshare.org/bmlt
-    
-    BMLT is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
-    
-    BMLT is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-    
-    You should have received a copy of the GNU General Public License
-    along with this code.  If not, see <http://www.gnu.org/licenses/>.
+*   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
+*   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
+*                                                                                           *
+*   This file is part of the Basic Meeting List Toolbox (BMLT).                             *
+*                                                                                           *
+*   Find out more at: http://magshare.org/bmlt                                              *
+*                                                                                           *
+*   BMLT is free software: you can redistribute it and/or modify                            *
+*   it under the terms of the GNU General Public License as published by                    *
+*   the Free Software Foundation, either version 3 of the License, or                       *
+*   (at your option) any later version.                                                     *
+*                                                                                           *
+*   BMLT is distributed in the hope that it will be useful,                                 *
+*   but WITHOUT ANY WARRANTY; without even the implied warranty of                          *
+*   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the                           *
+*   GNU General Public License for more details.                                            *
+*                                                                                           *
+*   You should have received a copy of the GNU General Public License                       *
+*   along with this code.  If not, see <http://www.gnu.org/licenses/>.                      *
 ********************************************************************************************/
 
 // define ( '_DEBUG_MODE_', 1 ); //Uncomment for easier JavaScript debugging.
@@ -257,6 +257,14 @@ class BMLTPlugin
     static  $local_select_search = 'Select a Quick Search';                 ///< Used for the "filler" in the quick search popup.
     static  $local_clear_search = 'Clear Search Results';                   ///< Used for the "Clear" item in the quick search popup.
     static  $local_menu_new_search_text = 'New Search';                     ///< For the new search menu in the old-style BMLT search.
+    
+    /// These are for the change display
+    static  $local_change_label_date =  'Change Date:';                     ///< The date when the change was made.
+    static  $local_change_label_meeting_name =  'Meeting Name:';            ///< The name of the changed meeting.
+    static  $local_change_label_service_body_name =  'Service Body:';       ///< The name of the meeting's Service body.
+    static  $local_change_label_admin_name =  'Changed By:';                ///< The name of the Service Body Admin that made the change.
+    static  $local_change_label_description =  'Description:';              ///< The description of the change.
+    static  $local_change_date_format = 'F j Y, \a\t g:i A';                ///< The format in which the change date/time is displayed.
     
     /// A simple message for most <noscript> elements. We have a different one for the older interactive search (below).
     static  $local_noscript = 'This will not work, because you do not have JavaScript active.';             ///< The string displayed in a <noscript> element.
@@ -1702,6 +1710,8 @@ class BMLTPlugin
         // Simple searches can be mixed in with other content.
         $in_the_content = $this->display_simple_search ( $in_the_content );
 
+        $in_the_content = $this->display_changes ( $in_the_content );
+
         $in_the_content = $this->display_old_search ( $in_the_content );
         
         return $in_the_content;
@@ -1891,6 +1901,135 @@ class BMLTPlugin
             $in_content = self::replace_shortcode ( $in_content, 'bmlt_simple', $the_new_content );
             }
         return $in_content;
+        }
+        
+    /************************************************************************************//**
+    *   \brief This is a function that filters the content, and replaces a portion with the *
+    *   "changes" dump.                                                                     *
+    *                                                                                       *
+    *   \returns a string, containing the content.                                          *
+    ****************************************************************************************/
+    function display_changes (  $in_content      ///< This is the content to be filtered.
+                                )
+        {
+        $options_id = $this->cms_get_page_settings_id( $in_content );
+        
+        $options = $this->getBMLTOptions_by_id ( $options_id );
+        $root_server_root = $options['root_server'];
+
+        $in_content = str_replace ( '&#038;', '&', $in_content );   // This stupid kludge is because WordPress does an untoward substitution. Won't do anything unless WordPress has been naughty.
+        while ( $params = self::get_shortcode ( $in_content, 'bmlt_changes' ) )
+            {
+            $param_array = explode ( '##-##', $params );    // You can specify a settings ID, by separating it from the URI parameters with a ##-##.
+            
+            $params = null;
+            
+            if ( is_array ( $param_array ) && (count ( $param_array ) > 1) )
+                {
+                $options = $this->getBMLTOptions_by_id ( $param_array[0] );
+                $params = $param_array[1];
+                }
+            else
+                {
+                $params = (count ($param_array) > 0) ? $param_array[0] : null;
+                }
+            
+            if ( $params && $options['root_server'] )
+                {
+                $params = explode ( '&', $params );
+                
+                $start_date = null;
+                $end_date = null;
+                $meeting_id = null;
+                $service_body_id = null;
+                
+                foreach ( $params as $one_param )
+                    {
+                    list ( $key, $value ) = explode ( '=', $one_param );
+                    
+                    if ( $key && $value )
+                        {
+                        switch ( $key )
+                            {
+                            case 'start_date':
+                                $start_date = strtotime ( $value );
+                            break;
+                            
+                            case 'end_date':
+                                $end_date = strtotime ( $value );
+                            break;
+                            
+                            case 'meeting_id':
+                                $meeting_id = intval ( $value );
+                            break;
+                            
+                            case 'service_body_id':
+                                $service_body_id = intval ( $value );
+                            break;
+                            }
+                        }
+                    }
+                
+                $this->my_driver->set_m_root_uri ( $options['root_server'] );
+                $error = $this->my_driver->get_m_error_message();
+                
+                if ( $error )
+                    {
+                    ob_end_clean(); // Just in case we are in an OB
+                    echo "<!-- BMLTPlugin ERROR (display_changes)! Can't set the Satellite Driver root! ".htmlspecialchars ( $error )." -->";
+                    }
+                else
+                    {
+	                set_time_limit ( 120 ); // Change requests can take a loooong time...
+                    $changes = $this->my_driver->get_meeting_changes ( $start_date, $end_date, $meeting_id, $service_body_id );
+
+                    $error = $this->my_driver->get_m_error_message();
+                    
+                    if ( $error )
+                        {
+                        ob_end_clean(); // Just in case we are in an OB
+                        echo "<!-- BMLTPlugin ERROR (display_changes)! Error during get_meeting_changes Call! ".htmlspecialchars ( $error )." -->";
+                        }
+                    else
+                        {
+                        $the_new_content = '<div class="bmlt_change_record_div">';
+                        foreach ( $changes as $change )
+                            {
+                            $the_new_content .= self::setup_one_change ( $change );
+                            }
+                        
+                        $the_new_content .= '</div>';
+                        
+                        $in_content = self::replace_shortcode ( $in_content, 'bmlt_changes', $the_new_content );
+                        }
+                    }
+                }
+            }
+        return $in_content;
+        }
+
+    /************************************************************************************//**
+    *   \brief Returns the XHTML for one single change record.                              *
+    *                                                                                       *
+    *   \returns A string. The DOCTYPE to be displayed.                                     *
+    ****************************************************************************************/
+    static function setup_one_change (  $in_change_array  ///< One change record
+                                        )
+        {
+        $ret = '<dl class="bmlt_change_record_dl" id="bmlt_change_dl_'.htmlspecialchars ( $in_change_array['change_type'] ).'_'.intval ( $in_change_array['date_int'] ).'_'.intval ( $in_change_array['meeting_id'] ).'">';
+            $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_date">'.self::process_text ( self::$local_change_label_date ).'</dt>';
+                $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_date">'.date ( self::$local_change_date_format, $in_change_array['date_int'] ).'</dd>';
+            $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_name">'.self::process_text ( self::$local_change_label_meeting_name ).'</dt>';
+                $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_name">'.self::process_text ( $in_change_array['meeting_name'] ).'</dd>';
+            $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_service_body_name">'.self::process_text ( self::$local_change_label_service_body_name ).'</dt>';
+                $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_service_body_name">'.self::process_text ( $in_change_array['service_body_name'] ).'</dd>';
+            $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_service_body_admin_name">'.self::process_text ( self::$local_change_label_admin_name ).'</dt>';
+                $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_service_body_admin_name">'.self::process_text ( $in_change_array['user_name'] ).'</dd>';
+            $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_description">'.self::process_text ( self::$local_change_label_description ).'</dt>';
+                $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_description">'.self::process_text ( $in_change_array['details'] ).'</dd>';
+        $ret .= '</dl>';
+        
+        return $ret;
         }
 
     /************************************************************************************//**
@@ -2940,7 +3079,7 @@ class BMLTPlugin
     protected function process_text (  $in_string  ///< The string to be processed.
                                     )
         {
-        return null;
+        return htmlspecialchars ( $in_string );
         }
         
     /************************************************************************************//**
@@ -3021,7 +3160,7 @@ class BMLTPlugin
                 }
             elseif( !$in_check_mobile ) // A mobile check ignores the rest.
                 {
-                if ( $params = self::get_shortcode ( $in_content, 'bmlt_simple') ) 
+                if ( ($params = self::get_shortcode ( $in_content, 'bmlt_simple')) || ($params = self::get_shortcode ( $in_content, 'bmlt_changes')) ) 
                     {
                     $param_array = explode ( '##-##', $params );
                     
