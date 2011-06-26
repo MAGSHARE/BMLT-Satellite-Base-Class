@@ -1942,10 +1942,11 @@ class BMLTPlugin
                 $end_date = null;
                 $meeting_id = null;
                 $service_body_id = null;
+                $single_uri = null;
                 
                 foreach ( $params as $one_param )
                     {
-                    list ( $key, $value ) = explode ( '=', $one_param );
+                    list ( $key, $value ) = explode ( '=', $one_param, 2 );
                     
                     if ( $key && $value )
                         {
@@ -1966,10 +1967,13 @@ class BMLTPlugin
                             case 'service_body_id':
                                 $service_body_id = intval ( $value );
                             break;
+                            
+                            case 'single_uri':
+                                $single_uri = $value;
+                            break;
                             }
                         }
                     }
-                
                 $this->my_driver->set_m_root_uri ( $options['root_server'] );
                 $error = $this->my_driver->get_m_error_message();
                 
@@ -1995,7 +1999,7 @@ class BMLTPlugin
                         $the_new_content = '<div class="bmlt_change_record_div">';
                         foreach ( $changes as $change )
                             {
-                            $the_new_content .= self::setup_one_change ( $change );
+                            $the_new_content .= self::setup_one_change ( $change, $single_uri );
                             }
                         
                         $the_new_content .= '</div>';
@@ -2013,20 +2017,47 @@ class BMLTPlugin
     *                                                                                       *
     *   \returns A string. The DOCTYPE to be displayed.                                     *
     ****************************************************************************************/
-    static function setup_one_change (  $in_change_array  ///< One change record
+    static function setup_one_change (  $in_change_array,       ///< One change record
+                                        $in_single_uri = null   ///< If there was a specific single meeting URI, we pass it in here.
                                         )
         {
         $ret = '<dl class="bmlt_change_record_dl" id="bmlt_change_dl_'.htmlspecialchars ( $in_change_array['change_type'] ).'_'.intval ( $in_change_array['date_int'] ).'_'.intval ( $in_change_array['meeting_id'] ).'">';
             $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_date">'.self::process_text ( self::$local_change_label_date ).'</dt>';
                 $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_date">'.date ( self::$local_change_date_format, intval ( $in_change_array['date_int'] ) ).'</dd>';
-            $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_name">'.self::process_text ( self::$local_change_label_meeting_name ).'</dt>';
-                $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_name">'.self::process_text ( html_entity_decode ( $in_change_array['meeting_name'] ) ).'</dd>';
-            $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_service_body_name">'.self::process_text ( self::$local_change_label_service_body_name ).'</dt>';
-                $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_service_body_name">'.self::process_text ( html_entity_decode ( $in_change_array['service_body_name'] ) ).'</dd>';
-            $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_service_body_admin_name">'.self::process_text ( self::$local_change_label_admin_name ).'</dt>';
-                $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_service_body_admin_name">'.self::process_text ( html_entity_decode ( $in_change_array['user_name'] ) ).'</dd>';
-            $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_description">'.self::process_text ( self::$local_change_label_description ).'</dt>';
-                $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_description">'.self::process_text ( html_entity_decode ( $in_change_array['details'] ) ).'</dd>';
+            
+            if ( isset ( $in_change_array['meeting_name'] ) && $in_change_array['meeting_name'] )
+                {
+                $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_name">'.self::process_text ( self::$local_change_label_meeting_name ).'</dt>';
+                    $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_name">';
+                    
+                    if ( isset ( $in_change_array['meeting_id'] ) && $in_change_array['meeting_id'] && isset ( $in_single_uri ) && $in_single_uri )
+                        {
+                        $ret .= '<a href="'.htmlspecialchars ( $in_single_uri ).$in_change_array['meeting_id'].'" rel="nofollow">';
+                            $ret .= self::process_text ( html_entity_decode ( $in_change_array['meeting_name'] ) );
+                        $ret .= '</a>';
+                        }
+                    else
+                        {
+                        $ret .= self::process_text ( html_entity_decode ( $in_change_array['meeting_name'] ) );
+                        }
+                    
+                    $ret .= '</dd>';
+                }
+            if ( isset ( $in_change_array['service_body_name'] ) && $in_change_array['service_body_name'] )
+                {
+                $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_service_body_name">'.self::process_text ( self::$local_change_label_service_body_name ).'</dt>';
+                    $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_service_body_name">'.self::process_text ( html_entity_decode ( $in_change_array['service_body_name'] ) ).'</dd>';
+                }
+            if ( isset ( $in_change_array['user_name'] ) && $in_change_array['user_name'] )
+                {
+                $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_service_body_admin_name">'.self::process_text ( self::$local_change_label_admin_name ).'</dt>';
+                    $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_service_body_admin_name">'.self::process_text ( html_entity_decode ( $in_change_array['user_name'] ) ).'</dd>';
+                }
+            if ( isset ( $in_change_array['details'] ) && $in_change_array['details'] )
+                {
+                $ret .= '<dt class="bmlt_change_record_dt bmlt_change_record_dt_description">'.self::process_text ( self::$local_change_label_description ).'</dt>';
+                    $ret .= '<dd class="bmlt_change_record_dd bmlt_change_record_dd_description">'.self::process_text ( html_entity_decode ( $in_change_array['details'] ) ).'</dd>';
+                }
         $ret .= '</dl>';
         
         return $ret;
