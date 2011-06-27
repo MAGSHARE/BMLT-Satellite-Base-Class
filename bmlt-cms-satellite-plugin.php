@@ -457,12 +457,28 @@ class BMLTPlugin
                         {
                         if ( isset ( $val ) &&  is_array ( $val ) && count ( $val ) )
                             {
-                            $val = implode ( ',', $val );
+                            // This stupid, stupid, kludgy dance, is because Drupal 7
+                            // Doesn't seem to acknowledge the existence of the join() or
+                            // implode() functions, and puts out a notice.
+                            $val_ar = '';
+                            
+                            foreach ( $val as $v )
+                                {
+                                if ( $val_ar )
+                                    {
+                                    $val_ar .= ',';
+                                    }
+                                
+                                $val_ar .= $v;
+                                }
+                                
+                            $val = strval ( $val_ar );;
                             }
                         elseif ( !isset ( $val ) )
                             {
                             $val = '';
                             }
+
                         $my_params .= '&'.urlencode ( $key ) ."[]=". urlencode ( $val );
                         }
                     $key = null;
