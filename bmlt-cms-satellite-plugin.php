@@ -472,7 +472,7 @@ class BMLTPlugin
                                 $val_ar .= $v;
                                 }
                                 
-                            $val = strval ( $val_ar );;
+                            $val = strval ( $val_ar );
                             }
                         elseif ( !isset ( $val ) )
                             {
