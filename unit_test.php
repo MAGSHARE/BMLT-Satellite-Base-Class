@@ -2,7 +2,7 @@
 /****************************************************************************************//**
 * \file unit_test.php																		*
 * \brief A unit test harness for the BMLTPlugin class.						                *
-* \version 1.0.8																			*
+* \version 1.1.1																			*
     
     This file is part of the BMLT Common Satellite Base Class Project. The project GitHub
     page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class
@@ -209,10 +209,14 @@ function u_test_form()
                         $ret .= '<option value="<!--bmlt-->">Standard BMLT (Comment)</option>';
                         $ret .= '<option value="[[bmlt_mobile]]">BMLT Mobile (Brackets)</option>';
                         $ret .= '<option value="<!--bmlt_mobile-->">BMLT Mobile (Comment)</option>';
-                        $ret .= '<option value="[[bmlt_simple(switcher=GetSearchResults&block_mode=1&meeting_key=location_city_subsection&meeting_key_value=Brooklyn&weekdays[]=7)]]">BMLT Simple (Brackets -Brooklyn, Saturday)</option>';
+                        $ret .= '<option value="[[BMLT_SIMPLE(switcher=GetSearchResults&block_mode=1&meeting_key=location_city_subsection&meeting_key_value=Brooklyn&weekdays[]=7)]]">BMLT Simple (Brackets -Brooklyn, Saturday)</option>';
                         $ret .= '<option value="<!--bmlt_simple(switcher=GetSearchResults&block_mode=1&meeting_key=location_city_subsection&meeting_key_value=Brooklyn&weekdays[]=1)-->">BMLT Simple (Comment -Brooklyn, Sunday)</option>';
                         $ret .= '<option value="[[bmlt_simple(switcher=GetFormats)]]">BMLT Simple (Brackets -Formats)</option>';
                         $ret .= '<option value="<!--bmlt_simple(switcher=GetFormats)-->">BMLT Simple (Comment -Formats)</option>';
+                        $ret .= '<option value="[[bmlt_changes(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).')]]">BMLT Changes (Brackets -Last 90 days)</option>';
+                        $ret .= '<option value="<!-- bmlt_changes(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 180)).'&end_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).') -->">BMLT Changes (Comments -Last 180 - 90 days)</option>';
+                        $ret .= '<option value="[[bmlt_changes(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 365)).'&service_body_id=1001)]]">BMLT Changes (Brackets -Last year in Suffolk Area Service)</option>';
+                        $ret .= '<option value="<!--BMLT_CHANGES(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).'&service_body_id=1)-->">BMLT Changes (Comments -Last 90 days in Greater New York Regional Service)</option>';
                         $ret .= '</select>';
                     $ret .= '</div>';
                 $ret .= '</div>';

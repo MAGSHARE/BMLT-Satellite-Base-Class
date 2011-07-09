@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 1.1.1 =
+* July 9, 2011
+* Added unit tests for the new change capabilities.
+
 = 1.1.0 =
 * June 25, 2011
 * Added the capability to specify changes.
