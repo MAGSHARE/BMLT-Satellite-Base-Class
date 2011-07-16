@@ -3,7 +3,7 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 1.1.1                                                                          *
+*   \version 1.1.2                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -1548,7 +1548,7 @@ class BMLTPlugin
                     }
                 }
             
-            ob_end_clean(); // Just in case we are in an OB
+            if ( ob_get_level () ) ob_end_clean(); // Just in case we are in an OB
             die ( strVal ( $ret ) );
             }
         elseif ( isset ( $this->my_http_vars['BMLTPlugin_AJAX_Call'] ) || isset ( $this->my_http_vars['BMLTPlugin_Fetch_Langs_AJAX_Call'] ) )
@@ -1586,7 +1586,7 @@ class BMLTPlugin
                     }
                 }
             
-            ob_end_clean(); // Just in case we are in an OB
+            if ( ob_get_level () ) ob_end_clean(); // Just in case we are in an OB
             die ( $ret );
             }
         }
@@ -1605,7 +1605,7 @@ class BMLTPlugin
             {
             $options = $this->getBMLTOptions_by_id ( $this->my_http_vars['bmlt_settings_id'] ); // This is for security. We don't allow URIs to be directly specified. They must come from the settings.
             $uri = $options['root_server'].'/'.$this->my_http_vars['request'];
-            ob_end_clean(); // Just in case we are in an OB
+            if ( ob_get_level () ) ob_end_clean(); // Just in case we are in an OB
             die ( bmlt_satellite_controller::call_curl ( $uri ) );
             }
         else    // However, if it is a mobile call, we do the mobile thing, then drop out.
@@ -1614,7 +1614,7 @@ class BMLTPlugin
                 {
                 $ret = $this->BMLTPlugin_fast_mobile_lookup ();
                 
-                ob_end_clean(); // Just in case we are in an OB
+                if ( ob_get_level () )     ob_end_clean(); // Just in case we are in an OB
                 
                 $handler = null;
                 
@@ -1641,7 +1641,9 @@ class BMLTPlugin
                 if ( isset ( $this->my_http_vars['redirect_ajax'] ) && $this->my_http_vars['redirect_ajax'] )
                     {
                     $url = $options['root_server']."/client_interface/xhtml/index.php?switcher=RedirectAJAX$this->my_params";
-                    ob_end_clean(); // Just in case we are in an OB
+                    
+                    if ( ob_get_level () )         ob_end_clean(); // Just in case we are in an OB
+                        
                     $ret = bmlt_satellite_controller::call_curl ( $url );
                     
                     $handler = null;
@@ -1683,7 +1685,7 @@ class BMLTPlugin
                         $result = preg_replace ( '|\<a rel="external"|','<a rel="nofollow external" title="'.$this->process_text ( self::$local_gm_link_tooltip).'"', $result );
                         }
 
-                    ob_end_clean(); // Just in case we are in an OB
+                    if ( ob_get_level () )         ob_end_clean(); // Just in case we are in an OB
                     
                     $handler = null;
                     
@@ -1700,14 +1702,14 @@ class BMLTPlugin
                 elseif ( isset ( $this->my_http_vars['result_type_advanced'] ) && ($this->my_http_vars['result_type_advanced'] == 'booklet') )
                     {
                     $uri =  $options['root_server']."/local_server/pdf_generator/?list_type=booklet$this->my_params";
-                    ob_end_clean(); // Just in case we are in an OB
+                    if ( ob_get_level () )         ob_end_clean(); // Just in case we are in an OB
                     header ( "Location: $uri" );
                     die();
                     }
                 elseif ( isset ( $this->my_http_vars['result_type_advanced'] ) && ($this->my_http_vars['result_type_advanced'] == 'listprint') )
                     {
                     $uri =  $options['root_server']."/local_server/pdf_generator/?list_type=listprint$this->my_params";
-                    ob_end_clean(); // Just in case we are in an OB
+                    if ( ob_get_level () )         ob_end_clean(); // Just in case we are in an OB
                     header ( "Location: $uri" );
                     die();
                     }
@@ -1995,7 +1997,7 @@ class BMLTPlugin
                 
                 if ( $error )
                     {
-                    ob_end_clean(); // Just in case we are in an OB
+                    if ( ob_get_level () )         ob_end_clean(); // Just in case we are in an OB
                     echo "<!-- BMLTPlugin ERROR (display_changes)! Can't set the Satellite Driver root! ".htmlspecialchars ( $error )." -->";
                     }
                 else
@@ -2007,7 +2009,7 @@ class BMLTPlugin
                     
                     if ( $error )
                         {
-                        ob_end_clean(); // Just in case we are in an OB
+                        if ( ob_get_level () )             ob_end_clean(); // Just in case we are in an OB
                         echo "<!-- BMLTPlugin ERROR (display_changes)! Error during get_meeting_changes Call! ".htmlspecialchars ( $error )." -->";
                         }
                     else
@@ -2644,7 +2646,7 @@ class BMLTPlugin
             
             if ( $error )
                 {
-                ob_end_clean(); // Just in case we are in an OB
+                if ( ob_get_level () )     ob_end_clean(); // Just in case we are in an OB
                 die ( '<h1>ERROR (BMLTPlugin_fast_mobile_lookup: '.htmlspecialchars ( $error ).')</h1>' );
                 }
             
