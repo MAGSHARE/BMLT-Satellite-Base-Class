@@ -31,6 +31,7 @@
 ********************************************************************************************/
 
 function MapSearch (
+                    in_id,
                     in_div,
                     in_coords
                     )
@@ -41,7 +42,7 @@ function MapSearch (
 	
 	var	g_main_map = null;				///< This will hold the Google Map object.
 	var	g_allMarkers = [];				///< Holds all the markers.
-	var g_myThrobber = null;            ///< Contains the throbber <div> (so it can be easily hidden and shown).
+	var g_main_id = in_id;
 
 	/// These describe the regular NA meeting icon
 	var g_icon_image_single = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -69,6 +70,8 @@ function MapSearch (
         if ( g_main_div )
             {
             g_main_div.className = 'bmlt_search_map_div';
+            g_main_div.id = g_main_id+'_bmlt_search_map_div';
+            g_main_div.myThrobber = null;
             
             in_div.appendChild ( g_main_div );
             
@@ -103,9 +106,9 @@ function MapSearch (
             if ( g_main_map )
                 {
                 g_main_map.response_object = null;
-                g_main_map.uid = g_main_div.ID+'-MAP';
+                g_main_map.uid = g_main_div.id+'-MAP';
                 google.maps.event.addListener ( g_main_map, 'click', map_clicked );
-                create_throbber ( in_div );
+                create_throbber ( g_main_div );
                 };
             };
 	};
@@ -117,28 +120,29 @@ function MapSearch (
 	function create_throbber ( in_div    ///< The container div for the throbber.
 	                        )
 	{
-	    if ( !g_myThrobber )
+	    if ( !g_main_map.myThrobber )
 	        {
-            g_myThrobber = document.createElement("div");
-            if ( g_myThrobber )
+            g_main_map.myThrobber = document.createElement("div");
+            if ( g_main_map.myThrobber )
                 {
+                g_main_map.myThrobber.id = in_div.id+'_throbber_div';
+                g_main_map.myThrobber.className = 'bmlt_map_throbber_div';
+                g_main_map.myThrobber.style.display = 'none';
+                in_div.appendChild ( g_main_map.myThrobber );
                 var img = document.createElement("img");
                 
                 if ( img )
                     {
-                    img.src = c_g_BMLTPlugin_throbber_img_src;
+                    eval ( 'var srcval = c_g_BMLTPlugin_throbber_img_src_'+g_main_id+';' );
+                    img.src = srcval;
                     img.className = 'bmlt_map_throbber_img';
-                    img.ID = 'bmlt_map_throbber_img';
+                    img.id = in_div.id+'_throbber_img';
                     img.alt = 'AJAX Throbber';
-                    g_myThrobber.appendChild ( img );
-                    g_myThrobber.className = 'bmlt_map_throbber_div';
-                    g_myThrobber.ID = 'bmlt_map_throbber_div';
-	                g_myThrobber.style.display = 'none';
-                    in_div.appendChild ( g_myThrobber );
+                    g_main_map.myThrobber.appendChild ( img );
                     }
                 else
                     {
-                    g_myThrobber = null;
+                    in_div.myThrobber = null;
                     };
                 };
             };
@@ -150,9 +154,9 @@ function MapSearch (
 	
 	function show_throbber()
 	{
-	    if ( g_myThrobber )
+	    if ( g_main_map.myThrobber )
 	        {
-	        g_myThrobber.style.display = 'block';
+	        g_main_map.myThrobber.style.display = 'block';
 	        };
     };
         
@@ -162,9 +166,9 @@ function MapSearch (
 	
 	function hide_throbber()
 	{
-	    if ( g_myThrobber )
+	    if ( g_main_map.myThrobber )
 	        {
-	        g_myThrobber.style.display = 'none';
+	        g_main_map.myThrobber.style.display = 'none';
 	        };
     };
     
@@ -205,7 +209,7 @@ function MapSearch (
 	function call_root_server ( in_args
 	                            )
 	{
-	    var url = c_g_BMLTRoot_URI_JSON_SearchResults+'&'+in_args;
+	    eval ( 'var url = c_g_BMLTRoot_URI_JSON_SearchResults_'+g_main_id+'+\'&\'+in_args;' );
         BMLTPlugin_AjaxRequest ( url, bmlt_ajax_router, 'get' );
 	};
 	
@@ -644,7 +648,8 @@ function MapSearch (
 		 
 		if ( in_meeting_obj.distance_in_km )
 			{
-			ret += '<div class="marker_div_distance"><span class="distance_span">'+c_g_distance_prompt+':</span> '+(Math.round((c_g_distance_units_are_km ? in_meeting_obj.distance_in_km : in_meeting_obj.distance_in_miles) * 10)/10).toString()+' '+c_g_distance_units;
+            eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';var dist_units = c_g_distance_units_'+g_main_id+';' );
+			ret += '<div class="marker_div_distance"><span class="distance_span">'+c_g_distance_prompt+':</span> '+(Math.round((dist_r_km ? in_meeting_obj.distance_in_km : in_meeting_obj.distance_in_miles) * 10)/10).toString()+' '+dist_units;
 			ret += '</div>';
 			};
 		 

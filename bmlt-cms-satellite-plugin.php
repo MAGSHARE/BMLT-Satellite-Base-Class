@@ -526,7 +526,7 @@ class BMLTPlugin
         $code_regex_brackets = "\[\[\s?".preg_quote ( strtolower ( trim ( $in_code ) ) )."\s?(\(.*?\))?\s?\]\]";
         
         $matches = array();
-        
+      
         if ( preg_match ( '#'.$code_regex_html.'#i', $in_text_to_parse, $matches ) || preg_match ( '#'.$code_regex_brackets.'#i', $in_text_to_parse, $matches ) )
             {
             if ( !isset ( $matches[1] ) || !($ret = trim ( $matches[1], '()' )) ) // See if we have any parameters.
@@ -1951,27 +1951,34 @@ class BMLTPlugin
     function display_new_map_search ($in_content      ///< This is the content to be filtered.
                                     )
         {
-        $ret = '';
-        
         $options_id = $this->cms_get_page_settings_id( $in_content );
-        
-        $options = $this->getBMLTOptions_by_id ( $options_id );
-        $root_server_root = $options['root_server'];
 
         $in_content = str_replace ( '&#038;', '&', $in_content );   // This stupid kludge is because WordPress does an untoward substitution. Won't do anything unless WordPress has been naughty.
         
-        $params = self::get_shortcode ( $in_content, 'bmlt_map' );
-        
-        if ( $params )
+        $first = true;
+        while ( $params = self::get_shortcode ( $in_content, 'bmlt_map' ) )
             {
+            if ( $params !== true && intval ( $params ) )
+                {
+                $options_id = intval ( $params );
+                }
+            
+            $options = $this->getBMLTOptions_by_id ( $options_id );
             $uid = htmlspecialchars ( uniqid() );
-            $ret = '<div class="bmlt_map_container_div" id="'.$uid.'">';
-            $ret .= $this->BMLTPlugin_map_search_javascript_stuff ( );
-            $ret .= '<script type="text/javascript">MapSearch ( document.getElementById(\''.$uid.'\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
-            $ret .= '</div>';
+            $the_new_content = '<div class="bmlt_map_container_div" id="'.$uid.'">';
+            if ( $first )
+                {
+                $the_new_content .= $this->BMLTPlugin_map_search_global_javascript_stuff ( );
+                $first = false;
+                }
+            $the_new_content .= $this->BMLTPlugin_map_search_local_javascript_stuff ( $options_id );
+            $the_new_content .= '<script type="text/javascript">new MapSearch ( \''.htmlspecialchars ( $options_id ).'\', document.getElementById(\''.$uid.'\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
+            $the_new_content .= '</div>';
+            
+            $in_content = self::replace_shortcode ( $in_content, 'bmlt_map', $the_new_content );
             }
             
-        return $ret;
+        return $in_content;
         }
 
     /************************************************************************************//**
@@ -1979,10 +1986,8 @@ class BMLTPlugin
     *                                                                                       *
     *   \returns A string. The XHTML to be displayed.                                       *
     ****************************************************************************************/
-    function BMLTPlugin_map_search_javascript_stuff( )
+    function BMLTPlugin_map_search_global_javascript_stuff()
         {
-        $options = $this->getBMLTOptions_by_id ( $this->my_http_vars['bmlt_settings_id'] );
-            
         // Include the Google Maps API V3 files.
         $ret = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>';
         
@@ -2000,29 +2005,12 @@ class BMLTPlugin
         $ret .= 'var c_g_Noon = \''.$this->process_text ( self::$local_noon ).'\';';
         $ret .= 'var c_g_Midnight = \''.$this->process_text ( self::$local_midnight ).'\';';
         $ret .= 'var c_g_debug_mode = '.( defined ( 'DEBUG_MODE' ) ? 'true' : 'false' ).';';
-        $h = null;
-        $m = null;
-        list ( $h, $m ) = explode ( ':', date ( "G:i", time() + ($options['time_offset'] * 60 * 60) - ($options['grace_time'] * 60) ) );
-        $ret .= 'var c_g_hour = '.intval ( $h ).';';
-        $ret .= 'var c_g_min = '.intval ( $m ).';';
         $ret .= 'var c_g_distance_prompt = \''.$this->process_text ( self::$local_mobile_distance ).'\';';
-        $ret .= 'var c_g_distance_units_are_km = '.((strtolower ($options['distance_units']) == 'km' ) ? 'true' : 'false').';';
-        $ret .= 'var c_g_distance_units = \''.((strtolower ($options['distance_units']) == 'km' ) ? $this->process_text ( self::$local_mobile_kilometers ) : $this->process_text ( self::$local_mobile_miles ) ).'\';';
         $ret .= 'var c_BMLTPlugin_files_uri = \''.htmlspecialchars ( $this->get_ajax_mobile_base_uri() ).'?\';';
-        $ret .= 'var c_bmlt_settings_id='.intval($this->my_http_vars['bmlt_settings_id']).';';        
-        $url = $this->get_plugin_path();
-
-        $img_url = "$url/google_map_images";
-
-        $img_url = htmlspecialchars ( $img_url );
-        
-        $ret .= "var c_g_BMLTPlugin_images = '$img_url';";
-        
-        $ret .= "var c_g_BMLTPlugin_throbber_img_src = '".htmlspecialchars ( $this->get_plugin_path().'themes/'.$options['theme'].'/images/Throbber.gif' )."';";
-            
-        $ret .= "var c_g_BMLTRoot_URI_JSON_SearchResults = '".htmlspecialchars ( $this->get_ajax_base_uri() )."?redirect_ajax_json=".urlencode ( 'switcher=GetSearchResults' )."';\n";
+        $ret .= "var c_g_BMLTPlugin_images = '".htmlspecialchars ( $this->get_plugin_path()."/google_map_images" )."';";
         $ret .= '</script>';
        
+        $url = $this->get_plugin_path();
         if ( defined ( '_DEBUG_MODE_' ) ) // In debug mode, we use unoptimized versions of these files for easier tracking.
             {
             $ret .= '<script src="'.htmlspecialchars ( $url ).'map_search.js" type="text/javascript"></script>';
@@ -2031,6 +2019,27 @@ class BMLTPlugin
             {
             $ret .= '<script src="'.htmlspecialchars ( $url ).'js_stripper.php?filename=map_search.js" type="text/javascript"></script>';
             }
+
+        return $ret;
+        }
+
+    /************************************************************************************//**
+    *   \brief 
+    *                                                                                       *
+    *   \returns A string. The XHTML to be displayed.                                       *
+    ****************************************************************************************/
+    function BMLTPlugin_map_search_local_javascript_stuff( $in_options_id ///< The ID for the options to use for this implementation.
+                                                            )
+        {
+        $options = $this->getBMLTOptions_by_id ( $in_options_id );
+
+        // Declare the various globals and display strings. This is how we pass strings to the JavaScript, as opposed to the clunky way we do it in the root server.
+        $ret .= '<script type="text/javascript">';
+        $ret .= 'var c_g_distance_units_are_km_'.intval($in_options_id).' = '.((strtolower ($options['distance_units']) == 'km' ) ? 'true' : 'false').';';
+        $ret .= 'var c_g_distance_units_'.intval($in_options_id).' = \''.((strtolower ($options['distance_units']) == 'km' ) ? $this->process_text ( self::$local_mobile_kilometers ) : $this->process_text ( self::$local_mobile_miles ) ).'\';';
+        $ret .= 'var c_g_BMLTPlugin_throbber_img_src_'.intval($in_options_id)." = '".htmlspecialchars ( $this->get_plugin_path().'themes/'.$options['theme'].'/images/Throbber.gif' )."';";
+        $ret .= 'var c_g_BMLTRoot_URI_JSON_SearchResults_'.intval($in_options_id)." = '".htmlspecialchars ( $this->get_ajax_base_uri() )."?redirect_ajax_json=".urlencode ( 'switcher=GetSearchResults' )."&bmlt_settings_id=$in_options_id';\n";
+        $ret .= '</script>';
 
         return $ret;
         }
@@ -3334,6 +3343,11 @@ class BMLTPlugin
                     }
         
                 if ($params = self::get_shortcode ( $in_content, 'bmlt') ) 
+                    {
+                    $my_option_id = ( $params !== true ) ? $params : $my_option_id;
+                    }
+        
+                if ($params = self::get_shortcode ( $in_content, 'bmlt_map') ) 
                     {
                     $my_option_id = ( $params !== true ) ? $params : $my_option_id;
                     }
