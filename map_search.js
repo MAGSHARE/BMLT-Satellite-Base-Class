@@ -25,7 +25,9 @@
 ********************************************************************************************/
 
 /****************************************************************************************//**
-*	\brief 
+*	\brief  This class governs the display of one APIV3 map search instance. It plays games *
+*           with dynamic DOM construction and complex IDs, because it is designed to allow  *
+*           multiple instances on a page.                                                   *
 ********************************************************************************************/
 
 function MapSearch (
@@ -62,41 +64,49 @@ function MapSearch (
 	
 	function load_map ( in_div, in_location_coords )
 	{
-        if ( in_div && in_location_coords )
-            {
-            var myOptions = {
-                                'center': new google.maps.LatLng ( in_location_coords.latitude, in_location_coords.longitude ),
-                                'zoom': in_location_coords.zoom,
-                                'mapTypeId': google.maps.MapTypeId.ROADMAP,
-                                'mapTypeControlOptions': { 'style': google.maps.MapTypeControlStyle.DROPDOWN_MENU },
-                                'zoomControl': true,
-                                'mapTypeControl': true,
-                                'disableDoubleClickZoom' : true,
-                                'draggableCursor' : 'crosshair',
-                                'draggingCursor' : 'crosshair'
-                            };
-
-            var	pixel_width = in_div.offsetWidth;
-            var	pixel_height = in_div.offsetHeight;
-            
-            if ( (pixel_width < 640) || (pixel_height < 640) )
-                {
-                myOptions.scrollwheel = true;
-                myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.SMALL };
-                }
-            else
-                {
-                myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
-                };
-                
-            g_main_map = new google.maps.Map ( in_div, myOptions );
-            };
+        var g_main_div = document.createElement("div");
         
-        if ( g_main_map )
+        if ( g_main_div )
             {
-	        g_main_map.response_object = null;
-            google.maps.event.addListener ( g_main_map, 'click', map_clicked );
-            create_throbber ( in_div );
+            g_main_div.className = 'bmlt_search_map_div';
+            
+            in_div.appendChild ( g_main_div );
+            
+            if ( g_main_div && in_location_coords )
+                {
+                var myOptions = {
+                                    'center': new google.maps.LatLng ( in_location_coords.latitude, in_location_coords.longitude ),
+                                    'zoom': in_location_coords.zoom,
+                                    'mapTypeId': google.maps.MapTypeId.ROADMAP,
+                                    'mapTypeControlOptions': { 'style': google.maps.MapTypeControlStyle.DROPDOWN_MENU },
+                                    'zoomControl': true,
+                                    'mapTypeControl': true,
+                                    'disableDoubleClickZoom' : true
+                                };
+    
+                var	pixel_width = in_div.offsetWidth;
+                var	pixel_height = in_div.offsetHeight;
+                
+                if ( (pixel_width < 640) || (pixel_height < 640) )
+                    {
+                    myOptions.scrollwheel = true;
+                    myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.SMALL };
+                    }
+                else
+                    {
+                    myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
+                    };
+                    
+                g_main_map = new google.maps.Map ( g_main_div, myOptions );
+                };
+            
+            if ( g_main_map )
+                {
+                g_main_map.response_object = null;
+                g_main_map.uid = g_main_div.ID+'-MAP';
+                google.maps.event.addListener ( g_main_map, 'click', map_clicked );
+                create_throbber ( in_div );
+                };
             };
 	};
 	
@@ -283,6 +293,12 @@ function MapSearch (
 			{
 			for ( var c = 0; c < g_allMarkers.length; c++ )
 				{
+				if ( g_allMarkers[c].info_win_ )
+				    {
+				    g_allMarkers[c].info_win_.close();
+				    g_allMarkers[c].info_win_ = null;
+				    };
+				
 				g_allMarkers[c].setMap( null );
 				g_allMarkers[c] = null;
 				};
@@ -419,7 +435,7 @@ function MapSearch (
 			
 			if ( included_weekdays.length > 1 )
 				{
-				marker_html += '<select id="sel_'+in_mtg_obj_array[0].id_bigint.toString()+'" onchange="marker_change_day('+in_mtg_obj_array[0].id_bigint.toString()+')">';
+				marker_html += '<select id="sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'" onchange="marker_change_day(\'sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'\',\''+in_mtg_obj_array[0].id_bigint.toString()+'\')">';
 				
 				for ( var wd = 1; wd < 8; wd++ )
 					{
@@ -465,7 +481,7 @@ function MapSearch (
 						marker_internal_html += 'none'; 
 						};
 						
-					marker_internal_html += '" id="marker_'+in_mtg_obj_array[0].id_bigint.toString()+'_'+wd.toString()+'_id">';
+					marker_internal_html += '" id="sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_marker_'+in_mtg_obj_array[0].id_bigint.toString()+'_'+wd.toString()+'_id">';
 					for ( var c2 = 0; c2 < meetings_html.length; c2++ )
 						{
 						if ( c2 > 0 )
@@ -501,7 +517,7 @@ function MapSearch (
 	{
 		var ret = '';
 		
-		ret = '<div class="marker_div_meeting" id="meeting_display_'+in_meeting_obj.id_bigint.toString()+'">';
+		ret = '<div class="marker_div_meeting">';
 		ret += '<h4>'+in_meeting_obj.meeting_name.toString()+'</h4>';
 		
 		var	time = in_meeting_obj.start_time.toString().split(':');
@@ -687,7 +703,7 @@ function MapSearch (
 																							};
 																						};
 																					};
-																				this.info_win_ = new SmartInfoWindow ({'position': marker.getPosition(), 'map': marker.getMap(), 'content': in_html});
+																				this.info_win_ = new google.maps.InfoWindow ({'position': marker.getPosition(), 'map': marker.getMap(), 'content': in_html, 'pixelOffset': new google.maps.Size ( 0, -32 ) });
 																				}
 												);
 					};
@@ -697,7 +713,37 @@ function MapSearch (
 		
 		return marker;
 	};
-	
+
+    /****************************************************************************************//**
+    *	\brief Function to Reveal and/hide day <div> elements in the marker info window.	    *
+    ********************************************************************************************/
+    
+    marker_change_day = function (  in_sel_id,
+                                    in_id	///< The base ID of the element.
+                                    )
+    {
+        var sel = document.getElementById ( in_sel_id );
+        
+        if ( sel && sel.value )
+            {
+            for ( var wd = 1; wd < 8; wd++ )
+                {
+                var elem = document.getElementById ( in_sel_id+'_marker_'+in_id.toString()+'_'+wd.toString()+'_id' );
+                if ( elem )
+                    {
+                    if ( wd == sel.value )
+                        {
+                        elem.style.display = 'block';
+                        }
+                    else
+                        {
+                        elem.style.display = 'none';
+                        };
+                    };
+                };
+            };
+    };
+
     /****************************************************************************************
     *									  UTILITY FUNCTIONS                                 *
     ****************************************************************************************/

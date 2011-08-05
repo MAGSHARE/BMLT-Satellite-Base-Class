@@ -1964,11 +1964,11 @@ class BMLTPlugin
         
         if ( $params )
             {
-            $ret = '<div class="bmlt_map_container_div" id="bmlt_map_container_div">';
+            $uid = htmlspecialchars ( uniqid() );
+            $ret = '<div class="bmlt_map_container_div" id="'.$uid.'">';
             $ret .= $this->BMLTPlugin_map_search_javascript_stuff ( );
-
-            $ret .= '<div id="bmlt_location_finder_map" class="bmlt_search_map_div"></div>';
-            $ret .= '<script type="text/javascript">MapSearch ( document.getElementById(\'bmlt_location_finder_map\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
+            $ret .= '<script type="text/javascript">MapSearch ( document.getElementById(\''.$uid.'\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
+            $ret .= '</div>';
             }
             
         return $ret;
@@ -1987,45 +1987,45 @@ class BMLTPlugin
         $ret = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>';
         
         // Declare the various globals and display strings. This is how we pass strings to the JavaScript, as opposed to the clunky way we do it in the root server.
-        $ret .= '<script type="text/javascript">'."\n";
-        $ret .= 'var c_g_cannot_determine_location = \''.$this->process_text ( self::$local_cannot_determine_location ).'\';'."\n";
-        $ret .= 'var c_g_no_meetings_found = \''.$this->process_text ( self::$local_mobile_fail_no_meetings ).'\';'."\n";
-        $ret .= 'var c_g_server_error = \''.$this->process_text ( self::$local_server_fail ).'\';'."\n";
-        $ret .= 'var c_g_address_lookup_fail = \''.$this->process_text ( self::$local_cant_find_address ).'\';'."\n";
+        $ret .= '<script type="text/javascript">';
+        $ret .= 'var c_g_cannot_determine_location = \''.$this->process_text ( self::$local_cannot_determine_location ).'\';';
+        $ret .= 'var c_g_no_meetings_found = \''.$this->process_text ( self::$local_mobile_fail_no_meetings ).'\';';
+        $ret .= 'var c_g_server_error = \''.$this->process_text ( self::$local_server_fail ).'\';';
+        $ret .= 'var c_g_address_lookup_fail = \''.$this->process_text ( self::$local_cant_find_address ).'\';';
         $ret .= 'var c_g_map_link_text = \''.$this->process_text ( self::$local_map_link ).'\';';
         $ret .= 'var c_g_weekdays = [';
-        $ret .= "'".$this->process_text ( join ( "','", self::$local_weekdays ) )."'"."\n";
+        $ret .= "'".$this->process_text ( join ( "','", self::$local_weekdays ) )."'";
         $ret .= '];';
-        $ret .= 'var c_g_formats = \''.$this->process_text ( self::$local_formats ).'\';'."\n";
-        $ret .= 'var c_g_Noon = \''.$this->process_text ( self::$local_noon ).'\';'."\n";
-        $ret .= 'var c_g_Midnight = \''.$this->process_text ( self::$local_midnight ).'\';'."\n";
-        $ret .= 'var c_g_debug_mode = '.( defined ( 'DEBUG_MODE' ) ? 'true' : 'false' ).';'."\n";
+        $ret .= 'var c_g_formats = \''.$this->process_text ( self::$local_formats ).'\';';
+        $ret .= 'var c_g_Noon = \''.$this->process_text ( self::$local_noon ).'\';';
+        $ret .= 'var c_g_Midnight = \''.$this->process_text ( self::$local_midnight ).'\';';
+        $ret .= 'var c_g_debug_mode = '.( defined ( 'DEBUG_MODE' ) ? 'true' : 'false' ).';';
         $h = null;
         $m = null;
         list ( $h, $m ) = explode ( ':', date ( "G:i", time() + ($options['time_offset'] * 60 * 60) - ($options['grace_time'] * 60) ) );
-        $ret .= 'var c_g_hour = '.intval ( $h ).';'."\n";
-        $ret .= 'var c_g_min = '.intval ( $m ).';'."\n";
-        $ret .= 'var c_g_distance_prompt = \''.$this->process_text ( self::$local_mobile_distance ).'\';'."\n";
-        $ret .= 'var c_g_distance_units_are_km = '.((strtolower ($options['distance_units']) == 'km' ) ? 'true' : 'false').';'."\n";
-        $ret .= 'var c_g_distance_units = \''.((strtolower ($options['distance_units']) == 'km' ) ? $this->process_text ( self::$local_mobile_kilometers ) : $this->process_text ( self::$local_mobile_miles ) ).'\';'."\n";
-        $ret .= 'var c_BMLTPlugin_files_uri = \''.htmlspecialchars ( $this->get_ajax_mobile_base_uri() ).'?\';'."\n";
-        $ret .= 'var c_bmlt_settings_id='.intval($this->my_http_vars['bmlt_settings_id']).';'."\n";        
+        $ret .= 'var c_g_hour = '.intval ( $h ).';';
+        $ret .= 'var c_g_min = '.intval ( $m ).';';
+        $ret .= 'var c_g_distance_prompt = \''.$this->process_text ( self::$local_mobile_distance ).'\';';
+        $ret .= 'var c_g_distance_units_are_km = '.((strtolower ($options['distance_units']) == 'km' ) ? 'true' : 'false').';';
+        $ret .= 'var c_g_distance_units = \''.((strtolower ($options['distance_units']) == 'km' ) ? $this->process_text ( self::$local_mobile_kilometers ) : $this->process_text ( self::$local_mobile_miles ) ).'\';';
+        $ret .= 'var c_BMLTPlugin_files_uri = \''.htmlspecialchars ( $this->get_ajax_mobile_base_uri() ).'?\';';
+        $ret .= 'var c_bmlt_settings_id='.intval($this->my_http_vars['bmlt_settings_id']).';';        
         $url = $this->get_plugin_path();
 
         $img_url = "$url/google_map_images";
 
         $img_url = htmlspecialchars ( $img_url );
         
-        $ret .= "var c_g_BMLTPlugin_images = '$img_url';"."\n";
+        $ret .= "var c_g_BMLTPlugin_images = '$img_url';";
         
-        $ret .= "var c_g_BMLTPlugin_throbber_img_src = '".htmlspecialchars ( $this->get_plugin_path().'themes/'.$options['theme'].'/images/Throbber.gif' )."';"."\n";
+        $ret .= "var c_g_BMLTPlugin_throbber_img_src = '".htmlspecialchars ( $this->get_plugin_path().'themes/'.$options['theme'].'/images/Throbber.gif' )."';";
             
         $ret .= "var c_g_BMLTRoot_URI_JSON_SearchResults = '".htmlspecialchars ( $this->get_ajax_base_uri() )."?redirect_ajax_json=".urlencode ( 'switcher=GetSearchResults' )."';\n";
-        $ret .= '</script>'."\n";
+        $ret .= '</script>';
        
         if ( defined ( '_DEBUG_MODE_' ) ) // In debug mode, we use unoptimized versions of these files for easier tracking.
             {
-            $ret .= '<script src="'.htmlspecialchars ( $url ).'map_search.js" type="text/javascript"></script>'."\n";
+            $ret .= '<script src="'.htmlspecialchars ( $url ).'map_search.js" type="text/javascript"></script>';
             }
         else
             {
