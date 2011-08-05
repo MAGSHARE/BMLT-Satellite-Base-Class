@@ -2,7 +2,7 @@
 /****************************************************************************************//**
 * \file unit_test.php																		*
 * \brief A unit test harness for the BMLTPlugin class.						                *
-* \version 1.1.2																			*
+* \version 1.1.3																			*
     
     This file is part of the BMLT Common Satellite Base Class Project. The project GitHub
     page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class
@@ -36,6 +36,7 @@ require_once ( 'bmlt-unit-test-satellite-plugin.php' );
 
 /// This is an ID for a specific meeting (with some changes) for the meeting changes test.
 define ( 'U_TEST_MEETING_ID', 734 );
+define ( '_TIME_ZONE_', 'America/New_York' );
 
 /****************************************************************************************//**
 *	\brief Runs the unit tests.																*
@@ -195,7 +196,6 @@ function u_test_body()
 function u_test_form()
 {
     global $BMLTPluginOp;
-        
 	$ret = '<div class="return_button"><a href="http://'.$_SERVER['SERVER_NAME'].$_SERVER['SCRIPT_NAME'].'?utest_string=admin">Admin Page</a></div>';
     $ret .= '<div class="utest_input_form_container_div">';
         $ret .= '<form onsubmit="utest_onsubmit()" class="utest_input_form" method="get" action="'.htmlspecialchars ( $_SERVER['PHP_SELF'] ).'">';
@@ -277,5 +277,6 @@ function u_test_render()
 /*******************************************************************************************/
 
 // This calls the unit test.
+date_default_timezone_set ( _TIME_ZONE_ );   // Just to stop warnings.
 echo u_test();
 ?>

@@ -3,7 +3,7 @@
 *   \file   bmlt-unit-test-satellite-plugin.php                                             *
 *                                                                                           *
 *   \brief  This is a standalone unit test plugin of a BMLT satellite client.               *
-*   \version 1.1.2                                                                          *
+*   \version 1.1.3                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -345,12 +345,9 @@ class BMLTUTestPlugin extends BMLTPlugin
             die ( );
             }
         
-        if ( !$options['gmaps_api_key'] )   // No GMAP API key, no BMLT window.
-            {
-            $load_head = false;
-            }
+        $load_gmaps = !$options['gmaps_api_key'] || !$this->get_shortcode ( $in_text, 'bmlt');   // No GMAP API key or no "bmlt" shortcode, no BMLT window.
         
-        $this->my_http_vars['gmap_key'] = $options['gmaps_api_key'];
+        $this->my_http_vars['gmap_key'] = $load_gmaps ? null : $options['gmaps_api_key'];
         
         $this->my_http_vars['start_view'] = $options['bmlt_initial_view'];
         
@@ -380,7 +377,7 @@ class BMLTUTestPlugin extends BMLTPlugin
                 $head_content .= bmlt_satellite_controller::call_curl ( "$root_server?switcher=GetHeaderXHTML".$this->my_params );
                 }
             
-            $additional_css = '.bmlt_container * {margin:0;padding:0 }';
+            $additional_css = '.bmlt_container * {margin:0;padding:0;text-align:center }';
 
             if ( $options['push_down_more_details'] )
                 {
@@ -410,7 +407,7 @@ class BMLTUTestPlugin extends BMLTPlugin
             }
         
         $head_content .= 'javascript.js"></script>';
-
+        
         return $head_content;
         }
         

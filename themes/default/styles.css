@@ -425,3 +425,10 @@ table#bmlt_container .search_check_div label
 {
     display: inline;
 }
+
+.bmlt_search_map_div
+{
+    height:640px;
+    width: 640px;
+    margin:auto;
+}

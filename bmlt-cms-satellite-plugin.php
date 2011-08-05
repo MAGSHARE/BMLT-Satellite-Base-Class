@@ -3,7 +3,7 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 1.1.2                                                                          *
+*   \version 1.1.3                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -26,7 +26,7 @@
 *   along with this code.  If not, see <http://www.gnu.org/licenses/>.                      *
 ********************************************************************************************/
 
-// define ( '_DEBUG_MODE_', 1 ); //Uncomment for easier JavaScript debugging.
+define ( '_DEBUG_MODE_', 1 ); //Uncomment for easier JavaScript debugging.
 
 // Include the satellite driver class.
 require_once ( dirname ( __FILE__ ).'/BMLT-Satellite-Driver/bmlt_satellite_controller.class.php' );
@@ -1732,6 +1732,8 @@ class BMLTPlugin
 
         $in_the_content = $this->display_old_search ( $in_the_content );
         
+        $in_the_content = $this->display_new_map_search ( $in_the_content );
+        
         return $in_the_content;
         }
         
@@ -1921,6 +1923,95 @@ class BMLTPlugin
         return $in_content;
         }
         
+    /************************************************************************************//**
+    *   \brief This is a function that filters the content, and replaces a portion with the *
+    *   "new map" search                                                                    *
+    *                                                                                       *
+    *   \returns a string, containing the content.                                          *
+    ****************************************************************************************/
+    function display_new_map_search ($in_content      ///< This is the content to be filtered.
+                                    )
+        {
+        $ret = '';
+        
+        $options_id = $this->cms_get_page_settings_id( $in_content );
+        
+        $options = $this->getBMLTOptions_by_id ( $options_id );
+        $root_server_root = $options['root_server'];
+
+        $in_content = str_replace ( '&#038;', '&', $in_content );   // This stupid kludge is because WordPress does an untoward substitution. Won't do anything unless WordPress has been naughty.
+        
+        $params = self::get_shortcode ( $in_content, 'bmlt_map' );
+        
+        if ( $params )
+            {
+            $ret = '<div class="bmlt_map_container_div" id="bmlt_map_container_div">';
+            $ret .= $this->BMLTPlugin_map_search_javascript_stuff ( );
+            $ret .= '<div id="bmlt_location_finder_map" class="bmlt_search_map_div"></div>';
+            $ret .= '<script type="text/javascript">MapSearch ( document.getElementById(\'bmlt_location_finder_map\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
+            }
+            
+        return $ret;
+        }
+
+    /************************************************************************************//**
+    *   \brief 
+    *                                                                                       *
+    *   \returns A string. The XHTML to be displayed.                                       *
+    ****************************************************************************************/
+    function BMLTPlugin_map_search_javascript_stuff( )
+        {
+        $options = $this->getBMLTOptions_by_id ( $this->my_http_vars['bmlt_settings_id'] );
+            
+        // Include the Google Maps API V3 files.
+        $ret = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>';
+        
+        // Declare the various globals and display strings. This is how we pass strings to the JavaScript, as opposed to the clunky way we do it in the root server.
+        $ret .= '<script type="text/javascript">'."\n";
+        $ret .= 'var c_g_cannot_determine_location = \''.$this->process_text ( self::$local_cannot_determine_location ).'\';'."\n";
+        $ret .= 'var c_g_no_meetings_found = \''.$this->process_text ( self::$local_mobile_fail_no_meetings ).'\';'."\n";
+        $ret .= 'var c_g_server_error = \''.$this->process_text ( self::$local_server_fail ).'\';'."\n";
+        $ret .= 'var c_g_address_lookup_fail = \''.$this->process_text ( self::$local_cant_find_address ).'\';'."\n";
+        $ret .= 'var c_g_map_link_text = \''.$this->process_text ( self::$local_map_link ).'\';';
+        $ret .= 'var c_g_weekdays = [';
+        $ret .= "'".$this->process_text ( join ( "','", self::$local_weekdays ) )."'"."\n";
+        $ret .= '];';
+        $ret .= 'var c_g_formats = \''.$this->process_text ( self::$local_formats ).'\';'."\n";
+        $ret .= 'var c_g_Noon = \''.$this->process_text ( self::$local_noon ).'\';'."\n";
+        $ret .= 'var c_g_Midnight = \''.$this->process_text ( self::$local_midnight ).'\';'."\n";
+        $ret .= 'var c_g_debug_mode = '.( defined ( 'DEBUG_MODE' ) ? 'true' : 'false' ).';'."\n";
+        $h = null;
+        $m = null;
+        list ( $h, $m ) = explode ( ':', date ( "G:i", time() + ($options['time_offset'] * 60 * 60) - ($options['grace_time'] * 60) ) );
+        $ret .= 'var c_g_hour = '.intval ( $h ).';'."\n";
+        $ret .= 'var c_g_min = '.intval ( $m ).';'."\n";
+        $ret .= 'var c_g_distance_prompt = \''.$this->process_text ( self::$local_mobile_distance ).'\';'."\n";
+        $ret .= 'var c_g_distance_units_are_km = '.((strtolower ($options['distance_units']) == 'km' ) ? 'true' : 'false').';'."\n";
+        $ret .= 'var c_g_distance_units = \''.((strtolower ($options['distance_units']) == 'km' ) ? $this->process_text ( self::$local_mobile_kilometers ) : $this->process_text ( self::$local_mobile_miles ) ).'\';'."\n";
+        $ret .= 'var c_BMLTPlugin_files_uri = \''.htmlspecialchars ( $this->get_ajax_mobile_base_uri() ).'?\';'."\n";
+        $ret .= 'var c_bmlt_settings_id='.intval($this->my_http_vars['bmlt_settings_id']).';'."\n";        
+        $url = $this->get_plugin_path();
+
+        $img_url = "$url/google_map_images";
+
+        $img_url = htmlspecialchars ( $img_url );
+        
+        $ret .= "var c_g_BMLTPlugin_images = '$img_url';"."\n";
+        $ret .= "var c_g_BMLTRoot_URI = '".htmlspecialchars ( $options['root_server'] )."';\n";
+        $ret .= '</script>'."\n";
+       
+        if ( defined ( '_DEBUG_MODE_' ) ) // In debug mode, we use unoptimized versions of these files for easier tracking.
+            {
+            $ret .= '<script src="'.htmlspecialchars ( $url ).'map_search.js" type="text/javascript"></script>'."\n";
+            }
+        else
+            {
+            $ret .= '<script src="'.htmlspecialchars ( $url ).'js_stripper.php?filename=map_search.js" type="text/javascript"></script>';
+            }
+
+        return $ret;
+        }
+            
     /************************************************************************************//**
     *   \brief This is a function that filters the content, and replaces a portion with the *
     *   "changes" dump.                                                                     *
