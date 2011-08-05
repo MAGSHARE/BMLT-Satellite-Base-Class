@@ -39,6 +39,7 @@ function MapSearch (
 	
 	var	g_main_map = null;				///< This will hold the Google Map object.
 	var	g_allMarkers = [];				///< Holds all the markers.
+	var g_myThrobber = null;            ///< Contains the throbber <div> (so it can be easily hidden and shown).
 
 	/// These describe the regular NA meeting icon
 	var g_icon_image_single = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -95,9 +96,68 @@ function MapSearch (
             {
 	        g_main_map.response_object = null;
             google.maps.event.addListener ( g_main_map, 'click', map_clicked );
+            create_throbber ( in_div );
             };
 	};
 	
+	/************************************************************************************//**
+	*	\brief 
+	****************************************************************************************/
+	
+	function create_throbber ( in_div    ///< The container div for the throbber.
+	                        )
+	{
+	    if ( !g_myThrobber )
+	        {
+            g_myThrobber = document.createElement("div");
+            if ( g_myThrobber )
+                {
+                var img = document.createElement("img");
+                
+                if ( img )
+                    {
+                    img.src = c_g_BMLTPlugin_throbber_img_src;
+                    img.className = 'bmlt_map_throbber_img';
+                    img.ID = 'bmlt_map_throbber_img';
+                    img.alt = 'AJAX Throbber';
+                    g_myThrobber.appendChild ( img );
+                    g_myThrobber.className = 'bmlt_map_throbber_div';
+                    g_myThrobber.ID = 'bmlt_map_throbber_div';
+	                g_myThrobber.style.display = 'none';
+                    in_div.appendChild ( g_myThrobber );
+                    }
+                else
+                    {
+                    g_myThrobber = null;
+                    };
+                };
+            };
+        };
+        
+	/************************************************************************************//**
+	*	\brief 
+	****************************************************************************************/
+	
+	function show_throbber()
+	{
+	    if ( g_myThrobber )
+	        {
+	        g_myThrobber.style.display = 'block';
+	        };
+    };
+        
+	/************************************************************************************//**
+	*	\brief 
+	****************************************************************************************/
+	
+	function hide_throbber()
+	{
+	    if ( g_myThrobber )
+	        {
+	        g_myThrobber.style.display = 'none';
+	        };
+    };
+    
 	/************************************************************************************//**
 	*	\brief Respond to initial map click.                                                *
 	****************************************************************************************/
@@ -105,6 +165,7 @@ function MapSearch (
 	function map_clicked ( in_event ///< The mouse event that caused the click.
 	                        )
 	{
+	    show_throbber();
 	    clearAllMarkers();
 	    g_main_map.response_object = null;
 	    
@@ -134,8 +195,7 @@ function MapSearch (
 	function call_root_server ( in_args
 	                            )
 	{
-	    var url = c_g_BMLTRoot_URI+'/client_interface/json/index.php?switcher=GetSearchResults&'+in_args;
-
+	    var url = c_g_BMLTRoot_URI_JSON_SearchResults+'&'+in_args;
         BMLTPlugin_AjaxRequest ( url, bmlt_ajax_router, 'get' );
 	};
 	
@@ -183,6 +243,7 @@ function MapSearch (
 			};
 		
 		draw_markers();
+	    hide_throbber();
 	};
 	
 	/************************************************************************************//**

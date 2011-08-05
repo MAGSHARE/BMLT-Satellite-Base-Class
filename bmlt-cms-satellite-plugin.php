@@ -449,7 +449,7 @@ class BMLTPlugin
 
         foreach ( $in_array as $key => $value )
             {
-            if ( ($key != 'lang_enum') && isset ( $in_array['direct_simple'] ) || (!isset ( $in_array['direct_simple'] ) && $key != 'switcher') )    // We don't propagate switcher or the language.
+            if ( ($key != 'lang_enum') && isset ( $in_array['direct_simple'] ) || (!isset ( $in_array['direct_simple'] ) && $key != 'switcher') && ($key != 'redirect_ajax_json') )    // We don't propagate switcher or the language.
                 {
                 if ( isset ( $value ) && is_array ( $value ) && count ( $value ) )
                     {
@@ -1658,6 +1658,25 @@ class BMLTPlugin
                     ob_end_flush();
                     die ( );
                     }
+                elseif ( isset ( $this->my_http_vars['redirect_ajax_json'] ) )
+                    {
+                    $url = $options['root_server']."/client_interface/json/index.php?".$this->my_http_vars['redirect_ajax_json'].$this->my_params;
+
+                    if ( ob_get_level () )         ob_end_clean(); // Just in case we are in an OB
+                    $ret = bmlt_satellite_controller::call_curl ( $url );
+                    
+                    $handler = null;
+                    
+                    if ( zlib_get_coding_type() === false )
+                        {
+                        $handler = "ob_gzhandler";
+                        }
+                    
+                    ob_start($handler);
+                        echo $ret;
+                    ob_end_flush();
+                    die ( );
+                    }
                 elseif ( isset ( $this->my_http_vars['direct_simple'] ) )
                     {
                     $root_server = $options['root_server']."/client_interface/simple/index.php";
@@ -1947,6 +1966,7 @@ class BMLTPlugin
             {
             $ret = '<div class="bmlt_map_container_div" id="bmlt_map_container_div">';
             $ret .= $this->BMLTPlugin_map_search_javascript_stuff ( );
+
             $ret .= '<div id="bmlt_location_finder_map" class="bmlt_search_map_div"></div>';
             $ret .= '<script type="text/javascript">MapSearch ( document.getElementById(\'bmlt_location_finder_map\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
             }
@@ -1997,7 +2017,10 @@ class BMLTPlugin
         $img_url = htmlspecialchars ( $img_url );
         
         $ret .= "var c_g_BMLTPlugin_images = '$img_url';"."\n";
-        $ret .= "var c_g_BMLTRoot_URI = '".htmlspecialchars ( $options['root_server'] )."';\n";
+        
+        $ret .= "var c_g_BMLTPlugin_throbber_img_src = '".htmlspecialchars ( $this->get_plugin_path().'themes/'.$options['theme'].'/images/Throbber.gif' )."';"."\n";
+            
+        $ret .= "var c_g_BMLTRoot_URI_JSON_SearchResults = '".htmlspecialchars ( $this->get_ajax_base_uri() )."?redirect_ajax_json=".urlencode ( 'switcher=GetSearchResults' )."';\n";
         $ret .= '</script>'."\n";
        
         if ( defined ( '_DEBUG_MODE_' ) ) // In debug mode, we use unoptimized versions of these files for easier tracking.

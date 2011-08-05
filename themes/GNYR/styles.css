@@ -619,9 +619,31 @@ table#bmlt_container .bmlt_contact_form_one_line_text_item
     width: 336px;
 }
 
-.bmlt_search_map_div
+.bmlt_map_container_div .bmlt_search_map_div
 {
     height:640px;
     width: 640px;
     margin:auto;
+}
+
+.bmlt_map_container_div .bmlt_map_throbber_div
+{
+    position:absolute;
+    top:50%;
+    left:50%;
+    height:48px;
+    width:48px;
+    margin:0;
+    margin-top:-24px;
+    margin-left:-24px;
+    z-index:10000;
+    background-color:#555;
+}
+
+.bmlt_map_container_div .bmlt_map_throbber_div img
+{
+    display:block;
+    height:40px;
+    width:40px;
+    margin:4px;
 }
