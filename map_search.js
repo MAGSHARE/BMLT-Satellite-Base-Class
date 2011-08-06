@@ -871,7 +871,8 @@ function MapSearch (
     *           current search criteria.                                                    *
     ****************************************************************************************/
     
-    function recalculateMap()
+    function recalculateMap(in_cb   ///< Optional checkbox item. If supplied, then the "all reset" will be bypassed.
+                            )
     {
         var element_id = g_main_id+'_options_1_a';
             
@@ -880,16 +881,54 @@ function MapSearch (
         if ( g_basic_options_open )
             {
             // First, get the weekdays.
-            for ( var c = 1; c < 8; c++ )
+            var all_element_id = 'weekday_'+g_main_id+'_0'; // This is the special "all" tag. It is mutually exclusive to all the others.
+            var all_element = document.getElementById(all_element_id);
+            
+            if ( all_element )
                 {
-                g_basic_options_weekdays[c] = false;
-                var element_id = 'weekday_'+g_main_id+'_'+c;
-                
-                var weekday_checkbox = document.getElementById(element_id);
-                
-                if ( weekday_checkbox )
+                if ( all_element.checked && !in_cb )
                     {
-                    g_basic_options_weekdays[c] = weekday_checkbox.checked;
+                    for ( var c = 1; c < 8; c++ )
+                        {
+                        g_basic_options_weekdays[c] = false;
+                        var element_id = 'weekday_'+g_main_id+'_'+c;
+                        
+                        var weekday_checkbox = document.getElementById(element_id);
+                        
+                        if ( weekday_checkbox )
+                            {
+                            var old_onChange = weekday_checkbox.onChange;   // We do this to keep this function from being called like crazy.
+                            weekday_checkbox.onChange = null;
+                            weekday_checkbox.checked = false;
+                            weekday_checkbox.onChange = old_onChange;
+                            };
+                        };
+                    }
+                else
+                    {
+                    var weekday_checked = false;
+                    for ( var c = 1; c < 8; c++ )
+                        {
+                        g_basic_options_weekdays[c] = false;
+                        var element_id = 'weekday_'+g_main_id+'_'+c;
+                        
+                        var weekday_checkbox = document.getElementById(element_id);
+                        
+                        if ( weekday_checkbox )
+                            {
+                            g_basic_options_weekdays[c] = weekday_checkbox.checked;
+                            if ( weekday_checkbox.checked )
+                                {
+                                weekday_checked = true;
+                                };
+                            };
+                        };
+                    
+                    // If there are no checked weekdays, the "all" checkbox is checked. Otherwise, it is not.
+                    var old_onChange = all_element.onChange;   // We do this to keep this function from being called like crazy.
+                    all_element.onChange = null;
+                    all_element.checked = !weekday_checked;
+                    all_element.onChange = old_onChange;
                     };
                 };
             };

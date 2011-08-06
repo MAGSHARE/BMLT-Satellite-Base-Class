@@ -290,6 +290,7 @@ class BMLTPlugin
                                     
     static  $local_new_map_option_1_label = 'Basic Search Options:';
     static  $local_new_map_weekdays = 'Meetings Gather on These Weekdays:';
+    static  $local_new_map_all_weekdays = 'All';
 
     /************************************************************************************//**
     *                       STATIC DATA MEMBERS (MOBILE LOCALIZABLE)                        *
@@ -2008,11 +2009,13 @@ class BMLTPlugin
                 $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_1_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_1_a\');var b=document.getElementById(\''.$in_uid.'_options_1\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\'}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}};c_ms_'.$in_uid.'.recalculateMapExt()"><span>'.$this->process_text ( self::$local_new_map_option_1_label ).'</span></a>';
                 $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_1" style="display:none">';
                 $ret .= '<form action="#" method="get" onsubmit="return false"><fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset"><legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
+                    $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input type="checkbox" id="weekday_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
+                    $ret .= '<label for="weekday_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_weekdays ).'</label></div>';
                     for ( $index = 1;  $index < count ( self::$local_weekdays ); $index++ )
                         {
                         $weekday = self::$local_weekdays[$index];
-                        $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input type="checkbox" id="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
-                        $ret .= '<label for="weekday_'.$in_uid.htmlspecialchars ( $index ).'">'.$this->process_text ( $weekday ).'</label></div>';
+                        $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input type="checkbox" id="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
+                        $ret .= '<label for="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'">'.$this->process_text ( $weekday ).'</label></div>';
                         }
                 $ret .= '</fieldset></form>';
             $ret .= '</div>';
