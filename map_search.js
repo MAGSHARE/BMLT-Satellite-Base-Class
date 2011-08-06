@@ -31,7 +31,8 @@
 ********************************************************************************************/
 
 function MapSearch (
-                    in_id,
+                    in_unique_id,
+                    in_settings_id,
                     in_div,
                     in_coords
                     )
@@ -42,7 +43,7 @@ function MapSearch (
 	
 	var	g_main_map = null;				///< This will hold the Google Map object.
 	var	g_allMarkers = [];				///< Holds all the markers.
-	var g_main_id = in_id;
+	var g_main_id = in_unique_id;
     var g_search_radius = null;
     
 	/// These describe the regular NA meeting icon
@@ -56,6 +57,10 @@ function MapSearch (
 	var g_center_icon_shadow = new google.maps.MarkerImage( c_g_BMLTPlugin_images+"/NACenterMarkerS.png", new google.maps.Size(43, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
 	var g_center_icon_shape = { coord: [16,0,18,1,19,2,19,3,20,4,20,5,20,6,20,7,20,8,20,9,20,10,20,11,19,12,17,13,16,14,16,15,15,16,15,17,14,18,14,19,13,20,13,21,13,22,13,23,12,24,12,25,12,26,12,27,11,28,11,29,11,30,11,31,11,32,11,33,11,34,11,35,10,35,10,34,9,33,9,32,9,31,9,30,9,29,9,28,8,27,8,26,8,25,8,24,8,23,7,22,7,21,7,20,6,19,6,18,5,17,5,16,4,15,4,14,3,13,1,12,0,11,0,10,0,9,0,8,0,7,0,6,0,5,0,4,1,3,1,2,3,1,4,0,16,0], type: 'poly' };
 
+    /// These comprise a search state that will be used to filter searches.
+    var g_basic_options_open = false;                   ///< This is set to true if the basic options box is visible. If it is, then its options will be considered. If not, then they will be ignored.
+        var g_basic_options_weekdays = new Array();     ///< This will be an array that represents weekdays. 1 -> Sunday, 7 -> Saturday. We ignore 0. These will be true/false, and represent the checkbox states.
+        
 	/****************************************************************************************
 	*									GOOGLE MAPS STUFF									*
 	****************************************************************************************/
@@ -206,7 +211,20 @@ function MapSearch (
         var geo_width = (null == g_main_map.geo_width) ? -10 : (g_main_map.geo_width / (( dist_r_km ) ? 1.0 : 1.609344 ));
         
 	    var args = 'geo_width='+geo_width+'&long_val='+in_event.latLng.lng().toString()+'&lat_val='+in_event.latLng.lat().toString();
-	    
+        if ( g_basic_options_open )
+            {
+            var weekdays = '';
+            for ( var c = 1; c < 8; c++ )
+                {
+                if ( g_basic_options_weekdays[c] )
+                    {
+                    weekdays += '&weekdays[]='+c;
+                    };
+                };
+            
+            args += weekdays;
+            };
+            
 	    g_main_map.g_location_coords = in_event.latLng;
 
 	    call_root_server ( args );
@@ -846,7 +864,42 @@ function MapSearch (
                 };
             };
     };
+    
 
+    /************************************************************************************//**
+    *	\brief  This function reads the form elements, and redraws the map, based on the    *
+    *           current search criteria.                                                    *
+    ****************************************************************************************/
+    
+    function recalculateMap()
+    {
+        var element_id = g_main_id+'_options_1_a';
+            
+        g_basic_options_open = document.getElementById(element_id).className == 'bmlt_map_hide_options';    // OK. If this is hidden, we'll be skipping the rest.
+        
+        if ( g_basic_options_open )
+            {
+            // First, get the weekdays.
+            for ( var c = 1; c < 8; c++ )
+                {
+                g_basic_options_weekdays[c] = false;
+                var element_id = 'weekday_'+g_main_id+'_'+c;
+                
+                var weekday_checkbox = document.getElementById(element_id);
+                
+                if ( weekday_checkbox )
+                    {
+                    g_basic_options_weekdays[c] = weekday_checkbox.checked;
+                    };
+                };
+            };
+        
+        if ( g_main_map.g_location_coords ) // We only refresh if we have already done a search.
+            {
+            map_clicked ( {'latLng':g_main_map.g_location_coords} );
+            };
+    };
+    
     /****************************************************************************************
     *									  UTILITY FUNCTIONS                                 *
     ****************************************************************************************/
@@ -858,7 +911,7 @@ function MapSearch (
     *	\returns a Google Maps API V3 Point, with the pixel coordinates (top, left origin).	*
     ****************************************************************************************/
     
-    fromLatLngToPixel = function ( in_Latng )
+    function fromLatLngToPixel ( in_Latng )
     {
         var	ret = null;
         
@@ -897,5 +950,8 @@ function MapSearch (
 	if ( in_div && in_coords )
 		{
 		load_map ( in_div, in_coords );
+		this.recalculateMapExt = recalculateMap;
 		};
 };
+
+MapSearch.prototype.recalculateMapExt = null;   ///< This is the only exported function. We use this to recalculate the map when the user changes options.

@@ -458,14 +458,19 @@ table#bmlt_container .search_check_div label
     display: inline;
 }
 
-.bmlt_map_container_div .bmlt_search_map_div
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div,
+div.bmlt_map_container_div .bmlt_search_map_div
 {
-    height:640px;
     width: 640px;
     margin:auto;
 }
 
-.bmlt_map_container_div .bmlt_map_throbber_div
+div.bmlt_map_container_div .bmlt_search_map_div
+{
+    height:640px;
+}
+
+div.bmlt_map_container_div .bmlt_map_throbber_div
 {
     position:absolute;
     top:50%;
@@ -479,10 +484,14 @@ table#bmlt_container .search_check_div label
     background-color:#555;
 }
 
-.bmlt_map_container_div .bmlt_map_throbber_div img
+div.bmlt_map_container_div .bmlt_map_throbber_div img
 {
     display:block;
     height:40px;
     width:40px;
     margin:4px;
+}
+
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div
+{
 }

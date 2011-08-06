@@ -285,6 +285,13 @@ class BMLTPlugin
     static  $local_options_failure_time = 5000;                             ///< The number of milliseconds a failure message is displayed.
                                     
     /************************************************************************************//**
+    *                       STATIC DATA MEMBERS (NEW MAP LOCALIZABLE)                       *
+    ****************************************************************************************/
+                                    
+    static  $local_new_map_option_1_label = 'Basic Search Options:';
+    static  $local_new_map_weekdays = 'Meetings Gather on These Weekdays:';
+
+    /************************************************************************************//**
     *                       STATIC DATA MEMBERS (MOBILE LOCALIZABLE)                        *
     ****************************************************************************************/
 
@@ -1965,14 +1972,20 @@ class BMLTPlugin
             
             $options = $this->getBMLTOptions_by_id ( $options_id );
             $uid = htmlspecialchars ( uniqid() );
-            $the_new_content = '<div class="bmlt_map_container_div" id="'.$uid.'">';
-            if ( $first )
+            
+            $the_new_content = '<noscript>'.$this->process_text ( self::$local_noscript ).'</noscript>';    // We let non-JS browsers know that this won't work for them.
+            $the_new_content .= '<div class="bmlt_map_container_div" style="display:none" id="'.$uid.'">';  // This starts off hidden, and is revealed by JS.
+            
+            $the_new_content .= $this->BMLTPlugin_map_search_search_options($options_id, $uid);  // This is the box of search choices.
+            
+            if ( $first )   // We only load this the first time.
                 {
                 $the_new_content .= $this->BMLTPlugin_map_search_global_javascript_stuff ( );
                 $first = false;
                 }
-            $the_new_content .= $this->BMLTPlugin_map_search_local_javascript_stuff ( $options_id );
-            $the_new_content .= '<script type="text/javascript">new MapSearch ( \''.htmlspecialchars ( $options_id ).'\', document.getElementById(\''.$uid.'\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
+            
+            $the_new_content .= $this->BMLTPlugin_map_search_local_javascript_stuff ( $options_id, $uid );
+            $the_new_content .= '<script type="text/javascript">document.getElementById(\''.$uid.'\').style.display=\'block\';c_ms_'.$uid.' = new MapSearch ( \''.htmlspecialchars ( $uid ).'\',\''.htmlspecialchars ( $options_id ).'\', document.getElementById(\''.$uid.'\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
             $the_new_content .= '</div>';
             
             $in_content = self::replace_shortcode ( $in_content, 'bmlt_map', $the_new_content );
@@ -1982,7 +1995,34 @@ class BMLTPlugin
         }
 
     /************************************************************************************//**
-    *   \brief 
+    *   \brief  This returns a div of search options to be applied to the map search.       *
+    *                                                                                       *
+    *   \returns A string. The XHTML to be displayed.                                       *
+    ****************************************************************************************/
+    function BMLTPlugin_map_search_search_options(  $in_options_id, ///< The ID for the options to use for this implementation.
+                                                    $in_uid         ///< This is the UID of the enclosing div.
+                                                    )
+        {
+        $ret = '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options">';
+            $ret .= '<div class="bmlt_map_options_1">';
+                $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_1_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_1_a\');var b=document.getElementById(\''.$in_uid.'_options_1\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\'}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}};c_ms_'.$in_uid.'.recalculateMapExt()"><span>'.$this->process_text ( self::$local_new_map_option_1_label ).'</span></a>';
+                $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_1" style="display:none">';
+                $ret .= '<form action="#" method="get" onsubmit="return false"><fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset"><legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
+                    for ( $index = 1;  $index < count ( self::$local_weekdays ); $index++ )
+                        {
+                        $weekday = self::$local_weekdays[$index];
+                        $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input type="checkbox" id="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
+                        $ret .= '<label for="weekday_'.$in_uid.htmlspecialchars ( $index ).'">'.$this->process_text ( $weekday ).'</label></div>';
+                        }
+                $ret .= '</fieldset></form>';
+            $ret .= '</div>';
+        $ret .= '</div>';
+        return $ret;
+        }
+
+    /************************************************************************************//**
+    *   \brief  This returns the global JavaScript stuff for the new map search that only   *
+    *           only needs to be loaded once.                                               *
     *                                                                                       *
     *   \returns A string. The XHTML to be displayed.                                       *
     ****************************************************************************************/
@@ -2024,26 +2064,29 @@ class BMLTPlugin
         }
 
     /************************************************************************************//**
-    *   \brief 
+    *   \brief  This returns the JavaScript stuff that needs to be loaded into each of the  *
+    *           new map search instances.                                                   *
     *                                                                                       *
     *   \returns A string. The XHTML to be displayed.                                       *
     ****************************************************************************************/
-    function BMLTPlugin_map_search_local_javascript_stuff( $in_options_id ///< The ID for the options to use for this implementation.
+    function BMLTPlugin_map_search_local_javascript_stuff(  $in_options_id, ///< The ID for the options to use for this implementation.
+                                                            $in_uid         ///< The unique ID for this instance
                                                             )
         {
         $options = $this->getBMLTOptions_by_id ( $in_options_id );
 
         // Declare the various globals and display strings. This is how we pass strings to the JavaScript, as opposed to the clunky way we do it in the root server.
         $ret .= '<script type="text/javascript">';
-        $ret .= 'var c_g_distance_units_are_km_'.intval($in_options_id).' = '.((strtolower ($options['distance_units']) == 'km' ) ? 'true' : 'false').';';
-        $ret .= 'var c_g_distance_units_'.intval($in_options_id).' = \''.((strtolower ($options['distance_units']) == 'km' ) ? $this->process_text ( self::$local_mobile_kilometers ) : $this->process_text ( self::$local_mobile_miles ) ).'\';';
-        $ret .= 'var c_g_BMLTPlugin_throbber_img_src_'.intval($in_options_id)." = '".htmlspecialchars ( $this->get_plugin_path().'themes/'.$options['theme'].'/images/Throbber.gif' )."';";
-        $ret .= 'var c_g_BMLTRoot_URI_JSON_SearchResults_'.intval($in_options_id)." = '".htmlspecialchars ( $this->get_ajax_base_uri() )."?redirect_ajax_json=".urlencode ( 'switcher=GetSearchResults' )."&bmlt_settings_id=$in_options_id';\n";
+        $ret .= 'var c_ms_'.$in_uid.' = null;';
+        $ret .= 'var c_g_distance_units_are_km_'.$in_uid.' = '.((strtolower ($options['distance_units']) == 'km' ) ? 'true' : 'false').';';
+        $ret .= 'var c_g_distance_units_'.$in_uid.' = \''.((strtolower ($options['distance_units']) == 'km' ) ? $this->process_text ( self::$local_mobile_kilometers ) : $this->process_text ( self::$local_mobile_miles ) ).'\';';
+        $ret .= 'var c_g_BMLTPlugin_throbber_img_src_'.$in_uid." = '".htmlspecialchars ( $this->get_plugin_path().'themes/'.$options['theme'].'/images/Throbber.gif' )."';";
+        $ret .= 'var c_g_BMLTRoot_URI_JSON_SearchResults_'.$in_uid." = '".htmlspecialchars ( $this->get_ajax_base_uri() )."?redirect_ajax_json=".urlencode ( 'switcher=GetSearchResults' )."&bmlt_settings_id=$in_options_id';\n";
         $ret .= '</script>';
 
         return $ret;
         }
-            
+    
     /************************************************************************************//**
     *   \brief This is a function that filters the content, and replaces a portion with the *
     *   "changes" dump.                                                                     *
