@@ -45,6 +45,7 @@ function MapSearch (
 	var	g_allMarkers = [];				///< Holds all the markers.
 	var g_main_id = in_unique_id;
     var g_search_radius = null;
+    var g_AJAX_Request = null;;
     
 	/// These describe the regular NA meeting icon
 	var g_icon_image_single = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -242,8 +243,13 @@ function MapSearch (
 	function call_root_server ( in_args
 	                            )
 	{
+	    if ( g_AJAX_Request )
+	        {
+	        g_AJAX_Request.abort();
+	        };
+	        
 	    eval ( 'var url = c_g_BMLTRoot_URI_JSON_SearchResults_'+g_main_id+'+\'&\'+in_args;' );
-        BMLTPlugin_AjaxRequest ( url, bmlt_ajax_router, 'get' );
+        g_AJAX_Request = BMLTPlugin_AjaxRequest ( url, bmlt_ajax_router, 'get' );
 	};
 	
 	/************************************************************************************//**
@@ -254,6 +260,8 @@ function MapSearch (
 	                            in_extra
 	                            )
 	{
+	    g_AJAX_Request = null;
+	    
 		var text_reply = in_response_object.responseText;
 		
 		if ( text_reply )
