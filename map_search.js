@@ -43,7 +43,8 @@ function MapSearch (
 	var	g_main_map = null;				///< This will hold the Google Map object.
 	var	g_allMarkers = [];				///< Holds all the markers.
 	var g_main_id = in_id;
-
+    var g_search_radius = null;
+    
 	/// These describe the regular NA meeting icon
 	var g_icon_image_single = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	var g_icon_image_multi = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarkerG.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -84,7 +85,8 @@ function MapSearch (
                                     'mapTypeControlOptions': { 'style': google.maps.MapTypeControlStyle.DROPDOWN_MENU },
                                     'zoomControl': true,
                                     'mapTypeControl': true,
-                                    'disableDoubleClickZoom' : true
+                                    'disableDoubleClickZoom' : true,
+                                    'draggableCursor': "pointer",
                                 };
     
                 var	pixel_width = in_div.offsetWidth;
@@ -106,9 +108,25 @@ function MapSearch (
             if ( g_main_map )
                 {
                 g_main_map.response_object = null;
+                g_main_map.center_marker = null;
+                g_main_map.geo_width = null;
                 g_main_map.uid = g_main_div.id+'-MAP';
                 google.maps.event.addListener ( g_main_map, 'click', map_clicked );
                 create_throbber ( g_main_div );
+                    
+                // Options for circle overlay object
+
+                var circle_options =   {
+                                'center': g_main_map.getCenter(),
+                                'fillColor': "#999",
+                                'radius':1000,
+                                'fillOpacity': 0.25,
+                                'strokeOpacity': 0.0,
+                                'map': null,
+                                'clickable': false
+                                };
+
+                g_main_map._circle_overlay = new google.maps.Circle(circle_options);
                 };
             };
 	};
@@ -183,17 +201,14 @@ function MapSearch (
 	    clearAllMarkers();
 	    g_main_map.response_object = null;
 	    
-	    if ( g_main_map.zoom_handler )
-	        {
-	        google.maps.event.removeListener ( g_main_map.zoom_handler );
-	        };
-	    
-	    g_main_map.zoom_handler = null;
-	    
-	    var args = 'geo_width=-10'+'&long_val='+in_event.latLng.lng().toString()+'&lat_val='+in_event.latLng.lat().toString();
+        eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
+        
+        var geo_width = (null == g_main_map.geo_width) ? -10 : (g_main_map.geo_width / (( dist_r_km ) ? 1.0 : 1.609344 ));
+        
+	    var args = 'geo_width='+geo_width+'&long_val='+in_event.latLng.lng().toString()+'&lat_val='+in_event.latLng.lat().toString();
 	    
 	    g_main_map.g_location_coords = in_event.latLng;
-	    
+
 	    call_root_server ( args );
 	};
 	
@@ -239,9 +254,14 @@ function MapSearch (
                     }
                 else
                     {
+	                alert ( c_g_server_error );
                     };
+                }
+            else
+                {
+                alert ( c_g_server_error );
                 };
-	        };
+	        }
 	};
 	
 	/************************************************************************************//**
@@ -252,11 +272,19 @@ function MapSearch (
 	{
 		if ( !g_allMarkers.length )
 			{
-	        fit_markers();
-            g_main_map.zoom_handler = google.maps.event.addListener ( g_main_map, 'zoom_changed', search_response_callback );
+			if ( g_main_map.response_object.length && !g_main_map.zoom_handler )
+			    {
+	            fit_markers();
+                g_main_map.zoom_handler = google.maps.event.addListener ( g_main_map, 'zoom_changed', search_response_callback );
+	            }
+	        else
+	            {
+    	        g_main_map.panTo ( g_main_map.g_location_coords );
+	            };
 			};
 		
 		draw_markers();
+		fit_circle();
 	    hide_throbber();
 	};
 	
@@ -283,9 +311,62 @@ function MapSearch (
 		g_main_map.fitBounds ( bounds );
 	};
 	
+	/************************************************************************************//**
+	*	\brief 
+	****************************************************************************************/
+	
+	function fit_circle()
+	{
+	    if ( g_main_map._circle_overlay )
+	        {
+            if ( !g_search_radius )
+                {
+                g_search_radius = 0.0;
+            
+                for ( var c = 0; c < g_main_map.response_object.length; c++ )
+                    {
+                    var meeting_object = g_main_map.response_object[c];
+                    var distance = google.maps.geometry.spherical.computeDistanceBetween( g_main_map.g_location_coords, new google.maps.LatLng(meeting_object.latitude, meeting_object.longitude));
+                    g_search_radius = Math.max ( distance, g_search_radius );
+                    };
+                };
+	    
+            g_main_map._circle_overlay.setRadius ( g_search_radius );
+            g_main_map._circle_overlay.setCenter ( g_main_map.g_location_coords );
+            
+            g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
+            g_main_map._circle_overlay.setMap ( g_main_map );
+            
+            g_main_map.geo_width = g_search_radius / 1000.0;
+            };
+    };
+    	
 	/****************************************************************************************
 	*									CREATING MARKERS									*
 	****************************************************************************************/
+	
+	/************************************************************************************//**
+	*	\brief 
+	****************************************************************************************/
+	
+	function center_dragStart ( in_event )
+	{
+	    clearAllMarkers();
+	    
+	    return true;
+	}
+	
+	/************************************************************************************//**
+	*	\brief 
+	****************************************************************************************/
+	
+	function center_dragEnd ( in_event )
+	{
+	    clearAllMarkers
+	    map_clicked (in_event);
+	    
+	    return true;
+	}
 	
 	/************************************************************************************//**
 	*	\brief Remove all the markers.														*
@@ -329,7 +410,10 @@ function MapSearch (
 			};
 		
 		// Finish with the main (You are here) marker.
-		createMarker ( g_main_map.g_location_coords, g_center_icon_shadow, g_center_icon_image, g_center_icon_shape );
+		createMarker ( g_main_map.g_location_coords, g_center_icon_shadow, g_center_icon_image, g_center_icon_shape, null, true );
+        
+        google.maps.event.addListener ( g_main_map.center_marker, 'dragstart', center_dragStart );
+        google.maps.event.addListener ( g_main_map.center_marker, 'dragend', center_dragEnd );
 	};
 	
 	/************************************************************************************//**
@@ -674,7 +758,8 @@ function MapSearch (
 							in_shadow_icon,	///< The URI for the icon shadow
 							in_main_icon,	///< The URI for the main icon
 							in_shape,		///< The shape for the marker
-							in_html			///< The info window HTML
+							in_html,		///< The info window HTML
+							in_draggable    ///< True if the marker is draggable
 							)
 	{
 		var marker = null;
@@ -689,7 +774,8 @@ function MapSearch (
 													'icon':			in_main_icon,
 													'shape':		in_shape,
 													'clickable':	is_clickable,
-													'cursor':		'default'
+													'cursor':		'default',
+													'draggable':    in_draggable == true
 													} );
 			if ( marker )
 				{
@@ -712,7 +798,19 @@ function MapSearch (
 																				}
 												);
 					};
-				g_allMarkers[g_allMarkers.length] = marker;
+				if ( !in_draggable )
+				    {
+				    g_allMarkers[g_allMarkers.length] = marker;
+				    }
+				else
+				    {
+                    if ( g_main_map.center_marker )
+                        {
+                        g_main_map.center_marker.setMap ( null );
+                        g_main_map.center_marker = null;
+                        };
+				    g_main_map.center_marker = marker;
+				    };
 				};
 			};
 		

@@ -1990,7 +1990,7 @@ class BMLTPlugin
         {
         // Include the Google Maps API V3 files.
         $ret = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>';
-        
+        $ret .= '<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>';       
         // Declare the various globals and display strings. This is how we pass strings to the JavaScript, as opposed to the clunky way we do it in the root server.
         $ret .= '<script type="text/javascript">';
         $ret .= 'var c_g_cannot_determine_location = \''.$this->process_text ( self::$local_cannot_determine_location ).'\';';
