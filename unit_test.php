@@ -218,6 +218,7 @@ function u_test_form()
                         $ret .= '<option value="[[bmlt_changes(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 365)).'&service_body_id=1001)]]">BMLT Changes (Brackets -Last year in Suffolk Area Service)</option>';
                         $ret .= '<option value="<!--BMLT_CHANGES(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).'&service_body_id=1)-->">BMLT Changes (Comments -Last 90 days in Greater New York Regional Service)</option>';
                         $ret .= '<option value="[[bmlt_map]]">BMLT Map -New Implementation (Brackets)</option>';
+                        $ret .= '<option value="<!--bmlt_map-->">BMLT Map -New Implementation (Comments)</option>';
                         $ret .= '</select>';
                     $ret .= '</div>';
                 $ret .= '</div>';
