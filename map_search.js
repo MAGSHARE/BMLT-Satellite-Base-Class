@@ -265,17 +265,25 @@ function MapSearch (
                     g_main_map.response_object = response_object;
                     
                     search_response_callback();
-                    }
+ 	    
+	                hide_throbber();
+                   }
                 else
                     {
+	                hide_throbber();
 	                alert ( c_g_server_error );
                     };
                 }
             else
                 {
+	            hide_throbber();
                 alert ( c_g_server_error );
                 };
 	        }
+	    else
+	        {
+	        hide_throbber();
+	        };
 	};
 	
 	/************************************************************************************//**
@@ -302,8 +310,6 @@ function MapSearch (
             g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
             g_main_map._circle_overlay.setMap ( g_main_map );
             };
-        
-	    hide_throbber();
 	};
 	
 	/************************************************************************************//**
