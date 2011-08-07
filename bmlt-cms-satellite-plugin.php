@@ -291,6 +291,11 @@ class BMLTPlugin
     static  $local_new_map_option_1_label = 'Basic Search Options:';
     static  $local_new_map_weekdays = 'Meetings Gather on These Weekdays:';
     static  $local_new_map_all_weekdays = 'All';
+    static  $local_new_map_all_weekdays_title = 'Find meetings for every day.';
+    static  $local_new_map_weekdays_title = 'Find meetings that occur on ';
+    static  $local_new_map_formats = 'Meetings Have These Formats:';
+    static  $local_new_map_all_formats = 'All';
+    static  $local_new_map_all_formats_title = 'Find meetings for every format.';
 
     /************************************************************************************//**
     *                       STATIC DATA MEMBERS (MOBILE LOCALIZABLE)                        *
@@ -2008,16 +2013,44 @@ class BMLTPlugin
             $ret .= '<div class="bmlt_map_options_1">';
                 $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_1_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_1_a\');var b=document.getElementById(\''.$in_uid.'_options_1\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\'}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}};c_ms_'.$in_uid.'.recalculateMapExt()"><span>'.$this->process_text ( self::$local_new_map_option_1_label ).'</span></a>';
                 $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_1" style="display:none">';
-                $ret .= '<form action="#" method="get" onsubmit="return false"><fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset"><legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
-                    $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input type="checkbox" id="weekday_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
-                    $ret .= '<label for="weekday_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_weekdays ).'</label></div>';
-                    for ( $index = 1;  $index < count ( self::$local_weekdays ); $index++ )
-                        {
-                        $weekday = self::$local_weekdays[$index];
-                        $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input type="checkbox" id="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
-                        $ret .= '<label for="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'">'.$this->process_text ( $weekday ).'</label></div>';
-                        }
-                $ret .= '</fieldset></form>';
+                $ret .= '<form action="#" method="get" onsubmit="return false">';
+                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset"><legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
+                        $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" type="checkbox" id="weekday_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
+                        $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" for="weekday_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_weekdays ).'</label></div>';
+                        for ( $index = 1;  $index < count ( self::$local_weekdays ); $index++ )
+                            {
+                            $weekday = self::$local_weekdays[$index];
+                            $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." type="checkbox" id="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
+                            $ret .= '<label title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." for="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'">'.$this->process_text ( $weekday ).'</label></div>';
+                            }
+                    $ret .= '</fieldset>';
+                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_formats_fieldset"><legend>'.$this->process_text ( self::$local_new_map_formats ).'</legend>';
+                        $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" type="checkbox" id="formats_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
+                        $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" for="formats_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_formats ).'</label></div>';
+                        $options = $this->getBMLTOptions_by_id ( $in_options_id );
+                        $this->my_driver->set_m_root_uri ( $options['root_server'] );
+                        $error = $this->my_driver->get_m_error_message();
+                        
+                        if ( $error )
+                            {
+                            }
+                        else
+                            {
+                            $formats = $this->my_driver->get_server_formats();
+    
+                            if ( !$this->my_driver->get_m_error_message() )
+                                {
+                                $index = 1;
+                                foreach ( $formats as $id => $format )
+                                    {
+                                    $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div"><input type="checkbox" value="'.intval ( $id ).'" id="formats_'.$in_uid.'_'.$index.'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" title="'.$this->process_text ( '('.$format['name_string'] .') '.$format['description_string'] ).'" />';
+                                    $ret .= '<label title="'.$this->process_text ( '('.$format['name_string'] .') '.$format['description_string'] ).'" for="formats_'.$in_uid.'_'.$index.'">'.$this->process_text ( $format['key_string'] ).'</label></div>';
+                                    $index++;
+                                    }
+                                }
+                            }
+                    $ret .= '</fieldset>';
+                $ret .= '</form>';
             $ret .= '</div>';
         $ret .= '</div>';
         return $ret;

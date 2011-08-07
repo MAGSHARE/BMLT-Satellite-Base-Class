@@ -60,7 +60,6 @@ function MapSearch (
 
     /// These comprise a search state that will be used to filter searches.
     var g_basic_options_open = false;                   ///< This is set to true if the basic options box is visible. If it is, then its options will be considered. If not, then they will be ignored.
-        var g_basic_options_weekdays = new Array();     ///< This will be an array that represents weekdays. 1 -> Sunday, 7 -> Saturday. We ignore 0. These will be true/false, and represent the checkbox states.
         
 	/****************************************************************************************
 	*									GOOGLE MAPS STUFF									*
@@ -214,18 +213,10 @@ function MapSearch (
 	    var args = 'geo_width='+geo_width+'&long_val='+in_event.latLng.lng().toString()+'&lat_val='+in_event.latLng.lat().toString();
         if ( g_basic_options_open )
             {
-            var weekdays = '';
-            for ( var c = 1; c < 8; c++ )
-                {
-                if ( g_basic_options_weekdays[c] )
-                    {
-                    weekdays += '&weekdays[]='+c;
-                    };
-                };
-            
-            args += weekdays;
+            args += readWeekdayCheckBoxes();
+            args += readFormatCheckBoxes();
             };
-            
+
 	    g_main_map.g_location_coords = in_event.latLng;
 
 	    call_root_server ( args );
@@ -889,62 +880,143 @@ function MapSearch (
         if ( g_basic_options_open )
             {
             // First, get the weekdays.
-            var all_element_id = 'weekday_'+g_main_id+'_0'; // This is the special "all" tag. It is mutually exclusive to all the others.
-            var all_element = document.getElementById(all_element_id);
-            
-            if ( all_element )
-                {
-                if ( all_element.checked && !in_cb )
-                    {
-                    for ( var c = 1; c < 8; c++ )
-                        {
-                        g_basic_options_weekdays[c] = false;
-                        var element_id = 'weekday_'+g_main_id+'_'+c;
-                        
-                        var weekday_checkbox = document.getElementById(element_id);
-                        
-                        if ( weekday_checkbox )
-                            {
-                            var old_onChange = weekday_checkbox.onChange;   // We do this to keep this function from being called like crazy.
-                            weekday_checkbox.onChange = null;
-                            weekday_checkbox.checked = false;
-                            weekday_checkbox.onChange = old_onChange;
-                            };
-                        };
-                    }
-                else
-                    {
-                    var weekday_checked = false;
-                    for ( var c = 1; c < 8; c++ )
-                        {
-                        g_basic_options_weekdays[c] = false;
-                        var element_id = 'weekday_'+g_main_id+'_'+c;
-                        
-                        var weekday_checkbox = document.getElementById(element_id);
-                        
-                        if ( weekday_checkbox )
-                            {
-                            g_basic_options_weekdays[c] = weekday_checkbox.checked;
-                            if ( weekday_checkbox.checked )
-                                {
-                                weekday_checked = true;
-                                };
-                            };
-                        };
-                    
-                    // If there are no checked weekdays, the "all" checkbox is checked. Otherwise, it is not.
-                    var old_onChange = all_element.onChange;   // We do this to keep this function from being called like crazy.
-                    all_element.onChange = null;
-                    all_element.checked = !weekday_checked;
-                    all_element.onChange = old_onChange;
-                    };
-                };
+            readWeekdayCheckBoxes(in_cb);
+            readFormatCheckBoxes(in_cb);
             };
         
         if ( g_main_map.g_location_coords ) // We only refresh if we have already done a search.
             {
             map_clicked ( {'latLng':g_main_map.g_location_coords} );
             };
+    };
+    
+    /************************************************************************************//**
+    *	\brief  This function reads the weekday checkboxes, and formats an args string from *
+    *           their state.                                                                *
+    *																						*
+    *	\returns a string, with the arguments in it.                                        *
+    ****************************************************************************************/
+    function readWeekdayCheckBoxes(in_cb   ///< Optional checkbox item. If supplied, then the "all reset" will be bypassed.
+                                    )
+    {
+        var args = '';
+        
+        var all_element_id = 'weekday_'+g_main_id+'_0'; // This is the special "all" tag. It is mutually exclusive to all the others.
+        var all_element = document.getElementById(all_element_id);
+        
+        if ( all_element )
+            {
+            if ( all_element.checked && !in_cb )
+                {
+                for ( var c = 1; c < 8; c++ )
+                    {
+                    var element_id = 'weekday_'+g_main_id+'_'+c;
+                    
+                    var weekday_checkbox = document.getElementById(element_id);
+                    
+                    if ( weekday_checkbox )
+                        {
+                        var old_onChange = weekday_checkbox.onChange;   // We do this to keep this function from being called like crazy.
+                        weekday_checkbox.onChange = null;
+                        weekday_checkbox.checked = false;
+                        weekday_checkbox.onChange = old_onChange;
+                        };
+                    };
+                }
+            else
+                {
+                var weekday_checked = false;
+                for ( var c = 1; c < 8; c++ )
+                    {
+                    var element_id = 'weekday_'+g_main_id+'_'+c;
+                    
+                    var weekday_checkbox = document.getElementById(element_id);
+                    
+                    if ( weekday_checkbox )
+                        {
+                        if ( weekday_checkbox.checked )
+                            {
+                            weekday_checked = true;
+                            args += '&weekdays[]='+c;
+                            };
+                        };
+                    };
+                
+                // If there are no checked weekdays, the "all" checkbox is checked. Otherwise, it is not.
+                var old_onChange = all_element.onChange;   // We do this to keep this function from being called like crazy.
+                all_element.onChange = null;
+                all_element.checked = !weekday_checked;
+                all_element.onChange = old_onChange;
+                };
+            };
+            
+        return args;
+    };
+    
+    /************************************************************************************//**
+    *	\brief  This function reads the format checkboxes, and formats an args string from  *
+    *           their state.                                                                *
+    *																						*
+    *	\returns a string, with the arguments in it.                                        *
+    ****************************************************************************************/
+    function readFormatCheckBoxes(in_cb   ///< Optional checkbox item. If supplied, then the "all reset" will be bypassed.
+                                    )
+    {
+        var args = '';
+        
+        var all_element_id = 'formats_'+g_main_id+'_0'; // This is the special "all" tag. It is mutually exclusive to all the others.
+        var all_element = document.getElementById(all_element_id);
+        
+        // This is how we count the format checkboxes. A bit crude, but works like a charm.
+        var formats_divs = document.getElementsByClassName('bmlt_map_container_div_search_options_formats_checkbox_div');
+        
+        if ( all_element )
+            {
+            if ( all_element.checked && !in_cb )
+                {
+                for ( var c = 1; c < formats_divs.length; c++ )
+                    {
+                    var element_id = 'formats_'+g_main_id+'_'+c;
+                    
+                    var format_checkbox = document.getElementById(element_id);
+                    
+                    if ( format_checkbox )
+                        {
+                        var old_onChange = format_checkbox.onChange;   // We do this to keep this function from being called like crazy.
+                        format_checkbox.onChange = null;
+                        format_checkbox.checked = false;
+                        format_checkbox.onChange = old_onChange;
+                        };
+                    };
+                }
+            else
+                {
+                var format_checked = false;
+                for ( var c = 1; c < formats_divs.length; c++ )
+                    {
+                    var element_id = 'formats_'+g_main_id+'_'+c;
+                    
+                    var format_checkbox = document.getElementById(element_id);
+                    
+                    if ( format_checkbox )
+                        {
+                        if ( format_checkbox.checked )
+                            {
+                            format_checked = true;
+                            args += '&formats[]='+format_checkbox.value;
+                            };
+                        };
+                    };
+                
+                // If there are no checked weekdays, the "all" checkbox is checked. Otherwise, it is not.
+                var old_onChange = all_element.onChange;   // We do this to keep this function from being called like crazy.
+                all_element.onChange = null;
+                all_element.checked = !format_checked;
+                all_element.onChange = old_onChange;
+                };
+            };
+            
+        return args;
     };
     
     /****************************************************************************************

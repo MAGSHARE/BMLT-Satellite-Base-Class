@@ -474,13 +474,24 @@ div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_
     font-weight:bold;
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_weekday_checkbox_div
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_weekday_checkbox_div,
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_formats_checkbox_div
 {
     float:left;
+}
+
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_formats_checkbox_div
+{
+    width: 10%;
+}
+
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_weekday_checkbox_div
+{
     width: 19%;
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_weekday_checkbox_div label
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_weekday_checkbox_div label,
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_formats_checkbox_div label
 {
     padding-left: 4px;
     font-weight:bold;
