@@ -296,8 +296,12 @@ function MapSearch (
 	            };
 			};
 		
-		draw_markers();
 		fit_circle();
+		draw_markers();
+            
+        g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
+        g_main_map._circle_overlay.setMap ( g_main_map );
+        
 	    hide_throbber();
 	};
 	
@@ -347,9 +351,6 @@ function MapSearch (
             g_main_map._circle_overlay.setRadius ( g_search_radius );
             g_main_map._circle_overlay.setCenter ( g_main_map.g_location_coords );
             
-            g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
-            g_main_map._circle_overlay.setMap ( g_main_map );
-            
             g_main_map.geo_width = g_search_radius / 1000.0;
             };
     };
@@ -389,6 +390,12 @@ function MapSearch (
 	{
 		if ( g_allMarkers )
 			{
+			if ( g_main_map.center_marker && g_main_map.center_marker.info_win_ )
+			    {
+			    g_main_map.center_marker.info_win_.close();
+			    g_main_map.center_marker.info_win_ = null;
+			    };
+			
 			for ( var c = 0; c < g_allMarkers.length; c++ )
 				{
 				if ( g_allMarkers[c].info_win_ )
@@ -423,7 +430,7 @@ function MapSearch (
 			};
 		
 		// Finish with the main (You are here) marker.
-		createMarker ( g_main_map.g_location_coords, g_center_icon_shadow, g_center_icon_image, g_center_icon_shape, null, true );
+		createMarker ( g_main_map.g_location_coords, g_center_icon_shadow, g_center_icon_image, g_center_icon_shape, marker_make_centerHTML(), true );
         
         google.maps.event.addListener ( g_main_map.center_marker, 'dragstart', center_dragStart );
         google.maps.event.addListener ( g_main_map.center_marker, 'dragend', center_dragEnd );
@@ -608,6 +615,80 @@ function MapSearch (
 	};
 	
 	/************************************************************************************//**
+	*	\brief Responds to the new circle radius popup being changed.                       *
+	****************************************************************************************/
+	
+	change_circle_diameter = function()
+	{
+        eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
+
+	    var select_element = document.getElementById ( 'bmlt_center_marker_select' );
+        g_search_radius = select_element.value * (dist_r_km ? 500 : 804.672);
+        
+        fit_circle();
+	    clearAllMarkers();
+            
+        g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
+        g_main_map._circle_overlay.setMap ( g_main_map );
+        
+        map_clicked ( {'latLng':g_main_map.g_location_coords} );
+	};
+	
+	/************************************************************************************//**
+	*	\brief Return the HTML for the center marker info window.							*
+	*																						*
+	*	\returns the XHTML for the center marker.											*
+	****************************************************************************************/
+	
+	function marker_make_centerHTML ()
+	{
+        eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
+
+		var ret = '<div class="marker_div_meeting marker_info_center">';
+		
+            var about = Math.round ( (g_main_map.geo_width / (dist_r_km?1.0:1.609344)) * 10 ) / 5;
+            
+            ret += '<label for="bmlt_center_marker_select">';
+                ret += c_g_center_marker_curent_radius_1;
+            ret += '</label>';
+            ret += '<select id="bmlt_center_marker_select" class="bmlt_center_marker_select" onchange="change_circle_diameter()">';
+
+                for ( c = 0; c < c_g_diameter_choices.length; c++ )
+                    {
+                    var length = c_g_diameter_choices[c];
+                    var about_slot = (about > 0) && (about < length) && (about > ((c > 0)?c_g_diameter_choices[c-1]:0));
+                    
+                    if ( about_slot )
+                        {
+                        length = about;
+                        };
+                    
+                    ret += '<option value="';
+                        ret += length.toString();
+                        
+                        if ( length == about )
+                            {
+                            ret += '" selected="selected';
+                            };
+                            
+                        ret += '">';
+                        ret += length.toString();
+                    ret += '</option>';
+                    };
+                if ( about_slot )
+                    {
+                    about = null;
+                    c--;
+                    };
+            ret += '</select>';
+            ret += '<label for="bmlt_center_marker_select">';
+                ret += (dist_r_km?c_g_center_marker_curent_radius_2_km:c_g_center_marker_curent_radius_2_mi);
+            ret += '</label>';
+		ret += '</div>';
+		return ret;
+	}
+	
+	/************************************************************************************//**
 	*	\brief Return the HTML for a meeting marker info window.							*
 	*																						*
 	*	\returns the XHTML for the meeting marker.											*
@@ -616,9 +697,8 @@ function MapSearch (
 	function marker_make_meeting ( in_meeting_obj,
 									in_weekday )
 	{
-		var ret = '';
-		
-		ret = '<div class="marker_div_meeting">';
+	    var id = in_meeting_obj.id_bigint.toString()+'_'+g_main_id;
+		var ret = '<div class="marker_div_meeting marker_info_meeting" id="'+id+'">';
 		ret += '<h4>'+in_meeting_obj.meeting_name.toString()+'</h4>';
 		
 		var	time = in_meeting_obj.start_time.toString().split(':');
@@ -798,6 +878,12 @@ function MapSearch (
 					google.maps.event.addListener ( marker, "click", function () {
 																				for(var c=0; c < this.all_markers_.length; c++)
 																					{
+                                                                                    if ( g_main_map.center_marker && g_main_map.center_marker.info_win_ && (g_main_map.center_marker.info_win_ != this) )
+                                                                                        {
+                                                                                        g_main_map.center_marker.info_win_.close();
+                                                                                        g_main_map.center_marker.info_win_ = null;
+                                                                                        };
+                                                                                    
 																					if ( this.all_markers_[c] != this )
 																						{
 																						if ( this.all_markers_[c].info_win_ )
@@ -807,7 +893,12 @@ function MapSearch (
 																							};
 																						};
 																					};
-																				this.info_win_ = new google.maps.InfoWindow ({'position': marker.getPosition(), 'map': marker.getMap(), 'content': in_html, 'pixelOffset': new google.maps.Size ( 0, -32 ) });
+																				
+																				if ( !marker.info_win_ )
+																				    {
+																				    marker.info_win_ = new google.maps.InfoWindow ({'position': marker.getPosition(), 'map': marker.getMap(), 'content': in_html, 'pixelOffset': new google.maps.Size ( 0, -32 ) });
+																				    google.maps.event.addListenerOnce(marker.info_win_, 'closeclick', function() {marker.info_win_ = null; });
+																				    };
 																				}
 												);
 					};
@@ -871,14 +962,14 @@ function MapSearch (
     {
         var element_id = g_main_id+'_options_1_a';
             
-        g_basic_options_open = document.getElementById(element_id).className == 'bmlt_map_hide_options';    // OK. If this is hidden, we'll be skipping the rest.
+        g_basic_options_open = document.getElementById(element_id).className == 'bmlt_map_hide_options';    // See if the basic options area is visible.
         
         // We process the checkboxes. These functions allow them to configure properly.
         var args = readWeekdayCheckBoxes(in_cb);
         args += readFormatCheckBoxes(in_cb);
         
-        // We may not need to refresh the search.
-        if ( (in_cb || ((args != '') && !g_basic_options_open) || ((args != '') && g_basic_options_open)) && g_main_map.g_location_coords ) // We only refresh if we have already done a search.
+        // We may not need to refresh the search. We only refresh if we have already done a search and either one of the filters is off of "All."
+        if ( (in_cb || ((args != '') && !g_basic_options_open) || ((args != '') && g_basic_options_open)) && g_main_map.g_location_coords )
             {
             map_clicked ( {'latLng':g_main_map.g_location_coords} );
             };
@@ -1067,4 +1158,4 @@ function MapSearch (
 		};
 };
 
-MapSearch.prototype.recalculateMapExt = null;   ///< This is the only exported function. We use this to recalculate the map when the user changes options.
+MapSearch.prototype.recalculateMapExt = null;       ///< These are the only exported functions. We use this to recalculate the map when the user changes options.

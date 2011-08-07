@@ -296,6 +296,10 @@ class BMLTPlugin
     static  $local_new_map_formats = 'Meetings Have These Formats:';
     static  $local_new_map_all_formats = 'All';
     static  $local_new_map_all_formats_title = 'Find meetings for every format.';
+    static  $local_new_map_js_center_marker_current_radius_1 = 'The circle is about ';
+    static  $local_new_map_js_center_marker_current_radius_2_km = ' kilometers wide.';
+    static  $local_new_map_js_center_marker_current_radius_2_mi = ' miles wide.';
+    static  $local_new_map_js_diameter_choices = array ( 0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0 );
 
     /************************************************************************************//**
     *                       STATIC DATA MEMBERS (MOBILE LOCALIZABLE)                        *
@@ -2080,10 +2084,14 @@ class BMLTPlugin
         $ret .= 'var c_g_no_meetings_found = \''.$this->process_text ( self::$local_mobile_fail_no_meetings ).'\';';
         $ret .= 'var c_g_server_error = \''.$this->process_text ( self::$local_server_fail ).'\';';
         $ret .= 'var c_g_address_lookup_fail = \''.$this->process_text ( self::$local_cant_find_address ).'\';';
+        $ret .= 'var c_g_center_marker_curent_radius_1 = \''.$this->process_text ( self::$local_new_map_js_center_marker_current_radius_1 ).'\';';
+        $ret .= 'var c_g_center_marker_curent_radius_2_km = \''.$this->process_text ( self::$local_new_map_js_center_marker_current_radius_2_km ).'\';';
+        $ret .= 'var c_g_center_marker_curent_radius_2_mi = \''.$this->process_text ( self::$local_new_map_js_center_marker_current_radius_2_mi ).'\';';
         $ret .= 'var c_g_map_link_text = \''.$this->process_text ( self::$local_map_link ).'\';';
         $ret .= 'var c_g_weekdays = [';
         $ret .= "'".$this->process_text ( join ( "','", self::$local_weekdays ) )."'";
         $ret .= '];';
+        $ret .= 'var c_g_diameter_choices = ['.join ( ",", self::$local_new_map_js_diameter_choices ).'];';
         $ret .= 'var c_g_formats = \''.$this->process_text ( self::$local_formats ).'\';';
         $ret .= 'var c_g_Noon = \''.$this->process_text ( self::$local_noon ).'\';';
         $ret .= 'var c_g_Midnight = \''.$this->process_text ( self::$local_midnight ).'\';';
