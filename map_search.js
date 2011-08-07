@@ -71,17 +71,13 @@ function MapSearch (
 	
 	function load_map ( in_div, in_location_coords )
 	{
-        var g_main_div = document.createElement("div");
+        var g_main_div = in_div;
         
         if ( g_main_div )
             {
-            g_main_div.className = 'bmlt_search_map_div';
-            g_main_div.id = g_main_id+'_bmlt_search_map_div';
             g_main_div.myThrobber = null;
             
-            in_div.appendChild ( g_main_div );
-            
-            if ( g_main_div && in_location_coords )
+            if ( in_location_coords )
                 {
                 var myOptions = {
                                     'center': new google.maps.LatLng ( in_location_coords.latitude, in_location_coords.longitude ),

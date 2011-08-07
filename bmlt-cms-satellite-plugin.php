@@ -1969,6 +1969,7 @@ class BMLTPlugin
         $in_content = str_replace ( '&#038;', '&', $in_content );   // This stupid kludge is because WordPress does an untoward substitution. Won't do anything unless WordPress has been naughty.
         
         $first = true;
+
         while ( $params = self::get_shortcode ( $in_content, 'bmlt_map' ) )
             {
             if ( $params !== true && intval ( $params ) )
@@ -1980,18 +1981,18 @@ class BMLTPlugin
             $uid = htmlspecialchars ( uniqid() );
             
             $the_new_content = '<noscript>'.$this->process_text ( self::$local_noscript ).'</noscript>';    // We let non-JS browsers know that this won't work for them.
-            $the_new_content .= '<div class="bmlt_map_container_div" style="display:none" id="'.$uid.'">';  // This starts off hidden, and is revealed by JS.
-            
-            $the_new_content .= $this->BMLTPlugin_map_search_search_options($options_id, $uid);  // This is the box of search choices.
             
             if ( $first )   // We only load this the first time.
                 {
                 $the_new_content .= $this->BMLTPlugin_map_search_global_javascript_stuff ( );
                 $first = false;
                 }
-            
-            $the_new_content .= $this->BMLTPlugin_map_search_local_javascript_stuff ( $options_id, $uid );
-            $the_new_content .= '<script type="text/javascript">document.getElementById(\''.$uid.'\').style.display=\'block\';c_ms_'.$uid.' = new MapSearch ( \''.htmlspecialchars ( $uid ).'\',\''.htmlspecialchars ( $options_id ).'\', document.getElementById(\''.$uid.'\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
+
+            $the_new_content .= '<div class="bmlt_map_container_div" style="display:none" id="'.$uid.'">';  // This starts off hidden, and is revealed by JS.
+                $the_new_content .= $this->BMLTPlugin_map_search_search_options($options_id, $uid);  // This is the box of search choices.
+                $the_new_content .= $this->BMLTPlugin_map_search_local_javascript_stuff ( $options_id, $uid );
+                $the_new_content .= '<div class="bmlt_search_map_div" id="'.$uid.'_bmlt_search_map_div"></div>';
+                $the_new_content .= '<script type="text/javascript">document.getElementById(\''.$uid.'\').style.display=\'block\';c_ms_'.$uid.' = new MapSearch ( \''.htmlspecialchars ( $uid ).'\',\''.htmlspecialchars ( $options_id ).'\', document.getElementById(\''.$uid.'_bmlt_search_map_div\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
             $the_new_content .= '</div>';
             
             $in_content = self::replace_shortcode ( $in_content, 'bmlt_map', $the_new_content );
@@ -2014,19 +2015,25 @@ class BMLTPlugin
                 $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_1_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_1_a\');var b=document.getElementById(\''.$in_uid.'_options_1\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\'}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}};c_ms_'.$in_uid.'.recalculateMapExt()"><span>'.$this->process_text ( self::$local_new_map_option_1_label ).'</span></a>';
                 $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_1" style="display:none">';
                 $ret .= '<form action="#" method="get" onsubmit="return false">';
-                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset"><legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
+                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset">';
+                        $ret .= '<legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
                         $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" type="checkbox" id="weekday_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
                         $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" for="weekday_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_weekdays ).'</label></div>';
                         for ( $index = 1;  $index < count ( self::$local_weekdays ); $index++ )
                             {
                             $weekday = self::$local_weekdays[$index];
-                            $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." type="checkbox" id="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
-                            $ret .= '<label title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." for="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'">'.$this->process_text ( $weekday ).'</label></div>';
+                            $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div">';
+                                $ret .= '<input title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." type="checkbox" id="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
+                                $ret .= '<label title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." for="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'">'.$this->process_text ( $weekday ).'</label>';
+                            $ret .= '</div>';
                             }
                     $ret .= '</fieldset>';
-                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_formats_fieldset"><legend>'.$this->process_text ( self::$local_new_map_formats ).'</legend>';
-                        $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" type="checkbox" id="formats_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
-                        $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" for="formats_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_formats ).'</label></div>';
+                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_formats_fieldset">';
+                        $ret .= '<legend>'.$this->process_text ( self::$local_new_map_formats ).'</legend>';
+                        $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div">';
+                            $ret .= '<input title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" type="checkbox" id="formats_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
+                            $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" for="formats_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_formats ).'</label>';
+                        $ret .= '</div>';
                         $options = $this->getBMLTOptions_by_id ( $in_options_id );
                         $this->my_driver->set_m_root_uri ( $options['root_server'] );
                         $error = $this->my_driver->get_m_error_message();
