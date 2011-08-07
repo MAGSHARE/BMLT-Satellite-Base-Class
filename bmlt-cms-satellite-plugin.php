@@ -2017,7 +2017,7 @@ class BMLTPlugin
                 $ret .= '<form action="#" method="get" onsubmit="return false">';
                     $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset">';
                         $ret .= '<legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
-                        $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" type="checkbox" id="weekday_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
+                        $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" type="checkbox" id="weekday_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
                         $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" for="weekday_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_weekdays ).'</label></div>';
                         for ( $index = 1;  $index < count ( self::$local_weekdays ); $index++ )
                             {
@@ -2031,7 +2031,7 @@ class BMLTPlugin
                     $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_formats_fieldset">';
                         $ret .= '<legend>'.$this->process_text ( self::$local_new_map_formats ).'</legend>';
                         $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div">';
-                            $ret .= '<input title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" type="checkbox" id="formats_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt()" />';
+                            $ret .= '<input title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" type="checkbox" id="formats_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
                             $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" for="formats_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_formats ).'</label>';
                         $ret .= '</div>';
                         $options = $this->getBMLTOptions_by_id ( $in_options_id );

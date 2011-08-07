@@ -873,14 +873,12 @@ function MapSearch (
             
         g_basic_options_open = document.getElementById(element_id).className == 'bmlt_map_hide_options';    // OK. If this is hidden, we'll be skipping the rest.
         
-        if ( g_basic_options_open )
-            {
-            // First, get the weekdays.
-            readWeekdayCheckBoxes(in_cb);
-            readFormatCheckBoxes(in_cb);
-            };
+        // We process the checkboxes. These functions allow them to configure properly.
+        var args = readWeekdayCheckBoxes(in_cb);
+        args += readFormatCheckBoxes(in_cb);
         
-        if ( g_main_map.g_location_coords ) // We only refresh if we have already done a search.
+        // We may not need to refresh the search.
+        if ( (in_cb || ((args != '') && !g_basic_options_open) || ((args != '') && g_basic_options_open)) && g_main_map.g_location_coords ) // We only refresh if we have already done a search.
             {
             map_clicked ( {'latLng':g_main_map.g_location_coords} );
             };
@@ -902,7 +900,7 @@ function MapSearch (
         
         if ( all_element )
             {
-            if ( all_element.checked && !in_cb )
+            if ( all_element.checked && (in_cb == all_element) )
                 {
                 for ( var c = 1; c < 8; c++ )
                     {
@@ -968,7 +966,7 @@ function MapSearch (
         
         if ( all_element )
             {
-            if ( all_element.checked && !in_cb )
+            if ( all_element.checked && (in_cb == all_element) )
                 {
                 for ( var c = 1; c < formats_divs.length; c++ )
                     {
