@@ -45,7 +45,8 @@ function MapSearch (
 	var	g_allMarkers = [];				///< Holds all the markers.
 	var g_main_id = in_unique_id;
     var g_search_radius = null;
-    var g_AJAX_Request = null;;
+    var g_AJAX_Request = null;
+    var g_initial_call = false;         ///< Set to true, once we have zoomed in.
     
 	/// These describe the regular NA meeting icon
 	var g_icon_image_single = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -288,19 +289,19 @@ function MapSearch (
 			if ( g_main_map.response_object.length && !g_main_map.zoom_handler )
 			    {
 	            fit_markers();
+	            g_initial_call = true;
                 g_main_map.zoom_handler = google.maps.event.addListener ( g_main_map, 'zoom_changed', search_response_callback );
 	            }
-	        else
-	            {
-    	        g_main_map.panTo ( g_main_map.g_location_coords );
-	            };
 			};
 		
 		fit_circle();
 		draw_markers();
-            
-        g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
-        g_main_map._circle_overlay.setMap ( g_main_map );
+        
+        if ( g_main_map.center_marker )
+            {
+            g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
+            g_main_map._circle_overlay.setMap ( g_main_map );
+            };
         
 	    hide_throbber();
 	};
@@ -376,7 +377,6 @@ function MapSearch (
 	
 	function center_dragEnd ( in_event )
 	{
-	    clearAllMarkers
 	    map_clicked (in_event);
 	    
 	    return true;
@@ -429,11 +429,14 @@ function MapSearch (
 			createMapMarker ( overlap_map[c] );
 			};
 		
-		// Finish with the main (You are here) marker.
-		createMarker ( g_main_map.g_location_coords, g_center_icon_shadow, g_center_icon_image, g_center_icon_shape, marker_make_centerHTML(), true );
-        
-        google.maps.event.addListener ( g_main_map.center_marker, 'dragstart', center_dragStart );
-        google.maps.event.addListener ( g_main_map.center_marker, 'dragend', center_dragEnd );
+		if ( g_initial_call )
+		    {
+            // Finish with the main (You are here) marker.
+            createMarker ( g_main_map.g_location_coords, g_center_icon_shadow, g_center_icon_image, g_center_icon_shape, marker_make_centerHTML(), true );
+            
+            google.maps.event.addListener ( g_main_map.center_marker, 'dragstart', center_dragStart );
+            google.maps.event.addListener ( g_main_map.center_marker, 'dragend', center_dragEnd );
+            };
 	};
 	
 	/************************************************************************************//**
@@ -646,17 +649,27 @@ function MapSearch (
 
 		var ret = '<div class="marker_div_meeting marker_info_center">';
 		
-            var about = Math.round ( (g_main_map.geo_width / (dist_r_km?1.0:1.609344)) * 10 ) / 5;
+		    // This strange formula, is because we want to round to a couple of decimal places, and we also want to multiply by 2 (turn a radius into a diameter).
+		    // Folks are more able to identify with diameter, so that's how we present it.
+            var about = Math.round ( (g_main_map.geo_width / (dist_r_km?1.0:1.609344)) * 20 ) / 10;
             
             ret += '<label for="bmlt_center_marker_select">';
                 ret += c_g_center_marker_curent_radius_1;
             ret += '</label>';
             ret += '<select id="bmlt_center_marker_select" class="bmlt_center_marker_select" onchange="change_circle_diameter()">';
 
-                for ( c = 0; c < c_g_diameter_choices.length; c++ )
+                var count = c_g_diameter_choices.length;
+                
+                if ( about > c_g_diameter_choices[c_g_diameter_choices.length-1] )
                     {
-                    var length = c_g_diameter_choices[c];
-                    var about_slot = (about > 0) && (about < length) && (about > ((c > 0)?c_g_diameter_choices[c-1]:0));
+                    count++;
+                    };
+                
+                for ( c = 0; c < count; c++ )
+                    {
+                    var length = (c < c_g_diameter_choices.length) ? c_g_diameter_choices[c] : about;
+                    
+                    var about_slot = ((about > 0) && (about <= length) && (about > ((c > 0)?c_g_diameter_choices[c-1]:0)));
                     
                     if ( about_slot )
                         {
@@ -675,10 +688,10 @@ function MapSearch (
                         ret += length.toString();
                     ret += '</option>';
                     };
+                
                 if ( about_slot )
                     {
                     about = null;
-                    c--;
                     };
             ret += '</select>';
             ret += '<label for="bmlt_center_marker_select">';
