@@ -656,8 +656,28 @@ function MapSearch (
         else
             {
             g_search_radius = document.getElementById ( g_main_id+'_bmlt_center_marker_select' ).value * (dist_r_km ? 500 : 804.672);
-            document.getElementById ( g_main_id+'_radius_select' ).options[0].disabled = true;
-            document.getElementById ( g_main_id+'_radius_select' ).selectedIndex = 1;
+            var elem = document.getElementById ( g_main_id+'_radius_select' );
+            
+            if ( elem )
+                {
+                var old_onChange = elem.onChange; // We do this to prevent the handler from being called as we change the value.
+                elem.onChange = null;
+                
+                elem.options[0].disabled = true;
+                elem.selectedIndex = 1;
+
+                for ( var c = 2; c < elem.options.length; c++ )
+                    {
+                    var comp = elem.options[c].value * (dist_r_km ? 1000 : 1609.344);
+
+                    if ( comp == g_search_radius )
+                        {
+                        elem.selectedIndex = c;
+                        break;
+                        };
+                    };
+                elem.onChange = old_onChange;
+                };
             };
         
         fit_circle();
@@ -681,10 +701,12 @@ function MapSearch (
         eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
 
 		var ret = '<div class="marker_div_meeting marker_info_center">';
-		
+		    
+		    ret += '<div class="center_marker_desc">'+c_g_distance_center_marker_desc+'</div>';
+		    
 		    // This strange formula, is because we want to round to a couple of decimal places, and we also want to multiply by 2 (turn a radius into a diameter).
 		    // Folks are more able to identify with diameter, so that's how we present it.
-            var about = Math.round ( (g_main_map.geo_width / (dist_r_km?1.0:1.609344)) * 20 ) / 10;
+            var about = Math.round ( (g_main_map.geo_width / (dist_r_km?1.0:1.609344)) * 2000 ) / 1000;
             
             ret += '<label for="'+g_main_id+'_bmlt_center_marker_select">';
                 ret += c_g_center_marker_curent_radius_1;
@@ -873,7 +895,7 @@ function MapSearch (
 			{
 	        // We construct a variable name that uses our unique ID. This will determine what units we use.
             eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';var dist_units = c_g_distance_units_'+g_main_id+';' );
-			ret += '<div class="marker_div_distance"><span class="distance_span">'+c_g_distance_prompt+':</span> '+(Math.round((dist_r_km ? in_meeting_obj.distance_in_km : in_meeting_obj.distance_in_miles) * 10)/10).toString()+' '+dist_units;
+			ret += '<div class="marker_div_distance"><span class="distance_span">'+c_g_distance_prompt+':</span> '+(Math.round((dist_r_km ? in_meeting_obj.distance_in_km : in_meeting_obj.distance_in_miles) * 100)/100).toString()+' '+dist_units+c_g_distance_prompt_suffix;
 			ret += '</div>';
 			};
 		 

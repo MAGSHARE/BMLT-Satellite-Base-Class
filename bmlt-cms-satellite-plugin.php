@@ -307,6 +307,8 @@ class BMLTPlugin
     static  $local_new_map_option_loc_popup_km = 'Km';
     static  $local_new_map_option_loc_popup_mi = 'Miles';
     static  $local_new_map_option_loc_popup_auto = 'an automatically chosen distance';
+    static  $local_new_map_center_marker_distance_suffix = ' from the center marker.';
+    static  $local_new_map_center_marker_description = 'This is your chosen location.';
 
     /************************************************************************************//**
     *                       STATIC DATA MEMBERS (MOBILE LOCALIZABLE)                        *
@@ -2152,6 +2154,8 @@ class BMLTPlugin
         $ret .= 'var c_g_Midnight = \''.$this->process_text ( self::$local_midnight ).'\';';
         $ret .= 'var c_g_debug_mode = '.( defined ( 'DEBUG_MODE' ) ? 'true' : 'false' ).';';
         $ret .= 'var c_g_distance_prompt = \''.$this->process_text ( self::$local_mobile_distance ).'\';';
+        $ret .= 'var c_g_distance_prompt_suffix = \''.$this->process_text ( self::$local_new_map_center_marker_distance_suffix ).'\';';
+        $ret .= 'var c_g_distance_center_marker_desc = \''.$this->process_text ( self::$local_new_map_center_marker_description ).'\';';
         $ret .= 'var c_BMLTPlugin_files_uri = \''.htmlspecialchars ( $this->get_ajax_mobile_base_uri() ).'?\';';
         $ret .= "var c_g_BMLTPlugin_images = '".htmlspecialchars ( $this->get_plugin_path()."/google_map_images" )."';";
         $ret .= '</script>';

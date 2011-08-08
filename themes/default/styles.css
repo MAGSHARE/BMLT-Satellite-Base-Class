@@ -557,11 +557,6 @@ div.bmlt_map_container_div a.bmlt_map_hide_options:hover
     background-image:url(images/visible_disclosure_mouseover.gif);
 }
 
-div.bmlt_map_container_div .marker_info_center
-{
-    margin-top:16px;
-}
-
 div.bmlt_map_container_div .bmlt_search_map_new_search_div a,
 div.bmlt_map_container_div .bmlt_search_map_new_search_div a:visited
 {
@@ -595,4 +590,10 @@ div.bmlt_map_container_div .bmlt_map_location_radius_popup
 {
     margin-left:4px;
     margin-right:4px;
+}
+
+div.bmlt_map_container_div .center_marker_desc
+{
+    font-weight:bold;
+    text-align:center;
 }
