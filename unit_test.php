@@ -70,7 +70,7 @@ function u_test()
         $ret .= '</script>';
         $ret .= '</head><body>';    // Open the page
         $ret .= '<div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'">Return to Start</a></div>';
-        $ret .= '<div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'?utest_string=clear_session">Clear Session</a></div>';
+        $ret .= '<div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'?utest_string=clear_session">Clear Session And Create Second Default Settings</a></div>';
         $ret .= u_test_body();
         $ret .= '</body></html>';	// Wrap up the page.
 	    }
@@ -98,6 +98,19 @@ function u_test_operation()
     elseif ( strtolower ( $oper_text ) == 'clear_session' )
         {
         $ret = 'clear_session';
+        
+        $seconds = $BMLTPluginOp->getBMLTOptions(-1);
+        
+        $seconds['setting_name'] = 'UKNA';
+        $seconds['root_server'] = 'http://www.ukna.org/BMLT/main_server';
+        $seconds['map_center_latitude'] = 53.067626642387374;
+        $seconds['map_center_longitude'] = -1.23046875;
+        $seconds['map_zoom'] = 5;
+        
+        $BMLTPluginOp->setBMLTOptions ( $seconds, 2 );
+        $firsts = $BMLTPluginOp->getBMLTOptions ( 1 );
+        $firsts['setting_name'] = 'GNYR';
+        $BMLTPluginOp->setBMLTOptions ( $firsts, 1 );
         }
     elseif ( $BMLTPluginOp->get_shortcode('bmlt', $oper_text ) )
         {

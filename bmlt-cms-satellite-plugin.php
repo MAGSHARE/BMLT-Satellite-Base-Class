@@ -288,7 +288,7 @@ class BMLTPlugin
     *                       STATIC DATA MEMBERS (NEW MAP LOCALIZABLE)                       *
     ****************************************************************************************/
                                     
-    static  $local_new_map_option_1_label = 'Basic Search Options (Not Applied Unless This Section Is Open):';
+    static  $local_new_map_option_1_label = 'Search Options (Not Applied Unless This Section Is Open):';
     static  $local_new_map_weekdays = 'Meetings Gather on These Weekdays:';
     static  $local_new_map_all_weekdays = 'All';
     static  $local_new_map_all_weekdays_title = 'Find meetings for every day.';
@@ -2033,7 +2033,7 @@ class BMLTPlugin
             $ret .= '<div class="bmlt_map_options_loc">';
                 $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_loc_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_loc_a\');var b=document.getElementById(\''.$in_uid.'_options_loc\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\';c_ms_'.$in_uid.'.openLocationSectionExt(document.getElementById(\''.$in_uid.'_location_text\'), document.getElementById(\''.$in_uid.'_location_submit\'))}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}}"><span>'.$this->process_text ( self::$local_new_map_option_loc_label ).'</span></a>';
                 $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_loc" style="display:none">';
-                $ret .= '<form action="#" method="get" onsubmit="return false">';
+                $ret .= '<form action="#" method="get" onsubmit="c_ms_'.$in_uid.'.lookupLocationExt(document.getElementById(\''.$in_uid.'_location_text\'), document.getElementById(\''.$in_uid.'_location_submit\'));return false">';
                     $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_location_fieldset">';
                         $ret .= '<div class="location_radius_popup_div">';
                             $ret .= '<label for="">'.$this->process_text ( self::$local_new_map_option_loc_popup_label_1 ).'</label>';

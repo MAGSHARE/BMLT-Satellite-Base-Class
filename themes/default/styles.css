@@ -607,12 +607,12 @@ div.bmlt_map_container_div .location_text_submit_div
 div.bmlt_map_container_div .location_text_input_div input
 {
     border: 1px solid #555;
-    padding:4px;
+    padding:3px;
     width:90%;
-    margin-bottom: 8px;
-    border-radius: 4px;
-	-moz-border-radius:4px;
-	-webkit-border-radius: 4px;
+    margin-bottom: 12px;
+    border-radius: 5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius: 5px;
 }
 
 div.bmlt_map_container_div .location_text_input_item_focused

@@ -1073,6 +1073,12 @@ function MapSearch (
         document.getElementById ( g_main_id+'_radius_select' ).onChange = old_onChange;
         document.getElementById ( g_main_id+'_location_text' ).value = '';
         load_map ( g_initial_div, g_initial_coords );
+        
+        if ( document.getElementById ( g_main_id+'_options_loc' ).style.display != 'none' )
+            {
+            document.getElementById( g_main_id+'_location_text' ).select();
+            }
+        
         hideNewSearch();
     };
     
@@ -1292,6 +1298,8 @@ function MapSearch (
             if ( geocoder )
                 {
                 var	status = geocoder.geocode ( { 'address' : in_location_text_item.value }, geoCallback );
+                
+                in_location_text_item.select();
                 
                 if ( google.maps.OK != status )
                     {
