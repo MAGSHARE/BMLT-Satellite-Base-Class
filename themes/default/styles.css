@@ -428,6 +428,7 @@ table#bmlt_container .search_check_div label
 
 /* These are all for the new map search implementation */
 
+div.bmlt_map_container_div,
 div.bmlt_map_container_div .bmlt_map_container_div_search_options_div,
 div.bmlt_map_container_div .bmlt_search_map_div
 {
@@ -462,12 +463,13 @@ div.bmlt_map_container_div .bmlt_map_throbber_div img
     margin:4px;
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_div fieldset
+div.bmlt_map_container_div .bmlt_map_container_div_location_options_div fieldset,
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div fieldset
 {
     padding: 4px;
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_container_div_search_options_div fieldset legend
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div fieldset legend
 {
     padding: 0;
     margin: 0;
@@ -499,7 +501,8 @@ div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_
     font-weight:bold;
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a
+div.bmlt_map_container_div a.bmlt_map_hide_options,
+div.bmlt_map_container_div a.bmlt_map_reveal_options
 {
     background-color:#555;
     width: 100%;
@@ -513,40 +516,43 @@ div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_
     text-decoration:none;
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a span
+div.bmlt_map_container_div .bmlt_map_options_1 a span,
+div.bmlt_map_container_div .bmlt_map_options_loc a span
 {
     color:#99f;
     text-decoration:underline;
     padding-left: 20px;
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a:hover span,
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a:active span
+div.bmlt_map_container_div .bmlt_map_options_1 a:hover span,
+div.bmlt_map_container_div .bmlt_map_options_1 a:active span,
+div.bmlt_map_container_div .bmlt_map_options_loc a:hover span,
+div.bmlt_map_container_div .bmlt_map_options_loc a:active span
 {
     color:#f96;
     text-decoration:none;
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a.bmlt_map_reveal_options,
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a.bmlt_map_reveal_options:visited
+div.bmlt_map_container_div a.bmlt_map_reveal_options,
+div.bmlt_map_container_div a.bmlt_map_reveal_options:visited
 {
     background-image:url(images/invisible_disclosure.gif);
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a.bmlt_map_reveal_options:active,
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a.bmlt_map_reveal_options:hover
+div.bmlt_map_container_div a.bmlt_map_reveal_options:active,
+div.bmlt_map_container_div a.bmlt_map_reveal_options:hover
 {
     background-image:url(images/invisible_disclosure_mouseover.gif);
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a.bmlt_map_hide_options,
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a.bmlt_map_hide_options:visited
+div.bmlt_map_container_div a.bmlt_map_hide_options,
+div.bmlt_map_container_div a.bmlt_map_hide_options:visited
 {
     background-image:url(images/visible_disclosure.gif);
 }
 
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a.bmlt_map_hide_options:active,
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_options_1 a.bmlt_map_hide_options:hover
+div.bmlt_map_container_div a.bmlt_map_hide_options:active,
+div.bmlt_map_container_div a.bmlt_map_hide_options:hover
 {
     background-image:url(images/visible_disclosure_mouseover.gif);
 }
@@ -578,4 +584,15 @@ div.bmlt_map_container_div .bmlt_search_map_new_search_div a:hover
 {
     color:#f96;
     text-decoration:none;
+}
+
+div.bmlt_map_container_div .location_radius_popup_div
+{
+    text-align: center;
+}
+
+div.bmlt_map_container_div .bmlt_map_location_radius_popup
+{
+    margin-left:4px;
+    margin-right:4px;
 }

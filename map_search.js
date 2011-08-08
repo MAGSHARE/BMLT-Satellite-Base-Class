@@ -636,13 +636,29 @@ function MapSearch (
 	*	\brief Responds to the new circle radius popup being changed.                       *
 	****************************************************************************************/
 	
-	change_circle_diameter = function()
+	change_circle_diameter = function(  in_from_ext ///< If true, then we will use the value of the location options popup instead of the map center one.
+	                                    )
 	{
 	    // We construct a variable name that uses our unique ID.
         eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
 
-	    var select_element = document.getElementById ( 'bmlt_center_marker_select' );
-        g_search_radius = select_element.value * (dist_r_km ? 500 : 804.672);
+        if ( in_from_ext )
+            {
+            if ( document.getElementById ( g_main_id+'_radius_select' ).value ) // It's possible that we have selected a null entry.
+                {
+                g_search_radius = document.getElementById ( g_main_id+'_radius_select' ).value * (dist_r_km ? 1000 : 1609.344);
+                }
+            else
+                {
+                return;
+                };
+            }
+        else
+            {
+            g_search_radius = document.getElementById ( g_main_id+'_bmlt_center_marker_select' ).value * (dist_r_km ? 500 : 804.672);
+            document.getElementById ( g_main_id+'_radius_select' ).options[0].disabled = true;
+            document.getElementById ( g_main_id+'_radius_select' ).selectedIndex = 1;
+            };
         
         fit_circle();
 	    clearAllMarkers();
@@ -670,10 +686,10 @@ function MapSearch (
 		    // Folks are more able to identify with diameter, so that's how we present it.
             var about = Math.round ( (g_main_map.geo_width / (dist_r_km?1.0:1.609344)) * 20 ) / 10;
             
-            ret += '<label for="bmlt_center_marker_select">';
+            ret += '<label for="'+g_main_id+'_bmlt_center_marker_select">';
                 ret += c_g_center_marker_curent_radius_1;
             ret += '</label>';
-            ret += '<select id="bmlt_center_marker_select" class="bmlt_center_marker_select" onchange="change_circle_diameter()">';
+            ret += '<select id="'+g_main_id+'_bmlt_center_marker_select" class="bmlt_center_marker_select" onchange="change_circle_diameter(false)">';
 
                 var count = c_g_diameter_choices.length;
                 
@@ -1023,6 +1039,11 @@ function MapSearch (
         g_initial_call = false;
         g_search_radius = null;
         
+        document.getElementById ( g_main_id+'_radius_select' ).options[0].disabled = false;
+        var old_onChange = document.getElementById ( g_main_id+'_radius_select' ).onChange; // We do this to prevent the handler from being called as we change the value.
+        document.getElementById ( g_main_id+'_radius_select' ).onChange = null;
+        document.getElementById ( g_main_id+'_radius_select' ).selectedIndex = 0;
+        document.getElementById ( g_main_id+'_radius_select' ).onChange = old_onChange;
         load_map ( g_initial_div, g_initial_coords );
         hideNewSearch();
     };
@@ -1230,8 +1251,10 @@ function MapSearch (
 		load_map ( in_div, in_coords );
 		this.recalculateMapExt = recalculateMap;
 		this.newSearchExt = setUpNewSearch;
+		this.changeRadiusExt = change_circle_diameter;
 		};
 };
 
 MapSearch.prototype.recalculateMapExt = null;       ///< These are the only exported functions. We use this to recalculate the map when the user changes options.
 MapSearch.prototype.newSearchExt = null;            ///< This will be used to reset the search.
+MapSearch.prototype.changeRadiusExt = null;         ///< This will be used to reset the search.

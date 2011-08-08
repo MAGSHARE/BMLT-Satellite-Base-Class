@@ -301,6 +301,12 @@ class BMLTPlugin
     static  $local_new_map_js_center_marker_current_radius_2_mi = ' miles wide.';
     static  $local_new_map_js_diameter_choices = array ( 0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0 );
     static  $local_new_map_js_new_search = 'New Search';
+    static  $local_new_map_option_loc_label = 'Enter A Location:';
+    static  $local_new_map_option_loc_popup_label_1 = 'Search for meetings within';
+    static  $local_new_map_option_loc_popup_label_2 = 'of the location.';
+    static  $local_new_map_option_loc_popup_km = 'Km';
+    static  $local_new_map_option_loc_popup_mi = 'Miles';
+    static  $local_new_map_option_loc_popup_auto = 'an automatically chosen distance';
 
     /************************************************************************************//**
     *                       STATIC DATA MEMBERS (MOBILE LOCALIZABLE)                        *
@@ -1994,7 +2000,9 @@ class BMLTPlugin
                 }
 
             $the_new_content .= '<div class="bmlt_map_container_div" style="display:none" id="'.$uid.'">';  // This starts off hidden, and is revealed by JS.
-                $the_new_content .= $this->BMLTPlugin_map_search_search_options($options_id, $uid);  // This is the box of search choices.
+                $the_new_content .= $this->BMLTPlugin_map_search_location_options($options_id, $uid);   // This is the box of location search choices.
+                $the_new_content .= $this->BMLTPlugin_map_search_search_options($options_id, $uid);     // This is the box of basic search choices.
+                $the_new_content .= $this->BMLTPlugin_map_search_advanced_options($options_id, $uid);   // This is the box of advanced search choices.
                 $the_new_content .= $this->BMLTPlugin_map_search_local_javascript_stuff ( $options_id, $uid );
                 $the_new_content .= '<div class="bmlt_search_map_div" id="'.$uid.'_bmlt_search_map_div"></div>';
                 $the_new_content .= '<div class="bmlt_search_map_new_search_div" id="'.$uid.'_bmlt_search_map_new_search_div" style="display:none"><a href="javascript:c_ms_'.$uid.'.newSearchExt();">'.$this->process_text ( self::$local_new_map_js_new_search ).'</a></div>';
@@ -2007,6 +2015,40 @@ class BMLTPlugin
         return $in_content;
         }
 
+    /************************************************************************************//**
+    *   \brief  This returns a div of location options to be applied to the map search.     *
+    *                                                                                       *
+    *   \returns A string. The XHTML to be displayed.                                       *
+    ****************************************************************************************/
+    function BMLTPlugin_map_search_location_options(    $in_options_id, ///< The ID for the options to use for this implementation.
+                                                        $in_uid         ///< This is the UID of the enclosing div.
+                                                        )
+        {
+        $ret = '<div class="bmlt_map_container_div_location_options_div" id="'.$in_uid.'_location">';
+            $ret .= '<div class="bmlt_map_options_loc">';
+                $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_loc_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_loc_a\');var b=document.getElementById(\''.$in_uid.'_options_loc\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\'}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}}"><span>'.$this->process_text ( self::$local_new_map_option_loc_label ).'</span></a>';
+                $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_loc" style="display:none">';
+                $ret .= '<form action="#" method="get" onsubmit="return false">';
+                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_location_fieldset">';
+                        $ret .= '<div class="location_radius_popup_div">';
+                            $ret .= '<label for="">'.$this->process_text ( self::$local_new_map_option_loc_popup_label_1 ).'</label>';
+                            $ret .= '<select class="bmlt_map_location_radius_popup" id="'.$in_uid.'_radius_select" onchange="c_ms_'.$in_uid.'.changeRadiusExt(true)">';
+                                $ret .= '<option value="" selected="selected">'.$this->process_text ( self::$local_new_map_option_loc_popup_auto ).'</option>';
+                                $ret .= '<option value="" disabled="disabled"></option>';
+                                foreach ( self::$local_new_map_js_diameter_choices as $radius )
+                                    {
+                                    $ret .= '<option value="'.($radius / 2).'">'.($radius / 2).' '.$this->process_text ( (strtolower ($options['distance_units']) == 'km') ? self::$local_new_map_option_loc_popup_km : self::$local_new_map_option_loc_popup_mi ).'</option>';
+                                    }
+                            $ret .= '</select>';
+                            $ret .= '<label for="">'.$this->process_text ( self::$local_new_map_option_loc_popup_label_2 ).'</label>';
+                        $ret .= '</div>';
+                    $ret .= '</fieldset>';
+                $ret .= '</form>';
+            $ret .= '</div>';
+        $ret .= '</div>';
+        return $ret;
+        }
+    
     /************************************************************************************//**
     *   \brief  This returns a div of search options to be applied to the map search.       *
     *                                                                                       *
@@ -2067,6 +2109,17 @@ class BMLTPlugin
             $ret .= '</div>';
         $ret .= '</div>';
         return $ret;
+        }
+
+    /************************************************************************************//**
+    *   \brief  This returns a div of advanced options to be applied to the map search.     *
+    *                                                                                       *
+    *   \returns A string. The XHTML to be displayed.                                       *
+    ****************************************************************************************/
+    function BMLTPlugin_map_search_advanced_options(    $in_options_id, ///< The ID for the options to use for this implementation.
+                                                        $in_uid         ///< This is the UID of the enclosing div.
+                                                        )
+        {
         }
 
     /************************************************************************************//**
