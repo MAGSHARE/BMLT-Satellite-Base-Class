@@ -47,6 +47,8 @@ function MapSearch (
     var g_search_radius = null;
     var g_AJAX_Request = null;
     var g_initial_call = false;         ///< Set to true, once we have zoomed in.
+    var g_initial_coords = in_coords;
+    var g_initial_div = in_div;
     
 	/// These describe the regular NA meeting icon
 	var g_icon_image_single = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -89,6 +91,7 @@ function MapSearch (
                                     'mapTypeControl': true,
                                     'disableDoubleClickZoom' : true,
                                     'draggableCursor': "pointer",
+                                    'scaleControl' : true
                                 };
     
                 var	pixel_width = in_div.offsetWidth;
@@ -153,6 +156,7 @@ function MapSearch (
                 
                 if ( img )
                     {
+	                // We construct a variable name that uses our unique ID.
                     eval ( 'var srcval = c_g_BMLTPlugin_throbber_img_src_'+g_main_id+';' );
                     img.src = srcval;
                     img.className = 'bmlt_map_throbber_img';
@@ -203,6 +207,7 @@ function MapSearch (
 	    clearAllMarkers();
 	    g_main_map.response_object = null;
 	    
+	    // We construct a variable name that uses our unique ID. This will determine what units we use.
         eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
         
         var geo_width = (null == g_main_map.geo_width) ? -10 : (g_main_map.geo_width / (( dist_r_km ) ? 1.0 : 1.609344 ));
@@ -231,24 +236,28 @@ function MapSearch (
 	function call_root_server ( in_args
 	                            )
 	{
-	    if ( g_AJAX_Request )
+	    if ( g_AJAX_Request )   // This prevents the requests from piling up. We are single-threaded.
 	        {
 	        g_AJAX_Request.abort();
+	        g_AJAX_Request = null;
 	        };
-	        
+	    
+	    // We construct a variable name that uses our unique ID.
 	    eval ( 'var url = c_g_BMLTRoot_URI_JSON_SearchResults_'+g_main_id+'+\'&\'+in_args;' );
+	    
         g_AJAX_Request = BMLTPlugin_AjaxRequest ( url, bmlt_ajax_router, 'get' );
 	};
 	
 	/************************************************************************************//**
-	*	\brief  
+	*	\brief  This routes the AJAX response to the correct function, and will display any *
+	*           error alerts.                                                               *
 	****************************************************************************************/
 	
 	function bmlt_ajax_router ( in_response_object,
 	                            in_extra
 	                            )
 	{
-	    g_AJAX_Request = null;
+	    g_AJAX_Request = null;  // Make sure we're done, here.
 	    
 		var text_reply = in_response_object.responseText;
 		
@@ -256,6 +265,7 @@ function MapSearch (
 			{
 	        var json_builder = 'var response_object = '+text_reply+';';
 	        
+	        // This is how you create JSON objects.
             eval ( json_builder );
             
             if ( response_object )
@@ -263,9 +273,7 @@ function MapSearch (
                 if ( !g_main_map.response_object )
                     {
                     g_main_map.response_object = response_object;
-                    
                     search_response_callback();
- 	    
 	                hide_throbber();
                    }
                 else
@@ -309,6 +317,7 @@ function MapSearch (
             {
             g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
             g_main_map._circle_overlay.setMap ( g_main_map );
+            showNewSearch();
             };
 	};
 	
@@ -629,6 +638,7 @@ function MapSearch (
 	
 	change_circle_diameter = function()
 	{
+	    // We construct a variable name that uses our unique ID.
         eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
 
 	    var select_element = document.getElementById ( 'bmlt_center_marker_select' );
@@ -651,6 +661,7 @@ function MapSearch (
 	
 	function marker_make_centerHTML ()
 	{
+	    // We construct a variable name that uses our unique ID.
         eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
 
 		var ret = '<div class="marker_div_meeting marker_info_center">';
@@ -844,6 +855,7 @@ function MapSearch (
 		 
 		if ( in_meeting_obj.distance_in_km )
 			{
+	        // We construct a variable name that uses our unique ID. This will determine what units we use.
             eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';var dist_units = c_g_distance_units_'+g_main_id+';' );
 			ret += '<div class="marker_div_distance"><span class="distance_span">'+c_g_distance_prompt+':</span> '+(Math.round((dist_r_km ? in_meeting_obj.distance_in_km : in_meeting_obj.distance_in_miles) * 10)/10).toString()+' '+dist_units;
 			ret += '</div>';
@@ -970,12 +982,55 @@ function MapSearch (
             };
     };
     
-
+    /************************************************************************************//**
+    *	\brief  
+    ****************************************************************************************/
+    function hideNewSearch()
+    {
+        var elem_id = g_main_id+'_bmlt_search_map_new_search_div';
+        
+        var element = document.getElementById ( elem_id );
+        
+        if ( element )
+            {
+            element.style.display = 'none';
+            };
+    };
+    
+    /************************************************************************************//**
+    *	\brief  
+    ****************************************************************************************/
+    function showNewSearch()
+    {
+        var elem_id = g_main_id+'_bmlt_search_map_new_search_div';
+        
+        var element = document.getElementById ( elem_id );
+        
+        if ( element )
+            {
+            element.style.display = 'block';
+            };
+    };
+    
+    /************************************************************************************//**
+    *	\brief  
+    ****************************************************************************************/
+    function setUpNewSearch()
+    {
+        clearAllMarkers();
+        g_main_map = null;
+        g_AJAX_Request = null;
+        g_initial_call = false;
+        g_search_radius = null;
+        
+        load_map ( g_initial_div, g_initial_coords );
+        hideNewSearch();
+    };
+    
     /************************************************************************************//**
     *	\brief  This function reads the form elements, and redraws the map, based on the    *
     *           current search criteria.                                                    *
     ****************************************************************************************/
-    
     function recalculateMap(in_cb   ///< Optional checkbox item. If supplied, then the "all reset" will be bypassed.
                             )
     {
@@ -1174,7 +1229,9 @@ function MapSearch (
 		{
 		load_map ( in_div, in_coords );
 		this.recalculateMapExt = recalculateMap;
+		this.newSearchExt = setUpNewSearch;
 		};
 };
 
 MapSearch.prototype.recalculateMapExt = null;       ///< These are the only exported functions. We use this to recalculate the map when the user changes options.
+MapSearch.prototype.newSearchExt = null;            ///< This will be used to reset the search.

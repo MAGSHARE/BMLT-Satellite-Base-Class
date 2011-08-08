@@ -265,8 +265,6 @@ function u_test_render()
     
     $str = u_test_get_string();
     
-//die ( '<pre>'.htmlspecialchars ( print_r ( $str, true )).'</pre>' );
-    
     $ret .= $BMLTPluginOp->content_filter ( u_test_get_string() );
     
     $ret .= '</div>';

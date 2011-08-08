@@ -551,7 +551,31 @@ div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_
     background-image:url(images/visible_disclosure_mouseover.gif);
 }
 
-div.bmlt_map_container_div .marker_div_meeting
+div.bmlt_map_container_div .marker_info_center
 {
     margin-top:16px;
+}
+
+div.bmlt_map_container_div .bmlt_search_map_new_search_div a,
+div.bmlt_map_container_div .bmlt_search_map_new_search_div a:visited
+{
+    background-color:#555;
+    text-align:center;
+    width: 100%;
+    line-height:16px;
+    height: 16px;
+    display:block;
+    font-weight:bold;
+    outline:none;
+    border:none;
+    text-decoration:none;
+    color:#99f;
+    text-decoration:underline;
+}
+
+div.bmlt_map_container_div .bmlt_search_map_new_search_div a:active,
+div.bmlt_map_container_div .bmlt_search_map_new_search_div a:hover
+{
+    color:#f96;
+    text-decoration:none;
 }

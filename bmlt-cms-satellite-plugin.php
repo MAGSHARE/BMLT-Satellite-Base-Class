@@ -300,6 +300,7 @@ class BMLTPlugin
     static  $local_new_map_js_center_marker_current_radius_2_km = ' kilometers wide.';
     static  $local_new_map_js_center_marker_current_radius_2_mi = ' miles wide.';
     static  $local_new_map_js_diameter_choices = array ( 0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0, 10.0, 15.0, 20.0, 25.0, 30.0, 50.0, 100.0 );
+    static  $local_new_map_js_new_search = 'New Search';
 
     /************************************************************************************//**
     *                       STATIC DATA MEMBERS (MOBILE LOCALIZABLE)                        *
@@ -1996,6 +1997,7 @@ class BMLTPlugin
                 $the_new_content .= $this->BMLTPlugin_map_search_search_options($options_id, $uid);  // This is the box of search choices.
                 $the_new_content .= $this->BMLTPlugin_map_search_local_javascript_stuff ( $options_id, $uid );
                 $the_new_content .= '<div class="bmlt_search_map_div" id="'.$uid.'_bmlt_search_map_div"></div>';
+                $the_new_content .= '<div class="bmlt_search_map_new_search_div" id="'.$uid.'_bmlt_search_map_new_search_div" style="display:none"><a href="javascript:c_ms_'.$uid.'.newSearchExt();">'.$this->process_text ( self::$local_new_map_js_new_search ).'</a></div>';
                 $the_new_content .= '<script type="text/javascript">document.getElementById(\''.$uid.'\').style.display=\'block\';c_ms_'.$uid.' = new MapSearch ( \''.htmlspecialchars ( $uid ).'\',\''.htmlspecialchars ( $options_id ).'\', document.getElementById(\''.$uid.'_bmlt_search_map_div\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
             $the_new_content .= '</div>';
             

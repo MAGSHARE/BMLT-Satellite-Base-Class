@@ -55,9 +55,9 @@ class BMLTUTestPlugin extends BMLTPlugin
             self::$default_rootserver = 'http://localhost/magshare.org/public_html/projects/BMLT-Root-Server/main_server';
             }
         self::$default_gkey = 'ABQIAAAABCC8PsaKPPEsC3k649kYPRTayKsye0hTYG-iMuljzAHNM4JcxhSlV55ZKpjgC9b-QsLtlkYPMO6omg'; ///< This is for MAGSHARE. Change this to your own.
-        self::$default_map_center_latitude = 41.37;
-        self::$default_map_center_longitude = -73.18;
-        self::$default_map_zoom = 8;
+        self::$default_map_center_latitude = 41.2;
+        self::$default_map_center_longitude = -73.4;
+        self::$default_map_zoom = 9;
         parent::__construct ();
         }
     
