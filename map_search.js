@@ -220,6 +220,10 @@ function MapSearch (
             };
 
 	    g_main_map.g_location_coords = in_event.latLng;
+	    if ( in_event.panTo )
+	        {
+	        g_main_map.panTo ( in_event.latLng );
+	        };
 
 	    call_root_server ( args );
 	};
@@ -290,6 +294,7 @@ function MapSearch (
 	        }
 	    else
 	        {
+            g_main_map.geo_width = null;
 	        hide_throbber();
 	        };
 	};
@@ -1066,6 +1071,7 @@ function MapSearch (
         document.getElementById ( g_main_id+'_radius_select' ).onChange = null;
         document.getElementById ( g_main_id+'_radius_select' ).selectedIndex = 0;
         document.getElementById ( g_main_id+'_radius_select' ).onChange = old_onChange;
+        document.getElementById ( g_main_id+'_location_text' ).value = '';
         load_map ( g_initial_div, g_initial_coords );
         hideNewSearch();
     };
@@ -1279,14 +1285,73 @@ function MapSearch (
                                 in_submit_button        ///< The submit button for this text item
                             )
     {
-alert ( 'This Function Is Not Yet Fully Implemented' );
         if ( in_location_text_item.value && (in_location_text_item.value != c_g_BMLTPlugin_default_location_text) )
             {
+            var	geocoder = new google.maps.Geocoder;
+            
+            if ( geocoder )
+                {
+                var	status = geocoder.geocode ( { 'address' : in_location_text_item.value }, geoCallback );
+                
+                if ( google.maps.OK != status )
+                    {
+                    if ( google.maps.INVALID_REQUEST != status )
+                        {
+                        alert ( c_g_address_lookup_fail );
+                        }
+                    else
+                        {
+                        if ( google.maps.ZERO_RESULTS != status )
+                            {
+                            alert ( c_g_address_lookup_fail );
+                            }
+                        else
+                            {
+                            alert ( c_g_server_error );
+                            };
+                        };
+                    };
+                }
+            else	// None of that stuff is defined if we couldn't create the geocoder.
+                {
+                alert ( c_g_server_error );
+                };
             }
         else
             {
+			alert ( c_g_address_lookup_fail );
             };
     };
+	
+	/************************************************************************************//**
+	*	\brief This catches the AJAX response, and fills in the response form.				*
+	****************************************************************************************/
+	
+	function geoCallback ( in_geocode_response	///< The JSON object.
+							)
+	{
+		if ( in_geocode_response && in_geocode_response[0] && in_geocode_response[0].geometry && in_geocode_response[0].geometry.location )
+			{
+            var elem = document.getElementById ( g_main_id+'_radius_select' );
+            
+            if ( elem && (elem.selectedIndex == 0) )    // They are expecting an autofit.
+                {
+                if ( g_main_map.zoom_handler )
+                    {
+                    google.maps.event.removeListener ( g_main_map.zoom_handler );
+                    g_main_map.zoom_handler = null;
+                    g_search_radius = 0.0;
+                    g_main_map.geo_width = null;
+                    };
+                };
+            
+            map_clicked ( {'latLng':in_geocode_response[0].geometry.location, 'panTo':true} );
+			}
+		else    // FAIL
+			{
+			alert ( c_g_address_lookup_fail );
+			};
+	};
         
     /****************************************************************************************
     *									  UTILITY FUNCTIONS                                 *
