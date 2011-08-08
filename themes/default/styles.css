@@ -597,3 +597,30 @@ div.bmlt_map_container_div .center_marker_desc
     font-weight:bold;
     text-align:center;
 }
+
+div.bmlt_map_container_div .location_text_input_div,
+div.bmlt_map_container_div .location_text_submit_div
+{
+    text-align:center;
+}
+
+div.bmlt_map_container_div .location_text_input_div input
+{
+    border: 1px solid #555;
+    padding:4px;
+    width:90%;
+    margin-bottom: 8px;
+    border-radius: 4px;
+	-moz-border-radius:4px;
+	-webkit-border-radius: 4px;
+}
+
+div.bmlt_map_container_div .location_text_input_item_focused
+{
+    color: black;
+}
+
+div.bmlt_map_container_div .location_text_input_item_blurred
+{
+    color: #999;
+}

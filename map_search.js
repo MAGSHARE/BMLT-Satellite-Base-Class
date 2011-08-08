@@ -1221,6 +1221,73 @@ function MapSearch (
         return args;
     };
     
+    /************************************************************************************//**
+    *	\brief  
+    ****************************************************************************************/
+    function openLocationSection (  in_location_text_item,  ///< This is the location text item object.
+                                    in_submit_button        ///< The submit button for this text item
+                                    )
+    {
+        in_location_text_item.select();
+    };
+        
+    /************************************************************************************//**
+    *	\brief  
+    ****************************************************************************************/
+    function selectLocationTextItem (   in_location_text_item,  ///< This is the location text item object.
+                                        in_submit_button,       ///< The submit button for this text item
+                                        in_blur                 ///< True, if this is a blur (false if it is a focus)
+                                    )
+    {
+        if ( !in_blur && (in_location_text_item.value == c_g_BMLTPlugin_default_location_text) )
+            {
+            in_location_text_item.value = '';
+            in_location_text_item.className = 'location_text_input_item_focused';
+            }
+        else if ( in_blur )
+            {
+            if ( !in_location_text_item.value )
+                {
+                in_location_text_item.value = c_g_BMLTPlugin_default_location_text;
+                in_location_text_item.className = 'location_text_input_item_blurred';
+                in_submit_button.disabled = true;
+                };
+            };
+    };
+        
+    /************************************************************************************//**
+    *	\brief  
+    ****************************************************************************************/
+    function enterTextIntoLocationText (in_location_text_item,  ///< This is the location text item object.
+                                        in_submit_button        ///< The submit button for this text item
+                                        )
+    {
+        if ( !in_location_text_item.value )
+            {
+            in_submit_button.disabled = true;
+            }
+        else
+            {
+            in_submit_button.disabled = false;
+            };
+    };
+    
+    /************************************************************************************//**
+    *	\brief  
+    ****************************************************************************************/
+    function lookupLocation (   in_location_text_item,  ///< This is the location text item object.
+                                in_submit_button        ///< The submit button for this text item
+                            )
+    {
+alert ( 'This Function Is Not Yet Fully Implemented' );
+        if ( in_location_text_item.value && (in_location_text_item.value != c_g_BMLTPlugin_default_location_text) )
+            {
+            }
+        else
+            {
+            };
+    };
+        
     /****************************************************************************************
     *									  UTILITY FUNCTIONS                                 *
     ****************************************************************************************/
@@ -1274,9 +1341,17 @@ function MapSearch (
 		this.recalculateMapExt = recalculateMap;
 		this.newSearchExt = setUpNewSearch;
 		this.changeRadiusExt = change_circle_diameter;
+		this.openLocationSectionExt = openLocationSection;
+		this.focusLocationTextExt = selectLocationTextItem;
+		this.enterTextIntoLocationTextExt = enterTextIntoLocationText;
+		this.lookupLocationExt = lookupLocation;
 		};
 };
 
 MapSearch.prototype.recalculateMapExt = null;       ///< These are the only exported functions. We use this to recalculate the map when the user changes options.
 MapSearch.prototype.newSearchExt = null;            ///< This will be used to reset the search.
 MapSearch.prototype.changeRadiusExt = null;         ///< This will be used to reset the search.
+MapSearch.prototype.openLocationSectionExt = null;  ///< This is called when the user opens the location section.
+MapSearch.prototype.focusLocationTextExt = null;    ///< This is called when the user selects the location text item.
+MapSearch.prototype.enterTextIntoLocationTextExt = null;    ///< This is called to validate entered text.
+MapSearch.prototype.lookupLocationExt = null;       ///< This is called to look up a location selected in the text item.

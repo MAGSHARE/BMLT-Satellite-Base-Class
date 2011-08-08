@@ -288,7 +288,7 @@ class BMLTPlugin
     *                       STATIC DATA MEMBERS (NEW MAP LOCALIZABLE)                       *
     ****************************************************************************************/
                                     
-    static  $local_new_map_option_1_label = 'Basic Search Options:';
+    static  $local_new_map_option_1_label = 'Basic Search Options (Not Applied Unless This Section Is Open):';
     static  $local_new_map_weekdays = 'Meetings Gather on These Weekdays:';
     static  $local_new_map_all_weekdays = 'All';
     static  $local_new_map_all_weekdays_title = 'Find meetings for every day.';
@@ -309,6 +309,9 @@ class BMLTPlugin
     static  $local_new_map_option_loc_popup_auto = 'an automatically chosen distance';
     static  $local_new_map_center_marker_distance_suffix = ' from the center marker.';
     static  $local_new_map_center_marker_description = 'This is your chosen location.';
+    static  $local_new_map_text_entry_fieldset_label = 'Enter an Address, Postcode or Location';
+    static  $local_new_map_text_entry_default_text = 'Enter an Address, Postcode or Location';
+    static  $local_new_map_location_submit_button_text = 'Search for Meetings Near This Location';
 
     /************************************************************************************//**
     *                       STATIC DATA MEMBERS (MOBILE LOCALIZABLE)                        *
@@ -2028,7 +2031,7 @@ class BMLTPlugin
         {
         $ret = '<div class="bmlt_map_container_div_location_options_div" id="'.$in_uid.'_location">';
             $ret .= '<div class="bmlt_map_options_loc">';
-                $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_loc_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_loc_a\');var b=document.getElementById(\''.$in_uid.'_options_loc\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\'}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}}"><span>'.$this->process_text ( self::$local_new_map_option_loc_label ).'</span></a>';
+                $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_loc_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_loc_a\');var b=document.getElementById(\''.$in_uid.'_options_loc\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\';c_ms_'.$in_uid.'.openLocationSectionExt(document.getElementById(\''.$in_uid.'_location_text\'), document.getElementById(\''.$in_uid.'_location_submit\'))}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}}"><span>'.$this->process_text ( self::$local_new_map_option_loc_label ).'</span></a>';
                 $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_loc" style="display:none">';
                 $ret .= '<form action="#" method="get" onsubmit="return false">';
                     $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_location_fieldset">';
@@ -2044,6 +2047,16 @@ class BMLTPlugin
                             $ret .= '</select>';
                             $ret .= '<label for="">'.$this->process_text ( self::$local_new_map_option_loc_popup_label_2 ).'</label>';
                         $ret .= '</div>';
+                        $ret .= '<fieldset class="location_text_entry_fieldset">';
+                            $ret .= '<legend>'.$this->process_text ( self::$local_new_map_text_entry_fieldset_label ).'</legend>';
+                            $def_text = $this->process_text ( self::$local_new_map_text_entry_default_text );
+                            $ret .= '<div class="location_text_input_div">';
+                                $ret .= '<input type="text" class="location_text_input_item_blurred" value="'.$def_text.'" id="'.$in_uid.'_location_text" onfocus="c_ms_'.$in_uid.'.focusLocationTextExt(this, document.getElementById(\''.$in_uid.'_location_submit\'), false)" onblur="c_ms_'.$in_uid.'.focusLocationTextExt(this, document.getElementById(\''.$in_uid.'_location_submit\'), true)" onkeyup="c_ms_'.$in_uid.'.enterTextIntoLocationTextExt(this, document.getElementById(\''.$in_uid.'_location_submit\'))" />';
+                            $ret .= '</div>';
+                            $ret .= '<div class="location_text_submit_div">';
+                                $ret .= '<input type="button" disabled="disabled" class="location_text_submit_button" value="'.$this->process_text ( self::$local_new_map_location_submit_button_text ).'" id="'.$in_uid.'_location_submit" onclick="c_ms_'.$in_uid.'.lookupLocationExt(document.getElementById(\''.$in_uid.'_location_text\'), this)" />';
+                            $ret .= '</div>';
+                        $ret .= '</fieldset>';
                     $ret .= '</fieldset>';
                 $ret .= '</form>';
             $ret .= '</div>';
@@ -2158,6 +2171,7 @@ class BMLTPlugin
         $ret .= 'var c_g_distance_center_marker_desc = \''.$this->process_text ( self::$local_new_map_center_marker_description ).'\';';
         $ret .= 'var c_BMLTPlugin_files_uri = \''.htmlspecialchars ( $this->get_ajax_mobile_base_uri() ).'?\';';
         $ret .= "var c_g_BMLTPlugin_images = '".htmlspecialchars ( $this->get_plugin_path()."/google_map_images" )."';";
+        $ret .= "var c_g_BMLTPlugin_default_location_text = '".$this->process_text ( self::$local_new_map_text_entry_default_text )."';";
         $ret .= '</script>';
        
         $url = $this->get_plugin_path();
