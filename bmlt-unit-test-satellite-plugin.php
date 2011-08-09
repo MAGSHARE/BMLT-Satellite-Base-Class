@@ -60,35 +60,6 @@ class BMLTUTestPlugin extends BMLTPlugin
         self::$default_map_zoom = 9;
         parent::__construct ();
         }
-        
-    /************************************************************************************//**
-    *   \brief  This gets the default admin options for the second options that we create   *
-    *           by default, so we can test multiple options.                                *
-    *                                                                                       *
-    *   \returns an associative array, with the default option settings.                    *
-    ****************************************************************************************/
-    protected function geSecondBMLTOptions ()
-        {
-        // These are the defaults. If the saved option has a different value, it replaces the ones in here.
-        return array (  'root_server' => self::$second_rootserver,
-                        'map_center_latitude' => self::$second_map_center_latitude,
-                        'map_center_longitude' => self::$second_map_center_longitude,
-                        'map_zoom' => self::$second_map_zoom,
-                        'bmlt_new_search_url' => self::$default_new_search,
-                        'gmaps_api_key' => self::$default_gkey,
-                        'bmlt_initial_view' => self::$default_initial_view,
-                        'push_down_more_details' => self::$default_push_down_more_details,
-                        'additional_css' => self::$default_additional_css,
-                        'id' => strval ( time() + intval(rand(0, 999))),   // This gives the option a unique slug
-                        'setting_name' => '',
-                        'theme' => self::$default_theme,
-                        'lang_enum' => self::$default_language,
-                        'lang_name' => self::$default_language_string,
-                        'distance_units' => self::$default_distance_units,
-                        'grace_period' => self::$default_grace_period,
-                        'time_offset' => self::$default_time_offset
-                        );
-        }
     
     /************************************************************************************//**
     *   \brief Return an HTTP path to the AJAX callback target.                             *

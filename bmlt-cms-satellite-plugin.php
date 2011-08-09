@@ -2040,6 +2040,7 @@ class BMLTPlugin
                             $ret .= '<select class="bmlt_map_location_radius_popup" id="'.$in_uid.'_radius_select" onchange="c_ms_'.$in_uid.'.changeRadiusExt(true)">';
                                 $ret .= '<option value="" selected="selected">'.$this->process_text ( self::$local_new_map_option_loc_popup_auto ).'</option>';
                                 $ret .= '<option value="" disabled="disabled"></option>';
+                                $options = $this->getBMLTOptions_by_id ( $in_options_id );
                                 foreach ( self::$local_new_map_js_diameter_choices as $radius )
                                     {
                                     $ret .= '<option value="'.($radius / 2).'">'.($radius / 2).' '.$this->process_text ( (strtolower ($options['distance_units']) == 'km') ? self::$local_new_map_option_loc_popup_km : self::$local_new_map_option_loc_popup_mi ).'</option>';

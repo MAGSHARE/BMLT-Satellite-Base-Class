@@ -107,11 +107,14 @@ function u_test_operation()
         $seconds['map_center_longitude'] = -1.23046875;
         $seconds['map_zoom'] = 5;
         $seconds['id'] = '2';
+        $seconds['distance_units'] = 'km';
+        $seconds['theme'] = 'BlueAndWhite';
         
         $BMLTPluginOp->setBMLTOptions ( $seconds, 2 );
         $firsts = $BMLTPluginOp->getBMLTOptions ( 1 );
         $firsts['setting_name'] = 'GNYR';
         $firsts['id'] = '1';
+        $seconds['theme'] = 'GNYR';
         $BMLTPluginOp->setBMLTOptions ( $firsts, 1 );
         }
     elseif ( $BMLTPluginOp->get_shortcode('bmlt', $oper_text ) )
