@@ -95,7 +95,7 @@ function u_test_operation()
         {
         $ret = 'admin';
         }
-    elseif ( strtolower ( $oper_text ) == 'clear_session' )
+    elseif ( strtolower ( $oper_text ) == 'clear_session' || (strtolower ( $oper_text ) == 'clear_session_start') )
         {
         $ret = 'clear_session';
         
@@ -106,10 +106,12 @@ function u_test_operation()
         $seconds['map_center_latitude'] = 53.067626642387374;
         $seconds['map_center_longitude'] = -1.23046875;
         $seconds['map_zoom'] = 5;
+        $seconds['id'] = '2';
         
         $BMLTPluginOp->setBMLTOptions ( $seconds, 2 );
         $firsts = $BMLTPluginOp->getBMLTOptions ( 1 );
         $firsts['setting_name'] = 'GNYR';
+        $firsts['id'] = '1';
         $BMLTPluginOp->setBMLTOptions ( $firsts, 1 );
         }
     elseif ( $BMLTPluginOp->get_shortcode('bmlt', $oper_text ) )
@@ -161,6 +163,7 @@ function u_test_header()
         break;
         
         case 'clear_session':
+        case 'clear_session_start':
             session_start();
             session_unset();
             session_destroy();
@@ -219,19 +222,25 @@ function u_test_form()
                         $ret .= '<label for="preset">Preset Text:<select id="preset" onchange="utest_preset_text(this.value)">';
                         $ret .= '<option value="" disabled="disabled">Select A Preset String</option>';
                         $ret .= '<option value="[[bmlt]]">Standard BMLT (Brackets)</option>';
-                        $ret .= '<option value="<!--bmlt-->">Standard BMLT (Comment)</option>';
+                        $ret .= '<option value="&lt;!--bmlt--&gt;">Standard BMLT (Comment)</option>';
                         $ret .= '<option value="[[bmlt_mobile]]">BMLT Mobile (Brackets)</option>';
-                        $ret .= '<option value="<!--bmlt_mobile-->">BMLT Mobile (Comment)</option>';
+                        $ret .= '<option value="&lt;!--bmlt_mobile--&gt;">BMLT Mobile (Comment)</option>';
                         $ret .= '<option value="[[BMLT_SIMPLE(switcher=GetSearchResults&block_mode=1&meeting_key=location_city_subsection&meeting_key_value=Brooklyn&weekdays[]=7)]]">BMLT Simple (Brackets -Brooklyn, Saturday)</option>';
-                        $ret .= '<option value="<!--bmlt_simple(switcher=GetSearchResults&block_mode=1&meeting_key=location_city_subsection&meeting_key_value=Brooklyn&weekdays[]=1)-->">BMLT Simple (Comment -Brooklyn, Sunday)</option>';
+                        $ret .= '<option value="&lt;!--bmlt_simple(switcher=GetSearchResults&block_mode=1&meeting_key=location_city_subsection&meeting_key_value=Brooklyn&weekdays[]=1)--&gt;">BMLT Simple (Comment -Brooklyn, Sunday)</option>';
                         $ret .= '<option value="[[bmlt_simple(switcher=GetFormats)]]">BMLT Simple (Brackets -Formats)</option>';
-                        $ret .= '<option value="<!--bmlt_simple(switcher=GetFormats)-->">BMLT Simple (Comment -Formats)</option>';
+                        $ret .= '<option value="&lt;!--bmlt_simple(switcher=GetFormats)--&gt;">BMLT Simple (Comment -Formats)</option>';
                         $ret .= '<option value="[[bmlt_changes(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).')]]">BMLT Changes (Brackets -Last 90 days)</option>';
-                        $ret .= '<option value="<!-- bmlt_changes(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 180)).'&end_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).') -->">BMLT Changes (Comments -Last 180 - 90 days)</option>';
+                        $ret .= '<option value="&lt;!-- bmlt_changes(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 180)).'&end_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).') --&gt;">BMLT Changes (Comments -Last 180 - 90 days)</option>';
                         $ret .= '<option value="[[bmlt_changes(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 365)).'&service_body_id=1001)]]">BMLT Changes (Brackets -Last year in Suffolk Area Service)</option>';
-                        $ret .= '<option value="<!--BMLT_CHANGES(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).'&service_body_id=1)-->">BMLT Changes (Comments -Last 90 days in Greater New York Regional Service)</option>';
+                        $ret .= '<option value="&lt;!--BMLT_CHANGES(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).'&service_body_id=1)--&gt;">BMLT Changes (Comments -Last 90 days in Greater New York Regional Service)</option>';
                         $ret .= '<option value="[[bmlt_map]]">BMLT Map -New Implementation (Brackets)</option>';
-                        $ret .= '<option value="<!--bmlt_map-->">BMLT Map -New Implementation (Comments)</option>';
+                        $ret .= '<option value="&lt;!--bmlt_map--&gt;">BMLT Map -New Implementation (Comments)</option>';
+                        $ret .= '<option value="" disabled="disabled"></option>';
+                        $ret .= '<option value="" disabled="disabled">NOTE: All the following Require that the Session Clear Be Called First!</option>';
+                        $ret .= '<option value="" disabled="disabled"></option>';
+                        $ret .= '<option value="[[bmlt_map(2)]]">BMLT Map -New Implementation (Brackets -UKNA)</option>';
+                        $ret .= '<option value="&lt;!--bmlt_map(2)--&gt;">BMLT Map -New Implementation (Comments -UKNA)</option>';
+                        $ret .= '<option value="&lt;fieldset&gt;&lt;legend&gt;GNYR OPTIONS&lt;/legend&gt;[[bmlt_map(1)]]&lt;/fieldset&gt;&lt;fieldset&gt;&lt;legend&gt;UKNA OPTIONS&lt;/legend&gt;[[bmlt_map(2)]]&lt;/fieldset&gt;">BMLT Map -New Implementation (Brackets -and Double-setup)</option>';
                         $ret .= '</select>';
                     $ret .= '</div>';
                 $ret .= '</div>';
@@ -291,5 +300,6 @@ function u_test_render()
 
 // This calls the unit test.
 date_default_timezone_set ( _TIME_ZONE_ );   // Just to stop warnings.
+
 echo u_test();
 ?>
