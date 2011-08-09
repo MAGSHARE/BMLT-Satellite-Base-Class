@@ -295,6 +295,13 @@ function MapSearch (
 	    else
 	        {
             g_main_map.geo_width = null;
+            g_search_radius = null;
+            g_main_map.response_object = null;
+            if ( g_main_map.zoom_handler )
+                {
+                google.maps.event.removeListener ( g_main_map.zoom_handler );
+                g_main_map.zoom_handler = null;
+                };
 	        hide_throbber();
 	        };
 	};
@@ -315,14 +322,16 @@ function MapSearch (
 	            }
 			};
 		
-		fit_circle();
-		draw_markers();
-        
-        if ( g_main_map.center_marker )
-            {
-            g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
-            g_main_map._circle_overlay.setMap ( g_main_map );
-            showNewSearch();
+		if ( fit_circle() )
+		    {
+            draw_markers();
+            
+            if ( g_main_map.center_marker )
+                {
+                g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
+                g_main_map._circle_overlay.setMap ( g_main_map );
+                showNewSearch();
+                };
             };
 	};
 	
@@ -350,62 +359,76 @@ function MapSearch (
 	};
 	
 	/************************************************************************************//**
-	*	\brief 
+	*	\brief This calculates a circle that will fit all of the meetings found.            *
+	*                                                                                       *
+	*   \returns    A boolean. True if the circle was successfully calculated.              *
 	****************************************************************************************/
-	
 	function fit_circle()
 	{
+	    var ret = false;
 	    if ( g_main_map._circle_overlay )
 	        {
-            if ( !g_search_radius )
+	        var search_radius = g_search_radius;
+	        
+            if ( !search_radius )
                 {
-                g_search_radius = 0.0;
-            
+                search_radius = 0.0;
+                // What we do here, is look at each meeting, and determine a circle that just fits them all.
                 for ( var c = 0; c < g_main_map.response_object.length; c++ )
                     {
                     var meeting_object = g_main_map.response_object[c];
-                    var distance = google.maps.geometry.spherical.computeDistanceBetween( g_main_map.g_location_coords, new google.maps.LatLng(meeting_object.latitude, meeting_object.longitude));
-                    g_search_radius = Math.max ( distance, g_search_radius );
+                    var distance = google.maps.geometry.spherical.computeDistanceBetween ( g_main_map.g_location_coords, new google.maps.LatLng(meeting_object.latitude, meeting_object.longitude) );
+                    search_radius = Math.max ( distance, search_radius );
+                    };
+                    
+                eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
+                // We only allow a maximum of 150% the highest value, so we don't have ginormous circles.
+                if ( search_radius > (c_g_diameter_choices[c_g_diameter_choices.length-1] * (dist_r_km ? 1500 : 2414.016)) )
+                    {
+                    search_radius = null;
                     };
                 };
 	    
-            g_main_map._circle_overlay.setRadius ( g_search_radius );
-            g_main_map._circle_overlay.setCenter ( g_main_map.g_location_coords );
-            
-            g_main_map.geo_width = g_search_radius / 1000.0;
+	        if ( search_radius )
+	            {
+                g_search_radius = search_radius;
+                g_main_map._circle_overlay.setRadius ( g_search_radius );
+                g_main_map._circle_overlay.setCenter ( g_main_map.g_location_coords );
+                g_main_map.geo_width = g_search_radius / 1000.0;
+                ret = true;
+                };
             };
+        
+        return ret;
     };
+	
+	/************************************************************************************//**
+	*	\brief Start dragging the center marker (clears all the markers).                   *
+	****************************************************************************************/
+	function center_dragStart ( in_event )
+	{
+	    clearAllMarkers();
+	    
+	    return true;
+	};
+	
+	/************************************************************************************//**
+	*	\brief The drag of the center marker has stopped. Recalculate the search.           *
+	****************************************************************************************/
+	function center_dragEnd ( in_event )
+	{
+	    map_clicked (in_event);
+	    
+	    return true;
+	};
     	
 	/****************************************************************************************
 	*									CREATING MARKERS									*
 	****************************************************************************************/
 	
 	/************************************************************************************//**
-	*	\brief 
-	****************************************************************************************/
-	
-	function center_dragStart ( in_event )
-	{
-	    clearAllMarkers();
-	    
-	    return true;
-	}
-	
-	/************************************************************************************//**
-	*	\brief 
-	****************************************************************************************/
-	
-	function center_dragEnd ( in_event )
-	{
-	    map_clicked (in_event);
-	    
-	    return true;
-	}
-	
-	/************************************************************************************//**
 	*	\brief Remove all the markers.														*
 	****************************************************************************************/
-	
 	function clearAllMarkers ( )
 	{
 		if ( g_allMarkers )
@@ -655,6 +678,8 @@ function MapSearch (
                 }
             else
                 {
+                g_search_radius = null;
+                g_main_map.geo_width = null;
                 return;
                 };
             }
@@ -668,7 +693,6 @@ function MapSearch (
                 var old_onChange = elem.onChange; // We do this to prevent the handler from being called as we change the value.
                 elem.onChange = null;
                 
-                elem.options[0].disabled = true;
                 elem.selectedIndex = 1;
 
                 for ( var c = 2; c < elem.options.length; c++ )
@@ -681,17 +705,20 @@ function MapSearch (
                         break;
                         };
                     };
+                
                 elem.onChange = old_onChange;
                 };
             };
         
-        fit_circle();
-	    clearAllMarkers();
+        if ( fit_circle() )
+            {
+            clearAllMarkers();
+                
+            g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
+            g_main_map._circle_overlay.setMap ( g_main_map );
             
-        g_main_map._circle_overlay.bindTo('center', g_main_map.center_marker, 'position');
-        g_main_map._circle_overlay.setMap ( g_main_map );
-        
-        map_clicked ( {'latLng':g_main_map.g_location_coords} );
+            map_clicked ( {'latLng':g_main_map.g_location_coords} );
+            };
 	};
 	
 	/************************************************************************************//**
@@ -1348,7 +1375,7 @@ function MapSearch (
                     {
                     google.maps.event.removeListener ( g_main_map.zoom_handler );
                     g_main_map.zoom_handler = null;
-                    g_search_radius = 0.0;
+                    g_search_radius = null;
                     g_main_map.geo_width = null;
                     };
                 };
