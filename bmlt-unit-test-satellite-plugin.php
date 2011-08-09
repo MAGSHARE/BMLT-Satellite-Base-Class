@@ -346,7 +346,6 @@ class BMLTUTestPlugin extends BMLTPlugin
         $this->ajax_router ( );
         $load_head = false;   // This is a throwback. It prevents the GM JS from being loaded if there is no directly specified settings ID.
         $head_content = "<!-- Added by the BMLT plugin 2.0. -->\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=EmulateIE7\" />\n<meta http-equiv=\"Content-Style-Type\" content=\"text/css\" />\n<meta http-equiv=\"Content-Script-Type\" content=\"text/javascript\" />\n";
-        $load_head = true;
         
         $support_mobile = $this->cms_get_page_settings_id ( $in_text, true );
         
@@ -378,7 +377,7 @@ class BMLTUTestPlugin extends BMLTPlugin
             die ( );
             }
         
-        $load_gmaps = !$options['gmaps_api_key'] || !$this->get_shortcode ( $in_text, 'bmlt');   // No GMAP API key or no "bmlt" shortcode, no BMLT window.
+        $load_server_header = $this->get_shortcode ( $in_text, 'bmlt');   // No GMAP API key or no "bmlt" shortcode, no BMLT window.
         
         $this->my_http_vars['gmap_key'] = $load_gmaps ? null : $options['gmaps_api_key'];
         
@@ -405,7 +404,7 @@ class BMLTUTestPlugin extends BMLTPlugin
             {
             $root_server = $root_server_root."/client_interface/xhtml/index.php";
             
-            if ( $load_head )
+            if ( $load_server_header )
                 {
                 $head_content .= bmlt_satellite_controller::call_curl ( "$root_server?switcher=GetHeaderXHTML".$this->my_params );
                 }
