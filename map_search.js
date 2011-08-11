@@ -396,7 +396,7 @@ function MapSearch (
                     
                 eval ( 'var dist_r_km = c_g_distance_units_are_km_'+g_main_id+';' );
                 // We only allow a maximum of 150% the highest value, so we don't have ginormous circles.
-                if ( search_radius > (c_g_diameter_choices[c_g_diameter_choices.length-1] * (dist_r_km ? 1500 : 2414.016)) )
+                if ( search_radius > (c_g_diameter_choices[c_g_diameter_choices.length-1] * (dist_r_km ? 2000 : 2414.016)) )
                     {
                     search_radius = null;
                     };
