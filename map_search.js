@@ -49,7 +49,8 @@ function MapSearch (
     var g_initial_call = false;         ///< Set to true, once we have zoomed in.
     var g_initial_coords = in_coords;
     var g_initial_div = in_div;
-    
+    var g_info_id = null;
+        
 	/// These describe the regular NA meeting icon
 	var g_icon_image_single = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	var g_icon_image_multi = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarkerG.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -466,6 +467,8 @@ function MapSearch (
 			
 			g_allMarkers.length = 0;
 			};
+		
+		g_info_id = null;
 	};
 	
 	/************************************************************************************//**
@@ -488,7 +491,7 @@ function MapSearch (
 		if ( g_initial_call )
 		    {
             // Finish with the main (You are here) marker.
-            createMarker ( g_main_map.g_location_coords, g_center_icon_shadow, g_center_icon_image, g_center_icon_shape, marker_make_centerHTML(), true );
+            createMarker ( g_main_map.g_location_coords, g_center_icon_shadow, g_center_icon_image, g_center_icon_shape, marker_make_centerHTML(), true, 0 );
             
             google.maps.event.addListener ( g_main_map.center_marker, 'dragstart', center_dragStart );
             google.maps.event.addListener ( g_main_map.center_marker, 'dragend', center_dragEnd );
@@ -670,7 +673,7 @@ function MapSearch (
 			};
 		
 		marker_html += '</div>';
-		var marker = createMarker ( main_point, g_icon_shadow, ((in_mtg_obj_array.length>1) ? g_icon_image_multi : g_icon_image_single), g_icon_shape, marker_html );
+		var marker = createMarker ( main_point, g_icon_shadow, ((in_mtg_obj_array.length>1) ? g_icon_image_multi : g_icon_image_single), g_icon_shape, marker_html, false, in_mtg_obj_array[0].id_bigint );
 	};
 	
 	/************************************************************************************//**
@@ -966,7 +969,8 @@ function MapSearch (
 							in_main_icon,	///< The URI for the main icon
 							in_shape,		///< The shape for the marker
 							in_html,		///< The info window HTML
-							in_draggable    ///< True if the marker is draggable
+							in_draggable,   ///< True if the marker is draggable
+							in_meeting_id   ///< Used to give the info window a unique ID.
 							)
 	{
 		var marker = null;
@@ -994,6 +998,7 @@ function MapSearch (
 				if ( in_html )
 					{
 					google.maps.event.addListener ( marker, "click", function () {
+					                                                            g_info_id = null;
 																				for(var c=0; c < this.all_markers_.length; c++)
 																					{
                                                                                     if ( g_main_map.center_marker && g_main_map.center_marker.info_win_ && (g_main_map.center_marker.info_win_ != this) )
@@ -1018,8 +1023,10 @@ function MapSearch (
 																				    {
                                                                                     if(marker.old_image){marker.setIcon(g_icon_image_selected)};
                                                                                     marker.setZIndex(google.maps.Marker.MAX_ZINDEX+1);
-																				    marker.info_win_ = new google.maps.InfoWindow ({'position': marker.getPosition(), 'map': marker.getMap(), 'content': in_html, 'pixelOffset': new google.maps.Size ( 0, -32 ) });
+																				    marker.info_win_ = new google.maps.InfoWindow ({'position': marker.getPosition(), 'map': marker.getMap(), 'content': '<div id="info_win_'+g_main_id+'_'+in_meeting_id+'">'+in_html+'</div>', 'pixelOffset': new google.maps.Size ( 0, -32 ) });
+																				    g_info_id = 'info_win_'+g_main_id+'_'+in_meeting_id;
 																				    google.maps.event.addListenerOnce(marker.info_win_, 'closeclick', function() {marker.info_win_ = null;if(marker.old_image){marker.setIcon(marker.old_image)};marker.setZIndex(null)});
+																				    google.maps.event.addListenerOnce(marker.info_win_, 'domready', marker_info_window_loaded);
 																				    };
 																				}
 												);
@@ -1041,6 +1048,28 @@ function MapSearch (
 			};
 		
 		return marker;
+	};
+	
+	/************************************************************************************//**
+	*	\brief  This is a slimy, dope-fiend move. Google makes it difficult to get at their *
+	*           DOM elements, so we tag our info window, and back out to the surrounding    *
+	*           div. We then give that div a known classname, so we can apply CSS to it.    *
+	****************************************************************************************/
+	
+	function marker_info_window_loaded()
+	{
+	    var info_win = document.getElementById(g_info_id);
+	    
+	    if ( info_win )
+	        {
+	        if(info_win.parentNode)
+	            {
+	            if(info_win.parentNode.parentNode)
+	                {
+                    info_win.parentNode.parentNode.className = 'bmlt_info_win_container';
+	                };
+	            };
+	        };
 	};
 
     /****************************************************************************************//**

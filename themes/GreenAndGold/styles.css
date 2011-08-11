@@ -877,5 +877,22 @@ div.bmlt_map_container_div .location_text_input_item_focused
 
 div.bmlt_map_container_div .location_text_input_item_blurred
 {
-    color: #999;
+    color: #6c6;
+}
+
+div.bmlt_map_container_div .bmlt_info_win_container
+{
+    border: 1px solid #030;
+    background-color: #ff9;
+    padding:3px;
+    border-radius: 5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius: 5px;
+	margin-left:-4px;
+	margin-top:-6px;
+}
+
+div.bmlt_map_container_div .bmlt_info_win_container fieldset
+{
+    border:none;
 }
