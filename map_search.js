@@ -53,6 +53,7 @@ function MapSearch (
 	/// These describe the regular NA meeting icon
 	var g_icon_image_single = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	var g_icon_image_multi = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarkerG.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	var g_icon_image_selected = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarkerSel.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	var g_icon_shadow = new google.maps.MarkerImage( c_g_BMLTPlugin_images+"/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	var g_icon_shape = { coord: [16,0,18,1,19,2,20,3,21,4,21,5,22,6,22,7,22,8,22,9,22,10,22,11,22,12,22,13,22,14,22,15,22,16,21,17,21,18,22,19,20,20,19,21,20,22,18,23,17,24,18,25,17,26,15,27,14,28,15,29,12,30,12,31,10,31,10,30,9,29,8,28,8,27,7,26,6,25,5,24,5,23,4,22,3,21,3,20,2,19,1,18,1,17,1,16,0,15,0,14,0,13,0,12,0,11,0,10,0,9,0,8,0,7,1,6,1,5,2,4,2,3,3,2,5,1,6,0,16,0], type: 'poly' };
 	
@@ -212,6 +213,18 @@ function MapSearch (
         
         var geo_width = (null == g_main_map.geo_width) ? -10 : (g_main_map.geo_width / (( dist_r_km ) ? 1.0 : 1.609344 ));
         
+        if ( document.getElementById ( g_main_id+'_radius_select' ).selectedIndex == 0 ) // We do another auto select if that item is selected.
+            {
+            geo_width = -10;
+            g_search_radius = null;
+            g_main_map.geo_width = null;
+            if ( g_main_map.zoom_handler )
+                {
+                google.maps.event.removeListener ( g_main_map.zoom_handler );
+                g_main_map.zoom_handler = null;
+                };
+            }
+    
 	    var args = 'geo_width='+geo_width+'&long_val='+in_event.latLng.lng().toString()+'&lat_val='+in_event.latLng.lat().toString();
         if ( g_basic_options_open )
             {
@@ -974,6 +987,10 @@ function MapSearch (
 			if ( marker )
 				{
 				marker.all_markers_ = g_allMarkers;
+                if (!in_draggable)  // We don't change the center marker. All the other ones turn green when selected.
+                    {
+                    marker.old_image = marker.getIcon();
+                    };
 				if ( in_html )
 					{
 					google.maps.event.addListener ( marker, "click", function () {
@@ -997,8 +1014,9 @@ function MapSearch (
 																				
 																				if ( !marker.info_win_ )
 																				    {
+                                                                                    if(marker.old_image){marker.setIcon(g_icon_image_selected)};
 																				    marker.info_win_ = new google.maps.InfoWindow ({'position': marker.getPosition(), 'map': marker.getMap(), 'content': in_html, 'pixelOffset': new google.maps.Size ( 0, -32 ) });
-																				    google.maps.event.addListenerOnce(marker.info_win_, 'closeclick', function() {marker.info_win_ = null; });
+																				    google.maps.event.addListenerOnce(marker.info_win_, 'closeclick', function() {marker.info_win_ = null;if(marker.old_image){marker.setIcon(marker.old_image)}});
 																				    };
 																				}
 												);
