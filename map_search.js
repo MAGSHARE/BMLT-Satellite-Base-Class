@@ -783,7 +783,7 @@ function MapSearch (
                             {
                             ret += '" selected="selected';
                             };
-                            
+                                
                         ret += '">';
                         ret += length.toString();
                     ret += '</option>';
@@ -1006,7 +1006,8 @@ function MapSearch (
 																						{
 																						if ( this.all_markers_[c].info_win_ )
 																							{
-																							if(this.all_markers_[c].old_image){this.all_markers_[c].setIcon(this.all_markers_[c].old_image)}
+																							if(this.all_markers_[c].old_image){this.all_markers_[c].setIcon(this.all_markers_[c].old_image);};
+																							this.all_markers_[c].setZIndex(null);
 																							this.all_markers_[c].info_win_.close();
 																							this.all_markers_[c].info_win_ = null;
 																							};
@@ -1016,8 +1017,9 @@ function MapSearch (
 																				if ( !marker.info_win_ )
 																				    {
                                                                                     if(marker.old_image){marker.setIcon(g_icon_image_selected)};
+                                                                                    marker.setZIndex(google.maps.Marker.MAX_ZINDEX+1);
 																				    marker.info_win_ = new google.maps.InfoWindow ({'position': marker.getPosition(), 'map': marker.getMap(), 'content': in_html, 'pixelOffset': new google.maps.Size ( 0, -32 ) });
-																				    google.maps.event.addListenerOnce(marker.info_win_, 'closeclick', function() {marker.info_win_ = null;if(marker.old_image){marker.setIcon(marker.old_image)}});
+																				    google.maps.event.addListenerOnce(marker.info_win_, 'closeclick', function() {marker.info_win_ = null;if(marker.old_image){marker.setIcon(marker.old_image)};marker.setZIndex(null)});
 																				    };
 																				}
 												);
