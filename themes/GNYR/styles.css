@@ -194,7 +194,7 @@ table#bmlt_container .bmlt_contact_form_header_h2,
 table#bmlt_container .c_comdef_search_results_alt1,
 table#bmlt_container .c_comdef_search_results_alt1 td
 {
-    background-color:##ffc;
+    background-color:#ffc;
 }
 
 table#bmlt_container .c_comdef_search_results_table,
@@ -561,9 +561,9 @@ table#bmlt_container .c_comdef_search_results_single_ajax_throbber_div,
 .BMLTPlugin_simple_throbber_div,
 .bmlt_simple_meetings_table
 {
-    -moz-box-shadow: 4px 4px 3px #555;
-    -webkit-box-shadow: 4px 4px 3px #555;
-    box-shadow: 4px 4px 3px #555;
+    -moz-box-shadow: 4px 4px 3px #006;
+    -webkit-box-shadow: 4px 4px 3px #006;
+    box-shadow: 4px 4px 3px #006;
 }
 
 table#bmlt_container .c_comdef_search_specification_container_div .throbber_div,          /* These are the window that surrounds the "throbber" */
@@ -622,11 +622,20 @@ table#bmlt_container .bmlt_contact_form_one_line_text_item
 /* These are all for the new map search implementation */
 
 div.bmlt_map_container_div,
-div.bmlt_map_container_div .bmlt_map_container_div_search_options_div,
-div.bmlt_map_container_div .bmlt_search_map_div
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div
 {
     width: 640px;
     margin:auto;
+}
+
+div.bmlt_map_container_div
+{
+    background-color: #ffc;
+    padding:2px;
+    border: 1px solid #f30;
+    border-radius: 6px;
+	-moz-border-radius:6px;
+	-webkit-border-radius: 6px;
 }
 
 div.bmlt_map_container_div .bmlt_search_map_div
@@ -645,7 +654,7 @@ div.bmlt_map_container_div .bmlt_map_throbber_div
     margin-top:-24px;
     margin-left:-24px;
     z-index:10000;
-    background-color:#555;
+    background-color:#006;
 }
 
 div.bmlt_map_container_div .bmlt_map_throbber_div img
@@ -660,6 +669,30 @@ div.bmlt_map_container_div .bmlt_map_container_div_location_options_div fieldset
 div.bmlt_map_container_div .bmlt_map_container_div_search_options_div fieldset
 {
     padding: 4px;
+}
+
+div.bmlt_map_container_div .bmlt_map_container_div_location_options_div fieldset,
+div.bmlt_map_container_div .bmlt_map_container_div_search_options_div fieldset,
+div.bmlt_map_container_div .bmlt_search_map_div,
+div.bmlt_map_container_div .bmlt_map_throbber_div
+{
+    border: 1px solid #f30;
+    border-radius: 3px;
+	-moz-border-radius:3px;
+	-webkit-border-radius: 3px;
+}
+
+div.bmlt_map_container_div .bmlt_map_container_div_location_options_div fieldset
+{
+    margin-top:2px;
+    margin-bottom:2px;
+}
+
+div.bmlt_map_container_div div.bmlt_search_map_div
+{
+    width:638px;
+    margin:auto;
+    margin-top:2px;
 }
 
 div.bmlt_map_container_div .bmlt_map_container_div_search_options_div fieldset legend
@@ -697,7 +730,7 @@ div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_
 div.bmlt_map_container_div a.bmlt_map_hide_options,
 div.bmlt_map_container_div a.bmlt_map_reveal_options
 {
-    background-color:#555;
+    background-color:#006;
     width: 100%;
     height: 16px;
     display:block;
@@ -753,7 +786,7 @@ div.bmlt_map_container_div a.bmlt_map_hide_options:hover
 div.bmlt_map_container_div .bmlt_search_map_new_search_div a,
 div.bmlt_map_container_div .bmlt_search_map_new_search_div a:visited
 {
-    background-color:#555;
+    background-color:#006;
     text-align:center;
     width: 100%;
     line-height:16px;
@@ -799,7 +832,7 @@ div.bmlt_map_container_div .location_text_submit_div
 
 div.bmlt_map_container_div .location_text_input_div input
 {
-    border: 1px solid #555;
+    border: 1px solid #006;
     padding:3px;
     width:90%;
     margin-bottom: 12px;
@@ -842,7 +875,7 @@ div.bmlt_map_container_div .bmlt_map_throbber_div
     margin-top:-24px;
     margin-left:-24px;
     z-index:10000;
-    background-color:#555;
+    background-color:#006;
 }
 
 div.bmlt_map_container_div .bmlt_map_throbber_div img
@@ -894,7 +927,7 @@ div.bmlt_map_container_div .bmlt_map_container_div_search_options_div .bmlt_map_
 div.bmlt_map_container_div a.bmlt_map_hide_options,
 div.bmlt_map_container_div a.bmlt_map_reveal_options
 {
-    background-color:#555;
+    background-color:#006;
     width: 100%;
     height: 16px;
     display:block;
@@ -950,7 +983,7 @@ div.bmlt_map_container_div a.bmlt_map_hide_options:hover
 div.bmlt_map_container_div .bmlt_search_map_new_search_div a,
 div.bmlt_map_container_div .bmlt_search_map_new_search_div a:visited
 {
-    background-color:#555;
+    background-color:#006;
     text-align:center;
     width: 100%;
     line-height:16px;
@@ -996,7 +1029,7 @@ div.bmlt_map_container_div .location_text_submit_div
 
 div.bmlt_map_container_div .location_text_input_div input
 {
-    border: 1px solid #555;
+    border: 1px solid #006;
     padding:4px;
     width:90%;
     margin-bottom: 8px;

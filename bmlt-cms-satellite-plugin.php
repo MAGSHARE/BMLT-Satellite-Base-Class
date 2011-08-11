@@ -2004,11 +2004,12 @@ class BMLTPlugin
                 $first = false;
                 }
 
-            $the_new_content .= '<div class="bmlt_map_container_div" style="display:none" id="'.$uid.'">';  // This starts off hidden, and is revealed by JS.
-                $the_new_content .= $this->BMLTPlugin_map_search_location_options($options_id, $uid);   // This is the box of location search choices.
-                $the_new_content .= $this->BMLTPlugin_map_search_search_options($options_id, $uid);     // This is the box of basic search choices.
-                $the_new_content .= $this->BMLTPlugin_map_search_advanced_options($options_id, $uid);   // This is the box of advanced search choices.
-                $the_new_content .= $this->BMLTPlugin_map_search_local_javascript_stuff ( $options_id, $uid );
+            $the_new_content .= '<div class="bmlt_map_container_div bmlt_map_container_div_theme_'.htmlspecialchars ( $options['theme'] ).'" style="display:none" id="'.$uid.'">';  // This starts off hidden, and is revealed by JS.
+                $the_new_content .= '<div class="bmlt_map_container_div_header">';  // This allows a CSS "hook."
+                    $the_new_content .= $this->BMLTPlugin_map_search_location_options($options_id, $uid);   // This is the box of location search choices.
+                    $the_new_content .= $this->BMLTPlugin_map_search_search_options($options_id, $uid);     // This is the box of basic search choices.
+                    $the_new_content .= $this->BMLTPlugin_map_search_local_javascript_stuff ( $options_id, $uid );
+                $the_new_content .= '</div>';
                 $the_new_content .= '<div class="bmlt_search_map_div" id="'.$uid.'_bmlt_search_map_div"></div>';
                 $the_new_content .= '<div class="bmlt_search_map_new_search_div" id="'.$uid.'_bmlt_search_map_new_search_div" style="display:none"><a href="javascript:c_ms_'.$uid.'.newSearchExt();">'.$this->process_text ( self::$local_new_map_js_new_search ).'</a></div>';
                 $the_new_content .= '<script type="text/javascript">document.getElementById(\''.$uid.'\').style.display=\'block\';c_ms_'.$uid.' = new MapSearch ( \''.htmlspecialchars ( $uid ).'\',\''.htmlspecialchars ( $options_id ).'\', document.getElementById(\''.$uid.'_bmlt_search_map_div\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
@@ -2125,17 +2126,6 @@ class BMLTPlugin
             $ret .= '</div>';
         $ret .= '</div>';
         return $ret;
-        }
-
-    /************************************************************************************//**
-    *   \brief  This returns a div of advanced options to be applied to the map search.     *
-    *                                                                                       *
-    *   \returns A string. The XHTML to be displayed.                                       *
-    ****************************************************************************************/
-    function BMLTPlugin_map_search_advanced_options(    $in_options_id, ///< The ID for the options to use for this implementation.
-                                                        $in_uid         ///< This is the UID of the enclosing div.
-                                                        )
-        {
         }
 
     /************************************************************************************//**
