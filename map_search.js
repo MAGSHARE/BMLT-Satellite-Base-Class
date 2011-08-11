@@ -1006,6 +1006,7 @@ function MapSearch (
 																						{
 																						if ( this.all_markers_[c].info_win_ )
 																							{
+																							if(this.all_markers_[c].old_image){this.all_markers_[c].setIcon(this.all_markers_[c].old_image)}
 																							this.all_markers_[c].info_win_.close();
 																							this.all_markers_[c].info_win_ = null;
 																							};
