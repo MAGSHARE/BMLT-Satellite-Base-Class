@@ -1,7 +1,7 @@
 /****************************************************************************************//**
 * \file map_search.js																        *
 * \brief Javascript functions for the new map search implementation.                        *
-* \version 1.1.3                                                                            *
+* \version 1.1.4                                                                            *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *

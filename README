@@ -25,7 +25,12 @@ INSTALLATION
 
 CHANGELIST
 ----------
-= 1.1.3 =
+= 1.1.4 =
+* August 12, 2011
+* Fixes a couple of minor theme/style issues.
+* Mitigates a strange Firefox bug that caused weird page loads when closing the location area.
+
+= 1.1.4 =
 * August 8, 2011
 * Implements an entirely new, Google Maps API V.3-based map search.
 

@@ -3,7 +3,7 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 1.1.3                                                                          *
+*   \version 1.1.4                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -2032,7 +2032,7 @@ class BMLTPlugin
         {
         $ret = '<div class="bmlt_map_container_div_location_options_div" id="'.$in_uid.'_location">';
             $ret .= '<div class="bmlt_map_options_loc">';
-                $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_loc_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_loc_a\');var b=document.getElementById(\''.$in_uid.'_options_loc\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\';c_ms_'.$in_uid.'.openLocationSectionExt(document.getElementById(\''.$in_uid.'_location_text\'), document.getElementById(\''.$in_uid.'_location_submit\'))}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}}"><span>'.$this->process_text ( self::$local_new_map_option_loc_label ).'</span></a>';
+                $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_loc_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_loc_a\');var b=document.getElementById(\''.$in_uid.'_options_loc\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\';c_ms_'.$in_uid.'.openLocationSectionExt(document.getElementById(\''.$in_uid.'_location_text\'), document.getElementById(\''.$in_uid.'_location_submit\'));}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\';};};c_ms_'.$in_uid.'.recalculateMapExt()"><span>'.$this->process_text ( self::$local_new_map_option_loc_label ).'</span></a>';
                 $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_loc" style="display:none">';
                     $ret .= '<form action="#" method="get" onsubmit="c_ms_'.$in_uid.'.lookupLocationExt(document.getElementById(\''.$in_uid.'_location_text\'), document.getElementById(\''.$in_uid.'_location_submit\'));return false">';
                         $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_location_fieldset">';
