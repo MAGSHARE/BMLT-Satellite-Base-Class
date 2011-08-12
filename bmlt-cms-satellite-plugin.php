@@ -2034,33 +2034,34 @@ class BMLTPlugin
             $ret .= '<div class="bmlt_map_options_loc">';
                 $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_loc_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_loc_a\');var b=document.getElementById(\''.$in_uid.'_options_loc\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\';c_ms_'.$in_uid.'.openLocationSectionExt(document.getElementById(\''.$in_uid.'_location_text\'), document.getElementById(\''.$in_uid.'_location_submit\'))}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}}"><span>'.$this->process_text ( self::$local_new_map_option_loc_label ).'</span></a>';
                 $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_loc" style="display:none">';
-                $ret .= '<form action="#" method="get" onsubmit="c_ms_'.$in_uid.'.lookupLocationExt(document.getElementById(\''.$in_uid.'_location_text\'), document.getElementById(\''.$in_uid.'_location_submit\'));return false">';
-                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_location_fieldset">';
-                        $ret .= '<div class="location_radius_popup_div">';
-                            $ret .= '<label for="">'.$this->process_text ( self::$local_new_map_option_loc_popup_label_1 ).'</label>';
-                            $ret .= '<select class="bmlt_map_location_radius_popup" id="'.$in_uid.'_radius_select" onchange="c_ms_'.$in_uid.'.changeRadiusExt(true)">';
-                                $ret .= '<option value="" selected="selected">'.$this->process_text ( self::$local_new_map_option_loc_popup_auto ).'</option>';
-                                $ret .= '<option value="" disabled="disabled"></option>';
-                                $options = $this->getBMLTOptions_by_id ( $in_options_id );
-                                foreach ( self::$local_new_map_js_diameter_choices as $radius )
-                                    {
-                                    $ret .= '<option value="'.($radius / 2).'">'.($radius / 2).' '.$this->process_text ( (strtolower ($options['distance_units']) == 'km') ? self::$local_new_map_option_loc_popup_km : self::$local_new_map_option_loc_popup_mi ).'</option>';
-                                    }
-                            $ret .= '</select>';
-                            $ret .= '<label for="">'.$this->process_text ( self::$local_new_map_option_loc_popup_label_2 ).'</label>';
-                        $ret .= '</div>';
-                        $ret .= '<fieldset class="location_text_entry_fieldset">';
-                            $ret .= '<legend>'.$this->process_text ( self::$local_new_map_text_entry_fieldset_label ).'</legend>';
-                            $def_text = $this->process_text ( self::$local_new_map_text_entry_default_text );
-                            $ret .= '<div class="location_text_input_div">';
-                                $ret .= '<input type="text" class="location_text_input_item_blurred" value="'.$def_text.'" id="'.$in_uid.'_location_text" onfocus="c_ms_'.$in_uid.'.focusLocationTextExt(this, document.getElementById(\''.$in_uid.'_location_submit\'), false)" onblur="c_ms_'.$in_uid.'.focusLocationTextExt(this, document.getElementById(\''.$in_uid.'_location_submit\'), true)" onkeyup="c_ms_'.$in_uid.'.enterTextIntoLocationTextExt(this, document.getElementById(\''.$in_uid.'_location_submit\'))" />';
+                    $ret .= '<form action="#" method="get" onsubmit="c_ms_'.$in_uid.'.lookupLocationExt(document.getElementById(\''.$in_uid.'_location_text\'), document.getElementById(\''.$in_uid.'_location_submit\'));return false">';
+                        $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_location_fieldset">';
+                            $ret .= '<div class="location_radius_popup_div">';
+                                $ret .= '<label for="">'.$this->process_text ( self::$local_new_map_option_loc_popup_label_1 ).'</label>';
+                                $ret .= '<select class="bmlt_map_location_radius_popup" id="'.$in_uid.'_radius_select" onchange="c_ms_'.$in_uid.'.changeRadiusExt(true)">';
+                                    $ret .= '<option value="" selected="selected">'.$this->process_text ( self::$local_new_map_option_loc_popup_auto ).'</option>';
+                                    $ret .= '<option value="" disabled="disabled"></option>';
+                                    $options = $this->getBMLTOptions_by_id ( $in_options_id );
+                                    foreach ( self::$local_new_map_js_diameter_choices as $radius )
+                                        {
+                                        $ret .= '<option value="'.($radius / 2).'">'.($radius / 2).' '.$this->process_text ( (strtolower ($options['distance_units']) == 'km') ? self::$local_new_map_option_loc_popup_km : self::$local_new_map_option_loc_popup_mi ).'</option>';
+                                        }
+                                $ret .= '</select>';
+                                $ret .= '<label for="">'.$this->process_text ( self::$local_new_map_option_loc_popup_label_2 ).'</label>';
                             $ret .= '</div>';
-                            $ret .= '<div class="location_text_submit_div">';
-                                $ret .= '<input type="button" disabled="disabled" class="location_text_submit_button" value="'.$this->process_text ( self::$local_new_map_location_submit_button_text ).'" id="'.$in_uid.'_location_submit" onclick="c_ms_'.$in_uid.'.lookupLocationExt(document.getElementById(\''.$in_uid.'_location_text\'), this)" />';
-                            $ret .= '</div>';
+                            $ret .= '<fieldset class="location_text_entry_fieldset">';
+                                $ret .= '<legend>'.$this->process_text ( self::$local_new_map_text_entry_fieldset_label ).'</legend>';
+                                $def_text = $this->process_text ( self::$local_new_map_text_entry_default_text );
+                                $ret .= '<div class="location_text_input_div">';
+                                    $ret .= '<input type="text" class="location_text_input_item_blurred" value="'.$def_text.'" id="'.$in_uid.'_location_text" onfocus="c_ms_'.$in_uid.'.focusLocationTextExt(this, document.getElementById(\''.$in_uid.'_location_submit\'), false)" onblur="c_ms_'.$in_uid.'.focusLocationTextExt(this, document.getElementById(\''.$in_uid.'_location_submit\'), true)" onkeyup="c_ms_'.$in_uid.'.enterTextIntoLocationTextExt(this, document.getElementById(\''.$in_uid.'_location_submit\'))" />';
+                                $ret .= '</div>';
+                                $ret .= '<div class="location_text_submit_div">';
+                                    $ret .= '<input type="button" disabled="disabled" class="location_text_submit_button" value="'.$this->process_text ( self::$local_new_map_location_submit_button_text ).'" id="'.$in_uid.'_location_submit" onclick="c_ms_'.$in_uid.'.lookupLocationExt(document.getElementById(\''.$in_uid.'_location_text\'), this)" />';
+                                $ret .= '</div>';
+                            $ret .= '</fieldset>';
                         $ret .= '</fieldset>';
-                    $ret .= '</fieldset>';
-                $ret .= '</form>';
+                    $ret .= '</form>';
+                $ret .= '</div>';
             $ret .= '</div>';
         $ret .= '</div>';
         return $ret;
@@ -2079,50 +2080,51 @@ class BMLTPlugin
             $ret .= '<div class="bmlt_map_options_1">';
                 $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_1_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_1_a\');var b=document.getElementById(\''.$in_uid.'_options_1\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\'}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}};c_ms_'.$in_uid.'.recalculateMapExt()"><span>'.$this->process_text ( self::$local_new_map_option_1_label ).'</span></a>';
                 $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_1" style="display:none">';
-                $ret .= '<form action="#" method="get" onsubmit="return false">';
-                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset">';
-                        $ret .= '<legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
-                        $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" type="checkbox" id="weekday_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
-                        $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" for="weekday_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_weekdays ).'</label></div>';
-                        for ( $index = 1;  $index < count ( self::$local_weekdays ); $index++ )
-                            {
-                            $weekday = self::$local_weekdays[$index];
-                            $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div">';
-                                $ret .= '<input title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." type="checkbox" id="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
-                                $ret .= '<label title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." for="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'">'.$this->process_text ( $weekday ).'</label>';
-                            $ret .= '</div>';
-                            }
-                    $ret .= '</fieldset>';
-                    $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_formats_fieldset">';
-                        $ret .= '<legend>'.$this->process_text ( self::$local_new_map_formats ).'</legend>';
-                        $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div">';
-                            $ret .= '<input title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" type="checkbox" id="formats_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
-                            $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" for="formats_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_formats ).'</label>';
-                        $ret .= '</div>';
-                        $options = $this->getBMLTOptions_by_id ( $in_options_id );
-                        $this->my_driver->set_m_root_uri ( $options['root_server'] );
-                        $error = $this->my_driver->get_m_error_message();
-                        
-                        if ( $error )
-                            {
-                            }
-                        else
-                            {
-                            $formats = $this->my_driver->get_server_formats();
-    
-                            if ( !$this->my_driver->get_m_error_message() )
+                    $ret .= '<form action="#" method="get" onsubmit="return false">';
+                        $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset">';
+                            $ret .= '<legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
+                            $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" type="checkbox" id="weekday_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
+                            $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" for="weekday_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_weekdays ).'</label></div>';
+                            for ( $index = 1;  $index < count ( self::$local_weekdays ); $index++ )
                                 {
-                                $index = 1;
-                                foreach ( $formats as $id => $format )
+                                $weekday = self::$local_weekdays[$index];
+                                $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div">';
+                                    $ret .= '<input title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." type="checkbox" id="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
+                                    $ret .= '<label title="'.$this->process_text ( self::$local_new_map_weekdays_title.$weekday ).'." for="weekday_'.$in_uid.'_'.htmlspecialchars ( $index ).'">'.$this->process_text ( $weekday ).'</label>';
+                                $ret .= '</div>';
+                                }
+                        $ret .= '</fieldset>';
+                        $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_formats_fieldset">';
+                            $ret .= '<legend>'.$this->process_text ( self::$local_new_map_formats ).'</legend>';
+                            $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div">';
+                                $ret .= '<input title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" type="checkbox" id="formats_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
+                                $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" for="formats_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_formats ).'</label>';
+                            $ret .= '</div>';
+                            $options = $this->getBMLTOptions_by_id ( $in_options_id );
+                            $this->my_driver->set_m_root_uri ( $options['root_server'] );
+                            $error = $this->my_driver->get_m_error_message();
+                            
+                            if ( $error )
+                                {
+                                }
+                            else
+                                {
+                                $formats = $this->my_driver->get_server_formats();
+        
+                                if ( !$this->my_driver->get_m_error_message() )
                                     {
-                                    $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div"><input type="checkbox" value="'.intval ( $id ).'" id="formats_'.$in_uid.'_'.$index.'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" title="'.$this->process_text ( '('.$format['name_string'] .') '.$format['description_string'] ).'" />';
-                                    $ret .= '<label title="'.$this->process_text ( '('.$format['name_string'] .') '.$format['description_string'] ).'" for="formats_'.$in_uid.'_'.$index.'">'.$this->process_text ( $format['key_string'] ).'</label></div>';
-                                    $index++;
+                                    $index = 1;
+                                    foreach ( $formats as $id => $format )
+                                        {
+                                        $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div"><input type="checkbox" value="'.intval ( $id ).'" id="formats_'.$in_uid.'_'.$index.'" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" title="'.$this->process_text ( '('.$format['name_string'] .') '.$format['description_string'] ).'" />';
+                                        $ret .= '<label title="'.$this->process_text ( '('.$format['name_string'] .') '.$format['description_string'] ).'" for="formats_'.$in_uid.'_'.$index.'">'.$this->process_text ( $format['key_string'] ).'</label></div>';
+                                        $index++;
+                                        }
                                     }
                                 }
-                            }
-                    $ret .= '</fieldset>';
-                $ret .= '</form>';
+                        $ret .= '</fieldset>';
+                    $ret .= '</form>';
+                $ret .= '</div>';
             $ret .= '</div>';
         $ret .= '</div>';
         return $ret;
