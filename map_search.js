@@ -114,6 +114,7 @@ function MapSearch (
             
             if ( g_main_map )
                 {
+                g_main_map.id = 'map_canvas';
                 g_main_map.response_object = null;
                 g_main_map.center_marker = null;
                 g_main_map.geo_width = null;
@@ -605,7 +606,7 @@ function MapSearch (
 			
 			if ( included_weekdays.length > 1 )
 				{
-				marker_html += '<select id="sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'" onchange="marker_change_day(\'sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'\',\''+in_mtg_obj_array[0].id_bigint.toString()+'\')">';
+				marker_html += '<select id="sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'" onclick="fix_popup_position(this)" onchange="marker_change_day(\'sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'\',\''+in_mtg_obj_array[0].id_bigint.toString()+'\')">';
 				
 				for ( var wd = 1; wd < 8; wd++ )
 					{
@@ -759,7 +760,7 @@ function MapSearch (
             ret += '<label for="'+g_main_id+'_bmlt_center_marker_select">';
                 ret += c_g_center_marker_curent_radius_1;
             ret += '</label>';
-            ret += '<select id="'+g_main_id+'_bmlt_center_marker_select" class="bmlt_center_marker_select" onchange="change_circle_diameter(false)">';
+            ret += '<select id="'+g_main_id+'_bmlt_center_marker_select" class="bmlt_center_marker_select" onclick="fix_popup_position(this)" onchange="change_circle_diameter(false)">';
 
                 var count = c_g_diameter_choices.length;
                 
@@ -1070,12 +1071,21 @@ function MapSearch (
 	                };
 	            };
 	        };
+	        
 	};
+	
+	/************************************************************************************//**
+	*	\brief  This is used to fix a very ugly Firefox bug. The popup is transformed way   *
+	*           the hell away from the info window, so we need to transform it back.        *
+	****************************************************************************************/
+    fix_popup_position = function (   in_popup_object ///< The popup menu object.
+                                )
+    {
+    };    
 
     /****************************************************************************************//**
     *	\brief Function to Reveal and/hide day <div> elements in the marker info window.	    *
     ********************************************************************************************/
-    
     marker_change_day = function (  in_sel_id,
                                     in_id	///< The base ID of the element.
                                     )
@@ -1480,7 +1490,7 @@ function MapSearch (
     
         return ret;
     };
-    
+
 	/****************************************************************************************
 	*								MAIN FUNCTIONAL INTERFACE								*
 	****************************************************************************************/
