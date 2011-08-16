@@ -3,7 +3,7 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 1.1.4                                                                          *
+*   \version 1.1.5                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -365,6 +365,7 @@ class BMLTPlugin
 
     /// This array has the weekdays, spelled out. Since weekdays start at 1 (Sunday), we consider 0 to be an error.
     static	$local_weekdays = array ( 'ERROR', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
+    static	$local_weekdays_short = array ( 'ERR', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' );
 
     /************************************************************************************//**
     *                                  DYNAMIC DATA MEMBERS                                 *
@@ -2153,6 +2154,9 @@ class BMLTPlugin
         $ret .= 'var c_g_map_link_text = \''.$this->process_text ( self::$local_map_link ).'\';';
         $ret .= 'var c_g_weekdays = [';
         $ret .= "'".$this->process_text ( join ( "','", self::$local_weekdays ) )."'";
+        $ret .= '];';
+        $ret .= 'var c_g_weekdays_short = [';
+        $ret .= "'".$this->process_text ( join ( "','", self::$local_weekdays_short ) )."'";
         $ret .= '];';
         $ret .= 'var c_g_diameter_choices = ['.join ( ",", self::$local_new_map_js_diameter_choices ).'];';
         $ret .= 'var c_g_formats = \''.$this->process_text ( self::$local_formats ).'\';';
