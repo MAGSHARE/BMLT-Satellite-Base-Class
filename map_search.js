@@ -1,7 +1,7 @@
 /****************************************************************************************//**
 * \file map_search.js																        *
 * \brief Javascript functions for the new map search implementation.                        *
-* \version 1.1.5                                                                            *
+* \version 1.1.4                                                                            *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -114,7 +114,6 @@ function MapSearch (
             
             if ( g_main_map )
                 {
-                g_main_map.id = g_main_id+'_map_search_canvas';
                 g_main_map.response_object = null;
                 g_main_map.center_marker = null;
                 g_main_map.geo_width = null;
@@ -602,26 +601,9 @@ function MapSearch (
 				};
 			
 			marker_html += '<div class="multi_day_info_div">';
-// 			marker_html += '<fieldset class="marker_fieldset"><legend>';
 			
 			if ( included_weekdays.length > 1 )
 				{
-/* 
-				marker_html += '<select id="sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'" onchange="marker_change_day(\'sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'\',\''+in_mtg_obj_array[0].id_bigint.toString()+'\')">';
-				
-				for ( var wd = 1; wd < 8; wd++ )
-					{
-					for ( var c = 0; c < included_weekdays.length; c++ )
-						{
-						if ( included_weekdays[c] == wd )
-							{
-							marker_html += '<option value="'+included_weekdays[c]+'">'+c_g_weekdays[included_weekdays[c]]+'</option>';
-							}
-						}
-					};
-				marker_html += '</select>';
-
- */
 				marker_html += '<div id="wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div"><ul class="wd_info_win_ul">';
 				
 				for ( var wd = 1; wd < 8; wd++ )
@@ -643,7 +625,6 @@ function MapSearch (
 				marker_html += '<strong>'+c_g_weekdays[included_weekdays[0]]+'</strong>';
 				};
 			
-// 			marker_html += '</legend>';
 			var	first = true;
 			for ( var wd = 1; wd < 8; wd++ )
 				{
@@ -683,7 +664,6 @@ function MapSearch (
 					marker_html += marker_internal_html;
 					};
 				};
-// 			marker_html += '</fieldset>';
 			marker_html += '</div>';
 			}
 		else
@@ -694,29 +674,6 @@ function MapSearch (
 		
 		marker_html += '</div>';
 		var marker = createMarker ( main_point, g_icon_shadow, ((in_mtg_obj_array.length>1) ? g_icon_image_multi : g_icon_image_single), g_icon_shape, marker_html, false, in_mtg_obj_array[0].id_bigint );
-	};
-	
-	/************************************************************************************//**
-	*	\brief 
-	****************************************************************************************/
-	expose_weekday = function ( in_container,
-	                            in_wd,
-	                            in_id
-	                            )
-	{
-	    var elements = in_container.getElementsByClassName('marker_div_weekday');
-	    
-	    for ( var wd = 1; wd < 8; wd++ )
-	        {
-	        var li = document.getElementById(g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_'+wd.toString()+'_li');
-	        var elem = document.getElementById('marker_info_weekday_'+g_main_map.uid+'_'+in_id+'_'+wd.toString()+'_div');
-	        
-	        if ( elem && li )
-	            {
-	            elem.style.display = ( wd == in_wd ) ? 'block' : 'none';
-	            li.className = ( wd == in_wd ) ? 'bmlt_selected_weekday_info' : 'bmlt_unselected_weekday_info'
-	            };
-	        };
 	};
 	
 	/************************************************************************************//**
@@ -802,7 +759,7 @@ function MapSearch (
             ret += '<label for="'+g_main_id+'_bmlt_center_marker_select">';
                 ret += c_g_center_marker_curent_radius_1;
             ret += '</label>';
-            ret += '<select id="'+g_main_id+'_bmlt_center_marker_select" class="bmlt_center_marker_select" onchange="change_circle_diameter(false)">';
+            ret += '<select id="'+g_main_id+'_bmlt_center_marker_select" class="bmlt_center_marker_select" onclick="fix_popup_position(this)" onchange="change_circle_diameter(false)">';
 
                 var count = c_g_diameter_choices.length;
                 
@@ -1115,11 +1072,10 @@ function MapSearch (
 	        };
 	        
 	};
-
+	
     /****************************************************************************************//**
     *	\brief Function to Reveal and/hide day <div> elements in the marker info window.	    *
     ********************************************************************************************/
-/* 
     marker_change_day = function (  in_sel_id,
                                     in_id	///< The base ID of the element.
                                     )
@@ -1145,9 +1101,6 @@ function MapSearch (
                 };
             };
     };
-
-
- */
     
     /************************************************************************************//**
     *	\brief  
