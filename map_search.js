@@ -622,7 +622,7 @@ function MapSearch (
 				marker_html += '</select>';
 
  */
-				marker_html += '<div id="wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div"><ul class="wd_info_win_ul"';
+				marker_html += '<div id="wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div"><ul class="wd_info_win_ul">';
 				
 				for ( var wd = 1; wd < 8; wd++ )
 					{
@@ -630,8 +630,9 @@ function MapSearch (
 						{
 						if ( included_weekdays[c] == wd )
 							{
-					        var day_id = 'sel_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_marker_'+in_mtg_obj_array[0].id_bigint.toString()+'_'+wd.toString()+'_id';
-							marker_html += '<li><a href="javascript:expose_weekday(document.getElementById(\'wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div\'),'+wd.toString()+',\''+in_mtg_obj_array[0].id_bigint.toString()+'\')">'+c_g_weekdays_short[included_weekdays[c]]+'</a></li>';
+							marker_html += '<li id="'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_'+wd.toString()+'_li" class="';
+							marker_html += (c == 0) ? 'bmlt_selected_weekday_info' : 'bmlt_unselected_weekday_info';
+							marker_html += '"><a href="javascript:expose_weekday(document.getElementById(\'wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div\'),'+wd.toString()+',\''+in_mtg_obj_array[0].id_bigint.toString()+'\')">'+c_g_weekdays_short[included_weekdays[c]]+'</a></li>';
 							}
 						}
 					};
@@ -707,13 +708,13 @@ function MapSearch (
 	    
 	    for ( var wd = 1; wd < 8; wd++ )
 	        {
-	        var id = 'marker_info_weekday_'+g_main_map.uid+'_'+in_id+'_'+wd.toString()+'_div';
-
-	        var elem = document.getElementById(id);
+	        var li = document.getElementById(g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_'+wd.toString()+'_li');
+	        var elem = document.getElementById('marker_info_weekday_'+g_main_map.uid+'_'+in_id+'_'+wd.toString()+'_div');
 	        
-	        if ( elem )
+	        if ( elem && li )
 	            {
 	            elem.style.display = ( wd == in_wd ) ? 'block' : 'none';
+	            li.className = ( wd == in_wd ) ? 'bmlt_selected_weekday_info' : 'bmlt_unselected_weekday_info'
 	            };
 	        };
 	};
