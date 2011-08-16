@@ -602,9 +602,11 @@ function MapSearch (
 			
 			marker_html += '<div class="multi_day_info_div">';
 			
+			var meeting_id = in_mtg_obj_array[0].id_bigint.toString();
+			
 			if ( included_weekdays.length > 1 )
 				{
-				marker_html += '<div id="wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div" class="bmlt_day_tabs"><ul class="wd_info_win_ul">';
+				marker_html += '<div id="wd_'+g_main_map.uid+'_'+meeting_id+'_div" class="bmlt_day_tabs"><ul class="wd_info_win_ul">';
 				
 				for ( var wd = 1; wd < 8; wd++ )
 					{
@@ -612,12 +614,12 @@ function MapSearch (
 						{
 						if ( included_weekdays[c] == wd )
 							{
-							marker_html += '<li id="'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_'+wd.toString()+'_li" class="'+((c == 0) ? 'bmlt_selected_weekday_info' : 'bmlt_unselected_weekday_info')+'">';
-							marker_html += '<a class="bmlt_info_win_day_a" href="javascript:expose_weekday(document.getElementById(\'wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div\'),'+wd.toString()+',\''+in_mtg_obj_array[0].id_bigint.toString()+'\')">'+c_g_weekdays_short[included_weekdays[c]]+'</a></li>';
+							marker_html += '<li id="'+g_main_map.uid+'_'+meeting_id+'_'+wd.toString()+'_li" class="'+((c == 0) ? 'bmlt_selected_weekday_info' : 'bmlt_unselected_weekday_info')+'">';
+							marker_html += '<a class="bmlt_info_win_day_a" href="javascript:expose_weekday(document.getElementById(\'wd_'+g_main_map.uid+'_'+meeting_id+'_div\'),'+wd.toString()+',\''+meeting_id+'\',\''+g_main_map.uid+'\')">'+c_g_weekdays_short[included_weekdays[c]]+'</a></li>';
 							};
 						};
 					};
-				marker_html += '</ul><div style="clear:both"></div></div>';
+				marker_html += '<li style="float:none;clear:both"></li></ul></div>';
 				}
 			else
 				{
@@ -639,7 +641,7 @@ function MapSearch (
 				
 				if ( meetings_html.length )
 					{
-					marker_internal_html += '<div class="marker_div_weekday" id="marker_info_weekday_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_'+wd.toString()+'_div" style="display:';
+					marker_internal_html += '<div class="marker_div_weekday" id="marker_info_weekday_'+g_main_map.uid+'_'+meeting_id+'_'+wd.toString()+'_div" style="display:';
 					if ( first )
 						{
 						marker_internal_html += 'block'; 
@@ -680,15 +682,16 @@ function MapSearch (
 	****************************************************************************************/
 	expose_weekday = function ( in_container,
 	                            in_wd,
-	                            in_id
+	                            in_id,
+	                            in_main_id
 	                            )
 	{
 	    var elements = in_container.getElementsByClassName('marker_div_weekday');
-	    
+
 	    for ( var wd = 1; wd < 8; wd++ )
 	        {
-	        var li = document.getElementById(g_main_map.uid+'_'+in_id+'_'+wd.toString()+'_li');
-	        var elem = document.getElementById('marker_info_weekday_'+g_main_map.uid+'_'+in_id+'_'+wd.toString()+'_div');
+	        var li = document.getElementById(in_main_id+'_'+in_id+'_'+wd.toString()+'_li');
+	        var elem = document.getElementById('marker_info_weekday_'+in_main_id+'_'+in_id+'_'+wd.toString()+'_div');
 	        
 	        if ( elem && li )
 	            {
