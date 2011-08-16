@@ -659,7 +659,31 @@ div.bmlt_map_container_div .bmlt_info_win_container
 	margin-top:-6px;
 }
 
-div.bmlt_map_container_div .bmlt_info_win_container fieldset
+div.bmlt_map_container_div .bmlt_info_win_container .bmlt_day_tabs
 {
-    border:none;
+    background-color:#555;
+}
+
+div.bmlt_map_container_div .bmlt_info_win_container .wd_info_win_ul li
+{
+    list-style-type:none;
+    display:block;
+    float:left;
+    text-align:center;
+    width: 40px;
+}
+
+div.bmlt_map_container_div .bmlt_info_win_container a.bmlt_info_win_day_a,
+div.bmlt_map_container_div .bmlt_info_win_container a.bmlt_info_win_day_a:visited
+{
+    display:block;
+    color:#99f;
+    text-decoration:underline;
+}
+
+div.bmlt_map_container_div .bmlt_info_win_container a.bmlt_info_win_day_a:active,
+div.bmlt_map_container_div .bmlt_info_win_container a.bmlt_info_win_day_a:hover
+{
+    color:#f96;
+    text-decoration:none;
 }

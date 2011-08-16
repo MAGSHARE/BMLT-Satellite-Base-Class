@@ -604,7 +604,7 @@ function MapSearch (
 			
 			if ( included_weekdays.length > 1 )
 				{
-				marker_html += '<div id="wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div"><ul class="wd_info_win_ul">';
+				marker_html += '<div id="wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div" class="bmlt_day_tabs"><ul class="wd_info_win_ul">';
 				
 				for ( var wd = 1; wd < 8; wd++ )
 					{
@@ -614,11 +614,11 @@ function MapSearch (
 							{
 							marker_html += '<li id="'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_'+wd.toString()+'_li" class="';
 							marker_html += (c == 0) ? 'bmlt_selected_weekday_info' : 'bmlt_unselected_weekday_info';
-							marker_html += '"><a href="javascript:expose_weekday(document.getElementById(\'wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div\'),'+wd.toString()+',\''+in_mtg_obj_array[0].id_bigint.toString()+'\')">'+c_g_weekdays_short[included_weekdays[c]]+'</a></li>';
+							marker_html += '"><a class="bmlt_info_win_day_a" href="javascript:expose_weekday(document.getElementById(\'wd_'+g_main_map.uid+'_'+in_mtg_obj_array[0].id_bigint.toString()+'_div\'),'+wd.toString()+',\''+in_mtg_obj_array[0].id_bigint.toString()+'\')">'+c_g_weekdays_short[included_weekdays[c]]+'</a></li>';
 							}
 						}
 					};
-				marker_html += '</ul></div>';
+				marker_html += '</ul><div style="clear:both"></div></div>';
 				}
 			else
 				{
