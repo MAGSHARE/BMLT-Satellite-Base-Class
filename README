@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 1.1.6 =
+* August 17, 2011
+* Minor fixes to the default styles in the themes, in order to make the info windows look better.
+
 = 1.1.5 =
 * August 16, 2011
 * Workaround for a Firefox bug that renders the popup menus in the info windows worthless.

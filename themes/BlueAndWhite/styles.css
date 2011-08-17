@@ -679,7 +679,6 @@ div.bmlt_map_container_div .bmlt_info_win_container
 {
     border: 1px solid #009;
     background-color:#eef;
-    padding:3px;
     border-radius: 5px;
 	-moz-border-radius:5px;
 	-webkit-border-radius: 5px;
@@ -696,9 +695,18 @@ div.bmlt_map_container_div .bmlt_info_win_container .bmlt_day_tabs
     -moz-border-top-left-radius: 3px;
     -webkit-border-top-right-radius: 3px;
     background-color:#009;
+}
+
+div.bmlt_map_container_div .bmlt_info_win_container .bmlt_day_tabs ul
+{
     padding-top:2px;
     padding-left:3px;
     padding-right:3px;
+}
+
+div.bmlt_map_container_div .bmlt_info_win_container .marker_div_meeting
+{
+    padding:4px;
 }
 
 div.bmlt_map_container_div .bmlt_info_win_container .wd_info_win_ul li
