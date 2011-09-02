@@ -1,7 +1,7 @@
 /****************************************************************************************//**
 * \file map_search.js																        *
 * \brief Javascript functions for the new map search implementation.                        *
-* \version 1.1.4                                                                            *
+* \version 1.1.7                                                                            *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -677,8 +677,9 @@ function MapSearch (
 		var marker = createMarker ( main_point, g_icon_shadow, ((in_mtg_obj_array.length>1) ? g_icon_image_multi : g_icon_image_single), g_icon_shape, marker_html, false, in_mtg_obj_array[0].id_bigint );
 	};
 	
+	
 	/************************************************************************************//**
-	*	\brief 
+	*	\brief Expose the weekday selected by the tab.
 	****************************************************************************************/
 	expose_weekday = function ( in_container,
 	                            in_wd,
@@ -686,19 +687,17 @@ function MapSearch (
 	                            in_main_id
 	                            )
 	{
-	    var elements = in_container.getElementsByClassName('marker_div_weekday');
-
-	    for ( var wd = 1; wd < 8; wd++ )
-	        {
-	        var li = document.getElementById(in_main_id+'_'+in_id+'_'+wd.toString()+'_li');
-	        var elem = document.getElementById('marker_info_weekday_'+in_main_id+'_'+in_id+'_'+wd.toString()+'_div');
-	        
-	        if ( elem && li )
-	            {
-	            elem.style.display = ( wd == in_wd ) ? 'block' : 'none';
-	            li.className = ( wd == in_wd ) ? 'bmlt_selected_weekday_info' : 'bmlt_unselected_weekday_info'
-	            };
-	        };
+        for ( var wd = 1; wd < 8; wd++ )
+            {
+            var li = document.getElementById(in_main_id+'_'+in_id+'_'+wd.toString()+'_li');
+            var elem = document.getElementById('marker_info_weekday_'+in_main_id+'_'+in_id+'_'+wd.toString()+'_div');
+            
+            if ( elem && li )
+                {
+                elem.style.display = ( wd == in_wd ) ? 'block' : 'none';
+                li.className = ( wd == in_wd ) ? 'bmlt_selected_weekday_info' : 'bmlt_unselected_weekday_info'
+                };
+            };
 	};
 	
 	/************************************************************************************//**

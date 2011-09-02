@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 1.1.7 =
+* September 2, 2011
+* Fixes a JavaScript Error with the new map search on Internet Explorer.
+
 = 1.1.6 =
 * August 17, 2011
 * Minor fixes to the default styles in the themes, in order to make the info windows look better.

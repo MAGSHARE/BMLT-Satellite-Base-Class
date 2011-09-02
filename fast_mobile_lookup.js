@@ -1,7 +1,7 @@
 /****************************************************************************************//**
 * \file fast_mobile_lookup.js																*
 * \brief Javascript functions for the fast mobile lookup map interface.						*
-* \version 1.1.6                                                                            *
+* \version 1.1.7                                                                            *
 * \license Public Domain -No restrictions at all.											*
 ********************************************************************************************/
 
