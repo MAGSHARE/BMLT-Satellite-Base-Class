@@ -31,9 +31,14 @@
 // Include the satellite driver class.
 require_once ( dirname ( __FILE__ ).'/BMLT-Satellite-Driver/bmlt_satellite_controller.class.php' );
 
-$lang_file = 'en';
+global $bmlt_localization;  ///< Use this to control the localization.
 
-require_once ( "lang/lang_".$lang_file.".php" );
+if ( !isset ( bmlt_localization$bmlt_localization ) || ! $bmlt_localization )
+    {
+    $bmlt_localization = 'en';
+    }
+
+require_once ( "lang/lang_".$bmlt_localization.".php" );
 
 /***********************************************************************/
 /** \brief	This is an open-source JSON encoder that allows us to support

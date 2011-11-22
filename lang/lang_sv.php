@@ -1,8 +1,8 @@
 <?php
 /****************************************************************************************//**
-*   \file   lang_en.php                                                                     *
+*   \file   lang_sv.php                                                                     *
 *                                                                                           *
-*   \brief  This file contains English localizations.                                       *
+*   \brief  This file contains Swedish localizations.                                       *
 *   \version 1.2                                                                            *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
@@ -25,7 +25,7 @@
 *   You should have received a copy of the GNU General Public License                       *
 *   along with this code.  If not, see <http://www.gnu.org/licenses/>.                      *
 ********************************************************************************************/
-/*### English ###*/
+/*### Svenska ###*/
 
 class BMLT_Localized_BaseClass
     {
