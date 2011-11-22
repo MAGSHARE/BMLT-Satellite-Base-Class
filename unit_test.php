@@ -32,6 +32,10 @@
 * disabled in actual implementation, so calls to the file will return nothing.				*
 ********************************************************************************************/
 
+global $bmlt_localization;  ///< Use this to control the localization.
+
+$bmlt_localization = 'en';
+
 require_once ( 'bmlt-unit-test-satellite-plugin.php' );
 
 /// This is an ID for a specific meeting (with some changes) for the meeting changes test.
