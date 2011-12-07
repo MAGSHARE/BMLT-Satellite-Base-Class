@@ -33,12 +33,14 @@ require_once ( dirname ( __FILE__ ).'/BMLT-Satellite-Driver/bmlt_satellite_contr
 
 global $bmlt_localization;  ///< Use this to control the localization.
 
-if ( !isset ( bmlt_localization$bmlt_localization ) || ! $bmlt_localization )
+$tmp_local = 'en';  ///< We will always fall back to English. It is possible that the plugin may not be localized to the desired language.
+
+if ( isset ( $bmlt_localization ) && $bmlt_localization && file_exists ( dirname ( __FILE__ )."lang/lang_".$bmlt_localization.".php" ) )
     {
-    $bmlt_localization = 'en';
+    $tmp_local = $bmlt_localization;
     }
 
-require_once ( "lang/lang_".$bmlt_localization.".php" );
+require_once ( dirname ( __FILE__ )."/lang/lang_".$tmp_local.".php" );
 
 /***********************************************************************/
 /** \brief	This is an open-source JSON encoder that allows us to support
@@ -1836,7 +1838,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 }
             
             $options = $this->getBMLTOptions_by_id ( $options_id );
-            $uid = htmlspecialchars ( uniqid() );
+            $uid = htmlspecialchars ( 'BMLTuid_'.uniqid() );
             
             $the_new_content = '<noscript>'.$this->process_text ( self::$local_noscript ).'</noscript>';    // We let non-JS browsers know that this won't work for them.
             

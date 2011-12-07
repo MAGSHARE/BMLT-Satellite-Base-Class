@@ -28,6 +28,7 @@ CHANGELIST
 = 1.2 =
 * November 22, 2011
 * Added the ability to have multiple localizations. It's a bit clunky, but this is the best way to get it working.
+* Corrected some minor validation issues with the new map search DOM tree.
 
 = 1.1.7 =
 * September 2, 2011
