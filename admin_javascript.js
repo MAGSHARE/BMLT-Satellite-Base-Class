@@ -1,7 +1,7 @@
 /****************************************************************************************//**
 * \file admin_javascript.js                                                                 *
 * \brief The javascript for the BMLTPlugin class (Admin options).                           *
-* \version 1.2                                                                              *
+*   \version 1.2.1                                                                          *
     
     This file is part of the BMLT Common Satellite Base Class Project. The project GitHub
     page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class

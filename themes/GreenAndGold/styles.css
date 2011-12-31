@@ -749,12 +749,6 @@ div.bmlt_map_container_div .bmlt_info_win_container a.bmlt_info_win_day_a:hover
     text-decoration:none;
 }
 
-{
-    display:block;
-    color:#99f;
-    text-decoration:underline;
-}
-
 div.bmlt_map_container_div .bmlt_info_win_container .bmlt_selected_weekday_info a.bmlt_info_win_day_a,
 div.bmlt_map_container_div .bmlt_info_win_container .bmlt_selected_weekday_info a.bmlt_info_win_day_a:visited,
 div.bmlt_map_container_div .bmlt_info_win_container .bmlt_selected_weekday_info a.bmlt_info_win_day_a:active,

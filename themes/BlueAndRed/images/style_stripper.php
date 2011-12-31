@@ -16,6 +16,9 @@
     This file is part of the BMLT Common Satellite Base Class Project. The project GitHub
     page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class
     
+    This file is part of the BMLT Common Satellite Base Class Project. The project GitHub
+    page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class
+    
     This file is part of the Basic Meeting List Toolbox (BMLT).
     
     Find out more at: http://magshare.org/bmlt
@@ -55,7 +58,6 @@
             ob_start($handler);
             echo $opt;
             ob_end_flush();
-
             }
         else
             {

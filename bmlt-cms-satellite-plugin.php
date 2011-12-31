@@ -3,7 +3,7 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 1.2                                                                            *
+*   \version 1.2.1                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -1625,6 +1625,9 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         $in_the_content = $this->display_old_search ( $in_the_content );
         
         $in_the_content = $this->display_new_map_search ( $in_the_content );
+        
+        // This simply ensures that we remove any unused mobile shortcodes.
+        $in_the_content = self::replace_shortcode ( $in_the_content, 'bmlt_mobile', '' );
         
         return $in_the_content;
         }
