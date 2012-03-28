@@ -93,6 +93,7 @@ class BMLT_Localized_BaseClass
     static  $local_select_search = 'Select a Quick Search';                 ///< Used for the "filler" in the quick search popup.
     static  $local_clear_search = 'Clear Search Results';                   ///< Used for the "Clear" item in the quick search popup.
     static  $local_menu_new_search_text = 'New Search';                     ///< For the new search menu in the old-style BMLT search.
+    static  $local_cant_find_meetings_display = 'No Meetings Found In This Search'; ///< When the new map search cannot find any meetings.
     
     /// These are for the change display
     static  $local_change_label_date =  'Change Date:';                     ///< The date when the change was made.

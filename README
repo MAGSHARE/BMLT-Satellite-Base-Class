@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 1.2.2 =
+* March 28, 2012
+* Added an alert to the new map search, if no meetings were found in a clicked search (before, there was no alert).
+
 = 1.2.1 =
 * December 31, 2011
 * Removed some errant CSS.

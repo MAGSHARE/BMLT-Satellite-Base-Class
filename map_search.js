@@ -1,7 +1,7 @@
 /****************************************************************************************//**
 * \file map_search.js																        *
 * \brief Javascript functions for the new map search implementation.                        *
-*   \version 1.2.1                                                                          *
+*   \version 1.2.2                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -326,6 +326,12 @@ function MapSearch (
 	
 	function search_response_callback()
 	{
+	    if ( !g_main_map.response_object.length )
+	        {
+	        alert ( g_no_meetings_found );
+	        return;
+	        };
+	        
 		if ( !g_allMarkers.length )
 			{
 			if ( g_main_map.response_object.length && !g_main_map.zoom_handler )
@@ -333,7 +339,7 @@ function MapSearch (
 	            fit_markers();
 	            g_initial_call = true;
                 g_main_map.zoom_handler = google.maps.event.addListener ( g_main_map, 'zoom_changed', search_response_callback );
-	            }
+	            };
 			};
 		
 		if ( fit_circle() )
