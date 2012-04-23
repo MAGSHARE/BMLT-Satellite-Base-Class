@@ -1,7 +1,7 @@
 /****************************************************************************************//**
 * \file map_search.js																        *
 * \brief Javascript functions for the new map search implementation.                        *
-*   \version 1.2.2                                                                          *
+*   \version 1.2.3                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -50,7 +50,16 @@ function MapSearch (
     var g_initial_coords = in_coords;
     var g_initial_div = in_div;
     var g_info_id = null;
-        
+    
+    /// These allow us to customize the content a bit.
+    /// These are "hooks," and will only work on a page where there is only one instance of the map search.
+    var g_searchbox_a = null;   ///< The ID of the disclosure link for the search spec
+    var g_searchbox_f = null;   ///< The ID of the search spec fieldset
+    var g_options_a = null;    ///< The ID of the disclosure link for the weekdays and formats
+    var g_options_d = null;    ///< The ID of the div for the weekdays and formats
+    var g_weekdays_f = null;    ///< The ID of the fieldset for the weekdays.
+    var g_formats_f = null;     ///< The ID of the fieldset for the formats.
+
 	/// These describe the regular NA meeting icon
 	var g_icon_image_single = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	var g_icon_image_multi = new google.maps.MarkerImage ( c_g_BMLTPlugin_images+"/NAMarkerG.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
@@ -1198,7 +1207,7 @@ function MapSearch (
     {
         var element_id = g_main_id+'_options_1_a';
             
-        g_basic_options_open = document.getElementById(element_id).className == 'bmlt_map_hide_options';    // See if the basic options area is visible.
+        g_basic_options_open = document.getElementById ( g_main_id+'_options_1' ).style.display != 'none';    // See if the basic options area is visible.
         
         // We process the checkboxes. These functions allow them to configure properly.
         var args = readWeekdayCheckBoxes(in_cb);
