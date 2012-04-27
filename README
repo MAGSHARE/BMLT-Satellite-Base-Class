@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 1.2.3 =
+* April 27, 2012
+* added some JavaScript "hooks" to allow more precise control of the new map search.
+
 = 1.2.2 =
 * March 28, 2012
 * Added an alert to the new map search, if no meetings were found in a clicked search (before, there was no alert).
