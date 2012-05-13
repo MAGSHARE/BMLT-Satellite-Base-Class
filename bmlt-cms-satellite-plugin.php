@@ -3,7 +3,7 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 1.2.3                                                                          *
+*   \version 1.2.4                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -522,12 +522,6 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
             // Strip off the trailing slash.
             $BMLTOptions['root_server'] = preg_replace ( "#\/$#", "", trim($BMLTOptions['root_server']), 1 );
             }
-        else
-            {
-            $in_option_number = $this->get_num_options() + 1;
-            }
-        
-        $this->setBMLTOptions ( $BMLTOptions, $in_option_number );
         
         return $BMLTOptions;
         }
@@ -623,7 +617,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $option_number = '_'.intval( $in_option_number );
                 }
             $in_option_number = (intval ( $in_option_number ) > 1) ? intval ( $in_option_number ) : 1;
-            
+
             $name = self::$adminOptionsName.$option_number;
             
             // If this is a new option, then we also update the admin 2 options, incrementing the number of servers.
@@ -657,8 +651,6 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         {
         $bmlt2_BMLTOptions = null;
         
-        $bmlt2_BMLTOptions = array ('num_servers' => 1  ///< This is how many servers we start with (1)
-                                    );
         // We have a special set of options for version 2.
         $old_BMLTOptions = $this->cms_get_option ( self::$admin2OptionsName );
         
@@ -669,9 +661,12 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $bmlt2_BMLTOptions[$key] = $value;
                 }
             }
+        else
+            {
+            $bmlt2_BMLTOptions = array ('num_servers' => 1 );
+            $this->setAdmin2Options ( $old_BMLTOptions );
+            }
         
-        $this->setAdmin2Options ( $bmlt2_BMLTOptions );
-            
         return $bmlt2_BMLTOptions;
         }
     
@@ -728,6 +723,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         // If we successfully get the options, we save them, in order to put them in place
         if ( is_array ( $opt ) && count ( $opt ) )
             {
+            $this->setBMLTOptions ( $BMLTOptions, $this->get_num_options ( ) + 1 );
             $ret = $this->get_num_options ( );
             }
         else
@@ -1859,7 +1855,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= '</div>';
                 $the_new_content .= '<div class="bmlt_search_map_div" id="'.$uid.'_bmlt_search_map_div"></div>';
                 $the_new_content .= '<div class="bmlt_search_map_new_search_div" id="'.$uid.'_bmlt_search_map_new_search_div" style="display:none"><a href="javascript:c_ms_'.$uid.'.newSearchExt();">'.$this->process_text ( self::$local_new_map_js_new_search ).'</a></div>';
-                $the_new_content .= '<script type="text/javascript">g_map_div='.$uid.'_bmlt_search_map_div;g_no_meetings_found="'.htmlspecialchars ( self::$local_cant_find_meetings_display ).'";document.getElementById(\''.$uid.'\').style.display=\'block\';c_ms_'.$uid.' = new MapSearch ( \''.htmlspecialchars ( $uid ).'\',\''.htmlspecialchars ( $options_id ).'\', document.getElementById(\''.$uid.'_bmlt_search_map_div\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
+                $the_new_content .= '<script type="text/javascript">g_no_meetings_found="'.htmlspecialchars ( self::$local_cant_find_meetings_display ).'";document.getElementById(\''.$uid.'\').style.display=\'block\';c_ms_'.$uid.' = new MapSearch ( \''.htmlspecialchars ( $uid ).'\',\''.htmlspecialchars ( $options_id ).'\', document.getElementById(\''.$uid.'_bmlt_search_map_div\'), {\'latitude\':'.$options['map_center_latitude'].',\'longitude\':'.$options['map_center_longitude'].',\'zoom\':'.$options['map_zoom'].'} )</script>';
             $the_new_content .= '</div>';
             
             $in_content = self::replace_shortcode ( $in_content, 'bmlt_map', $the_new_content );
@@ -1910,10 +1906,6 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                     $ret .= '</form>';
                 $ret .= '</div>';
             $ret .= '</div>';
-            $ret .= '<script type="text/javascript">';
-                $ret .= 'g_searchbox_a = \''.$in_uid.'_options_loc_a\';';
-                $ret .= 'g_searchbox_f = \''.$in_uid.'_options_loc\';';
-            $ret .= '</script>';
         $ret .= '</div>';
         return $ret;
         }
@@ -1932,7 +1924,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $ret .= '<a class="bmlt_map_reveal_options" id="'.$in_uid.'_options_1_a" href="javascript:var a=document.getElementById(\''.$in_uid.'_options_1_a\');var b=document.getElementById(\''.$in_uid.'_options_1\');if(b &amp;&amp; a){if(b.style.display==\'none\'){a.className=\'bmlt_map_hide_options\';b.style.display=\'block\'}else{a.className=\'bmlt_map_reveal_options\';b.style.display=\'none\'}};c_ms_'.$in_uid.'.recalculateMapExt()"><span>'.$this->process_text ( self::$local_new_map_option_1_label ).'</span></a>';
                 $ret .= '<div class="bmlt_map_container_div_search_options_div" id="'.$in_uid.'_options_1" style="display:none">';
                     $ret .= '<form action="#" method="get" onsubmit="return false">';
-                        $ret .= '<fieldset id="'.$in_uid.'_options_1_w" class="bmlt_map_container_div_search_options_div_weekdays_fieldset">';
+                        $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_weekdays_fieldset">';
                             $ret .= '<legend>'.$this->process_text ( self::$local_new_map_weekdays ).'</legend>';
                             $ret .= '<div class="bmlt_map_container_div_search_options_weekday_checkbox_div"><input title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" type="checkbox" id="weekday_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
                             $ret .= '<label title="'.$this->process_text ( self::$local_new_map_all_weekdays_title ).'" for="weekday_'.$in_uid.'_0">'.$this->process_text ( self::$local_new_map_all_weekdays ).'</label></div>';
@@ -1945,7 +1937,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                                 $ret .= '</div>';
                                 }
                         $ret .= '</fieldset>';
-                        $ret .= '<fieldset id="'.$in_uid.'_options_1_f" class="bmlt_map_container_div_search_options_div_formats_fieldset">';
+                        $ret .= '<fieldset class="bmlt_map_container_div_search_options_div_formats_fieldset">';
                             $ret .= '<legend>'.$this->process_text ( self::$local_new_map_formats ).'</legend>';
                             $ret .= '<div class="bmlt_map_container_div_search_options_formats_checkbox_div">';
                                 $ret .= '<input title="'.$this->process_text ( self::$local_new_map_all_formats_title ).'" type="checkbox" id="formats_'.$in_uid.'_0" checked="checked" onchange="c_ms_'.$in_uid.'.recalculateMapExt(this)" />';
@@ -1977,12 +1969,6 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                     $ret .= '</form>';
                 $ret .= '</div>';
             $ret .= '</div>';
-            $ret .= '<script type="text/javascript">';
-                $ret .= 'g_options_a = \''.$in_uid.'_options_1_a\';';
-                $ret .= 'g_options_d = \''.$in_uid.'_options_1\';';
-                $ret .= 'g_weekdays_f = \''.$in_uid.'_options_1_w\';';
-                $ret .= 'g_formats_f = \''.$in_uid.'_options_1_f\';';
-            $ret .= '</script>';
         $ret .= '</div>';
         return $ret;
         }

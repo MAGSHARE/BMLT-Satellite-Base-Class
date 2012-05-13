@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 1.2.4 =
+* May 13, 2012
+* Fixed a nasty bug in the admin interface that could create multiple empty settings.
+
 = 1.2.3 =
 * April 27, 2012
 * added some JavaScript "hooks" to allow more precise control of the new map search.
