@@ -3,7 +3,7 @@
 *   \file   lang_en.php                                                                     *
 *                                                                                           *
 *   \brief  This file contains English localizations.                                       *
-*   \version 1.2                                                                            *
+*   \version 2.0                                                                            *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -89,6 +89,12 @@ class BMLT_Localized_BaseClass
     static  $local_options_miles = 'Miles';                                 ///< The string for miles.
     static  $local_options_kilometers = 'Kilometers';                       ///< The string for kilometers.
     
+    static  $local_no_root_server = 'You need to provide a root server URI in order for this to work.';    ///< Displayed if there was no root server provided.
+    static  $local_nouveau_basic_button = 'Basic Search';                   ///< The button name for the basic search in the nouveau search.
+    static  $local_nouveau_advanced_button = 'Advanced Search';             ///< The button name for the advanced search in the nouveau search.
+    static  $local_nouveau_map_button = 'Search By Map';                    ///< The button name for the map search in the nouveau search.
+    static  $local_nouveau_text_button = 'Search By Text';                  ///< The button name for the text search in the nouveau search.
+
     /// These are for the actual search displays
     static  $local_select_search = 'Select a Quick Search';                 ///< Used for the "filler" in the quick search popup.
     static  $local_clear_search = 'Clear Search Results';                   ///< Used for the "Clear" item in the quick search popup.

@@ -1,0 +1,64 @@
+/*    
+    This file is part of the BMLT Common Satellite Base Class Project. The project GitHub
+    page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class
+    
+    This file is part of the Basic Meeting List Toolbox (BMLT).
+    
+    Find out more at: http://magshare.org/bmlt
+    
+    BMLT is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    
+    BMLT is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    
+    You should have received a copy of the GNU General Public License
+    along with this code.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+div.bmlt_nouveau_switcher_div
+{
+}
+
+div.bmlt_nouveau_switcher_div a,
+div.bmlt_nouveau_switcher_div a:visited
+{
+    text-align:center;
+    font-size: large;
+    font-weight:bold;
+    display:block;
+    float:left;
+    width:49.9%;
+}
+
+a.bmlt_nouveau_basic_a,
+a.bmlt_nouveau_basic_a:visited,
+a.bmlt_nouveau_advanced_a,
+a.bmlt_nouveau_advanced_a:visited,
+a.bmlt_nouveau_map_a,
+a.bmlt_nouveau_map_a:visited,
+a.bmlt_nouveau_text_a,
+a.bmlt_nouveau_text_a:visited
+{
+    background-color:#999;
+    color:white;
+    text-decoration:underline;
+}
+
+a.bmlt_nouveau_basic_a_selected,
+a.bmlt_nouveau_basic_a_selected:visited,
+a.bmlt_nouveau_advanced_a_selected,
+a.bmlt_nouveau_advanced_a_selected:visited,
+a.bmlt_nouveau_map_a_selected,
+a.bmlt_nouveau_map_a_selected:visited,
+a.bmlt_nouveau_text_a_selected,
+a.bmlt_nouveau_text_a_selected:visited
+{
+    background-color:#fff;
+    color:black;
+    text-decoration:none;
+}

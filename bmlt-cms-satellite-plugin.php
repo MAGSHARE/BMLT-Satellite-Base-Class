@@ -3,14 +3,14 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 1.2.4                                                                          *
+*   \version 2.0                                                                            *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
 *                                                                                           *
 *   This file is part of the Basic Meeting List Toolbox (BMLT).                             *
 *                                                                                           *
-*   Find out more at: http://magshare.org/bmlt                                              *
+*   Find out more at: http://bmlt.magshare.net                                              *
 *                                                                                           *
 *   BMLT is free software: you can redistribute it and/or modify                            *
 *   it under the terms of the GNU General Public License as published by                    *
@@ -26,7 +26,7 @@
 *   along with this code.  If not, see <http://www.gnu.org/licenses/>.                      *
 ********************************************************************************************/
 
-//define ( '_DEBUG_MODE_', 1 ); //Uncomment for easier JavaScript debugging.
+define ( '_DEBUG_MODE_', 1 ); //Uncomment for easier JavaScript debugging.
 
 // Include the satellite driver class.
 require_once ( dirname ( __FILE__ ).'/BMLT-Satellite-Driver/bmlt_satellite_controller.class.php' );
@@ -1622,6 +1622,8 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         
         $in_the_content = $this->display_new_map_search ( $in_the_content );
         
+        $in_the_content = $this->display_bmlt_nouveau ( $in_the_content );
+        
         // This simply ensures that we remove any unused mobile shortcodes.
         $in_the_content = self::replace_shortcode ( $in_the_content, 'bmlt_mobile', '' );
         
@@ -1690,6 +1692,64 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 }
             }
         
+        return $in_content;
+        }
+        
+    /************************************************************************************//**
+    *   \brief This function implements the new, Maps API V. 3 version of the "classic"     *
+    *          BMLT search screen.                                                          *
+    *                                                                                       *
+    *   \returns a string, containing the content.                                          *
+    ****************************************************************************************/
+    function display_bmlt_nouveau ($in_content      ///< This is the content to be filtered.
+                                    )
+        {
+        $theshortcode = 'bmlt_nouveau';
+        
+        $options_id = $this->cms_get_page_settings_id( $in_content );
+
+        $in_content = str_replace ( '&#038;', '&', $in_content );   // This stupid kludge is because WordPress does an untoward substitution. Won't do anything unless WordPress has been naughty.
+        
+        $first = true;
+
+        while ( $params = self::get_shortcode ( $in_content, $theshortcode ) )
+            {
+            if ( $params !== true && intval ( $params ) )
+                {
+                $options_id = intval ( $params );
+                }
+            
+            $options = $this->getBMLTOptions_by_id ( $options_id );
+            $uid = htmlspecialchars ( 'bmlt_nouveau_'.uniqid() );
+            
+            if ( defined ( '_DEBUG_MODE_' ) ) $the_new_content .= "\n"; // These just make the code easier to look at.
+            $the_new_content = '<noscript>'.$this->process_text ( self::$local_noscript ).'</noscript>';    // We let non-JS browsers know that this won't work for them.
+            
+            if ( $first )   // We only load this the first time.
+                {
+                // These are the basic global JavaScript properties.
+                $the_new_content .= $this->BMLTPlugin_nouveau_map_search_global_javascript_stuff ( );
+                // Most of the display is built in DOM, but this is how we get our localized strings into JS. We put them in globals.
+                $the_new_content .= '<script type="text/javascript">';
+                $the_new_content .= "var g_NouveauMapSearch_basic_name_string ='".htmlspecialchars ( self::$local_nouveau_basic_button )."';";
+                $the_new_content .= "var g_NouveauMapSearch_advanced_name_string ='".htmlspecialchars ( self::$local_nouveau_advanced_button )."';";
+                $the_new_content .= "var g_NouveauMapSearch_map_name_string ='".htmlspecialchars ( self::$local_nouveau_map_button )."';";
+                $the_new_content .= "var g_NouveauMapSearch_text_name_string ='".htmlspecialchars ( self::$local_nouveau_text_button )."';";
+                $the_new_content .= '</script>';
+                $first = false;
+                }
+            
+            if ( defined ( '_DEBUG_MODE_' ) ) $the_new_content .= "\n"; // These just make the code easier to look at.
+            
+            // This is the overall container div.
+            $the_new_content .= '<div id="'.$uid.'_container" class="bmlt_nouveau_container">';
+                // What we do here, is tell the client to create a global variable (in JS DOM), with a unique handler for this instance of the Nouveau search.
+                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options_id.'\' );</script>';
+            $the_new_content .= '</div>';
+
+            $in_content = self::replace_shortcode ( $in_content, $theshortcode, $the_new_content );
+            }
+            
         return $in_content;
         }
         
@@ -2021,6 +2081,31 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         else
             {
             $ret .= '<script src="'.htmlspecialchars ( $url ).'js_stripper.php?filename=map_search.js" type="text/javascript"></script>';
+            }
+
+        return $ret;
+        }
+
+    /************************************************************************************//**
+    *   \brief  This returns the global JavaScript stuff for the new map search that only   *
+    *           only needs to be loaded once.                                               *
+    *                                                                                       *
+    *   \returns A string. The XHTML to be displayed.                                       *
+    ****************************************************************************************/
+    function BMLTPlugin_nouveau_map_search_global_javascript_stuff()
+        {
+        // Include the Google Maps API V3 files.
+        $ret = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>';
+        $ret .= '<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>';       
+       
+        $url = $this->get_plugin_path();
+        if ( defined ( '_DEBUG_MODE_' ) ) // In debug mode, we use unoptimized versions of these files for easier tracking.
+            {
+            $ret .= '<script src="'.htmlspecialchars ( $url ).'nouveau_map_search.js" type="text/javascript"></script>';
+            }
+        else
+            {
+            $ret .= '<script src="'.htmlspecialchars ( $url ).'js_stripper.php?filename=nouveau_map_search.js" type="text/javascript"></script>';
             }
 
         return $ret;

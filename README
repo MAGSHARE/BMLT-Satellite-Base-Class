@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 2.0 =
+* TBD
+* Substantial rework to support new functionality.
+
 = 1.2.4 =
 * May 13, 2012
 * Fixed a nasty bug in the admin interface that could create multiple empty settings.

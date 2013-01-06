@@ -3,7 +3,7 @@
 *   \file   bmlt-unit-test-satellite-plugin.php                                             *
 *                                                                                           *
 *   \brief  This is a standalone unit test plugin of a BMLT satellite client.               *
-*   \version 1.2.1                                                                          *
+*   \version 2.0                                                                            *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -56,7 +56,7 @@ class BMLTUTestPlugin extends BMLTPlugin
         self::$default_rootserver = 'http://bmlt.magshare.net/trunk/main_server';
         if ( 'localhost' == strtolower($_SERVER['SERVER_NAME']) )
             {
-            self::$default_rootserver = 'http://localhost/magshare.org/public_html/projects/BMLT-Root-Server/main_server';
+            self::$default_rootserver = 'http://bmlt.magshare.net/trunk/main_server';
             }
         self::$default_gkey = 'ABQIAAAABCC8PsaKPPEsC3k649kYPRTayKsye0hTYG-iMuljzAHNM4JcxhSlV55ZKpjgC9b-QsLtlkYPMO6omg'; ///< This is for MAGSHARE. Change this to your own.
         self::$default_map_center_latitude = 41.2;
@@ -374,6 +374,17 @@ class BMLTUTestPlugin extends BMLTPlugin
             }
         
         $head_content .= 'styles.css" />';
+        
+        $head_content .= '<link rel="stylesheet" type="text/css" href="';
+        
+        $head_content .= htmlspecialchars ( $url.'themes/'.$options['theme'].'/' );
+        
+        if ( !defined ('_DEBUG_MODE_' ) )
+            {
+            $head_content .= 'style_stripper.php?filename=';
+            }
+        
+        $head_content .= 'nouveau_map_styles.css" />';
 
         if ( $root_server_root )
             {

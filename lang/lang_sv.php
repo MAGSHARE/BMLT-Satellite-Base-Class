@@ -3,7 +3,7 @@
 *   \file   lang_sv.php                                                                     *
 *                                                                                           *
 *   \brief  This file contains Swedish localizations.                                       *
-*   \version 1.2                                                                            *
+*   \version 2.0                                                                            *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -88,6 +88,8 @@ class BMLT_Localized_BaseClass
     static  $local_options_time_offset_disclaimer = 'Hours of Difference From the Main Server.';            ///< This explains what the time offset means.
     static  $local_options_miles = 'Miles';                                 ///< The string for miles.
     static  $local_options_kilometers = 'Kilometers';                       ///< The string for kilometers.
+    
+    static  $local_no_root_server = 'You need to provide a root server URI in order for this to work.';    ///< Displayed if there was no root server provided.
     
     /// These are for the actual search displays
     static  $local_select_search = 'Select a Quick Search';                 ///< Used for the "filler" in the quick search popup.
