@@ -1735,6 +1735,10 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_NouveauMapSearch_advanced_name_string ='".htmlspecialchars ( self::$local_nouveau_advanced_button )."';";
                 $the_new_content .= "var g_NouveauMapSearch_map_name_string ='".htmlspecialchars ( self::$local_nouveau_map_button )."';";
                 $the_new_content .= "var g_NouveauMapSearch_text_name_string ='".htmlspecialchars ( self::$local_nouveau_text_button )."';";
+                $the_new_content .= "var g_Nouveau_text_go_button_string ='".htmlspecialchars ( self::$local_nouveau_text_go_button )."';";
+                $the_new_content .= "var g_Nouveau_text_location_label_text ='".htmlspecialchars ( self::$local_nouveau_text_location_label_text )."';";
+                $the_new_content .= "var g_Nouveau_text_item_default_text ='".htmlspecialchars ( self::$local_nouveau_text_item_default_text )."';";
+                
                 $the_new_content .= '</script>';
                 $first = false;
                 }

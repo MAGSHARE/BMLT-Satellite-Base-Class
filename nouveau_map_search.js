@@ -54,6 +54,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_current_lat = null;               ///< The current map latitude. It will change as the map state changes.
     var m_current_zoom = null;              ///< The current map zoom. It will change as the map state changes.
     var m_single_meeting_id = null;         ///< This will contain the ID of any single meeting being displayed.
+    var m_initial_text = null;              ///< This will contain any initial text for the search text box.
     
     /// These variables hold quick references to the various elements of the screen.
     var m_container_div = null;             ///< This is the main outer container. It also contains the script.
@@ -72,8 +73,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_main_map = null;                  ///< This is the actual Google Maps instance.
     
     var m_text_div = null;                  ///< This will contain the text div.
+    var m_text_inner_div = null;            ///< This will be an inner container, allowing more precise positioning.
+    var m_text_item_div = null;             ///< This contains the text item.
     var m_text_input = null;                ///< This is the text search input element.
+    var m_text_input_label = null;          ///< This is the text input label.
+    var m_text_loc_checkbox_div = null;     ///< This contains the location checkbox item.
     var m_location_checkbox = null;         ///< This is the "This is a Location" checkbox.
+    var m_location_checkbox_label = null;   ///< This is the "This is a Location" checkbox label.
+    var m_text_go_button_div = null;        ///< This contains the go button item.
+    var m_text_go_a = null;                 ///< This is the text div "GO" button (Anchor element).
     
     var m_single_meeting_display_div = null;    ///< This is the div that will be used to display the details of a single meeting.
         
@@ -104,6 +112,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.buildDOMTree_Map_Text_Switch();
         
         this.buildDOMTree_Map_Div();
+        this.buildDOMTree_Text_Div();
+        
+        this.setBasicAdvancedSwitch();
+        this.setMapTextSwitch();
         
         this.m_display_div.appendChild ( this.m_header_div );
         this.m_display_div.appendChild ( this.m_content_div );
@@ -127,8 +139,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         txt = document.createTextNode(g_NouveauMapSearch_advanced_name_string);
         this.m_advanced_switch_a.appendChild ( txt );
         this.m_basic_advanced_switch_div.appendChild ( this.m_advanced_switch_a );
-        
-        this.setBasicAdvancedSwitch();
         
         this.m_header_div.appendChild ( this.m_basic_advanced_switch_div );
         };
@@ -174,8 +184,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_text_switch_a.appendChild ( txt );
         this.m_map_text_switch_div.appendChild ( this.m_text_switch_a );
         
-        this.setMapTextSwitch();
-        
         this.m_header_div.appendChild ( this.m_map_text_switch_div );
         };
     
@@ -191,6 +199,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_text_switch_a.className = 'bmlt_nouveau_text_a';
             this.m_text_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.TextButtonHit()' );
             this.m_map_switch_a.removeAttribute ( 'href' );
+            this.m_map_div.style.display = 'block';
+            this.m_text_div.style.display = 'none';
             }
         else
             {
@@ -198,6 +208,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_text_switch_a.className = 'bmlt_nouveau_text_a_selected';
             this.m_map_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.MapButtonHit()' );
             this.m_text_switch_a.removeAttribute ( 'href' );
+            this.m_map_div.style.display = 'none';
+            this.m_text_div.style.display = 'block';
             };
         };
     
@@ -206,7 +218,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree_Map_Div = function ()
         {
-        this.m_map_div = document.createElement ( 'div' );   // Create the switch container.
+        this.m_map_div = document.createElement ( 'div' );   // Create the map container.
         this.m_map_div.className = 'bmlt_nouveau_map_div';
         this.loadMap();
         this.m_content_div.appendChild ( this.m_map_div );
@@ -217,9 +229,70 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree_Text_Div = function ()
         {
-        this.m_text_div = null;
-        this.m_text_input = null;
+        this.m_text_div = document.createElement ( 'div' );
+        this.m_text_div.className = 'bmlt_nouveau_text_div';
+        
+        this.m_text_inner_div = document.createElement ( 'div' );
+        this.m_text_inner_div.className = 'bmlt_nouveau_text_inner_div';
+        
+        this.m_text_item_div = document.createElement ( 'div' );
+        this.m_text_item_div.className = 'bmlt_nouveau_text_item_div';
+        
+        this.m_text_input = document.createElement ( 'input' );
+        this.m_text_input.type = "text";
+        this.m_text_input.className = 'bmlt_nouveau_text_input_empty';
+        this.m_text_input.defaultValue = g_Nouveau_text_item_default_text;
+        
+        // If we have any initial text, we enter that.
+        if ( this.m_initial_text )
+            {
+            this.m_text_input.value = this.m_initial_text;
+            this.m_text_input.className = 'bmlt_nouveau_text_input';
+            };
+        
+        this.m_text_item_div.appendChild ( this.m_text_input );
+        this.m_text_inner_div.appendChild ( this.m_text_item_div );
+        
+        this.m_text_go_button_div = document.createElement ( 'div' );
+        this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div';
+        
+        this.m_text_go_a = document.createElement ( 'a' );
+        var txt = document.createTextNode(g_Nouveau_text_go_button_string);
+        this.m_text_go_a.className = 'bmlt_nouveau_text_go_button_a';
+        this.m_text_go_a.appendChild ( txt );
+        this.m_text_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.GoButtonHit()' );
+        
+        this.m_text_go_button_div.appendChild ( this.m_text_go_a );
+        this.m_text_inner_div.appendChild ( this.m_text_go_button_div );
+        
+        this.m_text_loc_checkbox_div = document.createElement ( 'div' );
+        this.m_text_loc_checkbox_div.className = 'bmlt_nouveau_text_checkbox_div';
+        
+        this.m_location_checkbox = document.createElement ( 'input' );
+        this.m_location_checkbox.type = 'checkbox';
+        this.m_location_checkbox.id = this.m_uid + '_location_checkbox';
+        this.m_location_checkbox.className = 'bmlt_nouveau_text_loc_checkbox';
+        this.m_location_checkbox.onclick = this.locCheckClicked;
+                
+        this.m_location_checkbox_label = document.createElement ( 'label' );
+        this.m_location_checkbox_label.className = 'bmlt_nouveau_text_checkbox_label';
+        this.m_location_checkbox_label.setAttribute ( 'for', this.m_uid + '_location_checkbox' );
+        
+        txt = document.createTextNode(g_Nouveau_text_location_label_text);
+        this.m_location_checkbox_label.appendChild ( txt );
+
+        this.m_text_loc_checkbox_div.appendChild ( this.m_location_checkbox );
+        this.m_text_loc_checkbox_div.appendChild ( this.m_location_checkbox_label );
+
+        this.m_text_inner_div.appendChild ( this.m_text_loc_checkbox_div );
+        this.m_text_div.appendChild ( this.m_text_inner_div );
+        
+        var elem = document.createElement ( 'div' );
+        elem.className = 'bmlt_nouveau_breaker_div';
+        this.m_text_div.appendChild ( elem );
+        
         this.m_location_checkbox = null;
+        this.m_content_div.appendChild ( this.m_text_div );
         };
     
     /****************************************************************************************
@@ -230,7 +303,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     *	\brief 
     ****************************************************************************************/
 	this.loadMap = function ( )
-	{
+	    {
         if ( this.m_map_div )
             {
             var myOptions = {
@@ -282,16 +355,38 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_main_map._circle_overlay = new google.maps.Circle(circle_options);
                 };
             };
-	};
+	    };
+    
+    /****************************************************************************************
+    *####################################### CALLBACKS #####################################*
+    ****************************************************************************************/
 
     /************************************************************************************//**
     *	\brief 
     ****************************************************************************************/
     this.mapClicked = function ( in_event ///< The mouse event that caused the click.
                                 )
-    {
-    alert ( 'MAP CLICKED' );
-    };
+        {
+alert ( 'MAP CLICKED' );
+        };
+
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.checkTextInput = function ( in_event ///< The mouse event that caused the click.
+                                    )
+        {
+alert ( 'TEXT INPUT CALLBACK' );
+        };
+
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.locCheckClicked = function ( in_event ///< The mouse event that caused the click.
+                                    )
+        {
+alert ( 'LOCATION CHECKBOX CLICKED' );
+        };
     
     /****************************************************************************************
     *								        CONSTRUCTOR							            *
@@ -303,6 +398,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_current_lat = in_initial_lat;
     this.m_current_zoom = in_initial_zoom;
     this.m_single_meeting_id = in_single_meeting_id;
+    this.m_initial_text = in_initial_text;
 
     this.m_container_div = document.getElementById ( this.m_uid + '_container' );   ///< This is the main outer container.
     
@@ -329,6 +425,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 /********************************************************************************************
 *								  PUBLIC CLASS FUNCTIONS									*
 ********************************************************************************************/
+    
+/****************************************************************************************//**
+*	\brief 
+********************************************************************************************/
+    
+NouveauMapSearch.prototype.GoButtonHit = function()
+    {
+alert ( 'GO CLICKED' );
+    };
     
 /****************************************************************************************//**
 *	\brief 

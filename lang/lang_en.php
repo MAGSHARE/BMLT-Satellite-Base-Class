@@ -94,6 +94,9 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_advanced_button = 'Advanced Search';             ///< The button name for the advanced search in the nouveau search.
     static  $local_nouveau_map_button = 'Search By Map';                    ///< The button name for the map search in the nouveau search.
     static  $local_nouveau_text_button = 'Search By Text';                  ///< The button name for the text search in the nouveau search.
+    static  $local_nouveau_text_go_button = 'GO';                           ///< The button name for the "GO" button in the text search in the nouveau search.
+    static  $local_nouveau_text_location_label_text = 'This is a location or postcode'; ///< The label text for the location checkbox.
+    static  $local_nouveau_text_item_default_text = 'Enter Search Text';    ///< The text that fills an empty text item.
 
     /// These are for the actual search displays
     static  $local_select_search = 'Select a Quick Search';                 ///< Used for the "filler" in the quick search popup.

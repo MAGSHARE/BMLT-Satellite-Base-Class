@@ -22,31 +22,14 @@
 
 div.bmlt_nouveau_container
 {
-    position:static;
-    width:auto;
-    height:auto;
 }
 
 div.bmlt_nouveau_header_div
 {
-    position:relative;
-    top:0px;
-    left:0px;
-    right:0px;
-    bottom:40px;
-    width:auto;
-    height:auto;
 }
 
 div.bmlt_nouveau_content_div
 {
-    position:relative;
-    top:40px;
-    left:0px;
-    right:0px;
-    bottom:0px;
-    width:auto;
-    height:auto;
 }
 
 div.bmlt_nouveau_switcher_div a,
@@ -89,13 +72,98 @@ a.bmlt_nouveau_text_a_selected:visited
     text-decoration:none;
 }
 
+div.bmlt_nouveau_breaker_div
+{
+    clear:both;
+    float:none;
+}
+
 div.bmlt_nouveau_map_div
 {
-    position:absolute;
-    top:0px;
-    left:0px;
-    right:0px;
-    bottom:0px;
-    width:auto;
-    height:auto;
+    width: 100%;
+    height:400px;
+}
+
+div.bmlt_nouveau_text_div
+{
+    clear:both;
+    text-align:center;
+    margin:0px;
+    padding:0px;
+    padding-top:8px;
+}
+
+div.bmlt_nouveau_text_inner_div
+{
+    width:700px;
+    margin:0px;
+    padding:0px;
+    margin-right:auto;
+    margin-left:auto;
+}
+
+div.bmlt_nouveau_text_item_div
+{
+    float:left;
+}
+
+input.bmlt_nouveau_text_input,
+input.bmlt_nouveau_text_input_empty
+{
+    width: 500px;
+}
+
+input.bmlt_nouveau_text_input
+{
+    color:black;
+}
+
+input.bmlt_nouveau_text_input_empty
+{
+    color:#555;
+}
+
+div.bmlt_nouveau_text_go_button_div
+{
+    width: 99px;
+    text-align:center;
+    vertical-align:middle;
+    float:left;
+}
+
+input.bmlt_nouveau_text_go_button_a
+{
+    display:block;
+    margin:0px;
+    padding:0px;
+    margin-right:auto;
+    margin-left:auto;
+    text-align:center;
+    vertical-align:middle;
+    font-size:small;
+    font-weight:bold;
+    width:60px;
+    height:16px;
+}
+
+div.bmlt_nouveau_text_checkbox_div
+{
+    clear:both;
+    text-align:left;
+    padding-top:8px;
+}
+
+input.bmlt_nouveau_text_loc_checkbox
+{
+    display:block;
+    width:16px;
+    height:16px;
+    float:left;
+    margin:auto;
+}
+
+div.bmlt_nouveau_text_checkbox_label
+{
+    margin-left:8px;
+    vertical-align:middle;
 }
