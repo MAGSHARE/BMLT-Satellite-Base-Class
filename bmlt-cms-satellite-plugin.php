@@ -1744,7 +1744,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
             // This is the overall container div.
             $the_new_content .= '<div id="'.$uid.'_container" class="bmlt_nouveau_container">';
                 // What we do here, is tell the client to create a global variable (in JS DOM), with a unique handler for this instance of the Nouveau search.
-                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options_id.'\' );</script>';
+                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \'map\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].' );</script>';
             $the_new_content .= '</div>';
 
             $in_content = self::replace_shortcode ( $in_content, $theshortcode, $the_new_content );
@@ -2097,16 +2097,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         // Include the Google Maps API V3 files.
         $ret = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>';
         $ret .= '<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>';       
-       
-        $url = $this->get_plugin_path();
-        if ( defined ( '_DEBUG_MODE_' ) ) // In debug mode, we use unoptimized versions of these files for easier tracking.
-            {
-            $ret .= '<script src="'.htmlspecialchars ( $url ).'nouveau_map_search.js" type="text/javascript"></script>';
-            }
-        else
-            {
-            $ret .= '<script src="'.htmlspecialchars ( $url ).'js_stripper.php?filename=nouveau_map_search.js" type="text/javascript"></script>';
-            }
+        $ret .= '<script src="'.htmlspecialchars ( $this->get_plugin_path() ).(!defined ( '_DEBUG_MODE_' ) ? 'js_stripper.php?filename=' : '').'nouveau_map_search.js" type="text/javascript"></script>';
 
         return $ret;
         }
