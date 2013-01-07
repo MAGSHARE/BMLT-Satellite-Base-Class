@@ -63,6 +63,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_basic_advanced_switch_div = null; ///< This will contain the "basic and "advanced" switch links.
     var m_map_text_switch_div = null;       ///< This will contain the 'Map' and 'Text' switch links.
     var m_advanced_switch_a = null;         ///< This is the "advanced" anchor
+    var m_basic_switch_a = null;            ///< This is the "basic" anchor
     var m_map_switch_a = null;              ///< This is the "map" anchor
     var m_text_switch_a = null;             ///< This is the "text" anchor
     var m_advanced_section_div = null;      ///< This is the advanced display section
@@ -133,6 +134,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_text_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_text_name_string) );
         this.m_map_text_switch_div.appendChild ( this.m_text_switch_a );
         
+        this.m_text_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.TextButtonHit()' );
+        this.m_map_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.MapButtonHit()' );
+        
         this.m_display_div.appendChild ( this.m_map_text_switch_div );
         };
     
@@ -146,8 +150,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             this.m_map_switch_a.className = 'bmlt_nouveau_switch_a_selected';
             this.m_text_switch_a.className = 'bmlt_nouveau_switch_a';
-            this.m_text_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.TextButtonHit()' );
-            this.m_map_switch_a.removeAttribute ( 'href' );
             this.m_map_div.style.display = 'block';
             this.m_text_div.style.display = 'none';
             }
@@ -155,8 +157,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             this.m_map_switch_a.className = 'bmlt_nouveau_switch_a';
             this.m_text_switch_a.className = 'bmlt_nouveau_switch_a_selected';
-            this.m_map_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.MapButtonHit()' );
-            this.m_text_switch_a.removeAttribute ( 'href' );
             this.m_map_div.style.display = 'none';
             this.m_text_div.style.display = 'block';
             };
@@ -249,7 +249,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief This sets up the "BASIC/ADVANCED" tab switch div.                            *
+    *	\brief This sets up the "MAP/TEXT" tab switch div.                                  *
     ****************************************************************************************/
     this.buildDOMTree_Basic_Advanced_Switch = function ()
         {
@@ -261,26 +261,33 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_basic_advanced_switch_div.appendChild ( this.m_advanced_switch_a );
         this.m_advanced_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.ToggleAdvanced()' );
         
+        this.m_basic_switch_a = document.createElement ( 'a' );      // Create the advanced switch anchor element.
+        this.m_basic_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_basic_name_string) );
+        this.m_basic_advanced_switch_div.appendChild ( this.m_basic_switch_a );
+        this.m_basic_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.ToggleAdvanced()' );
+        
         this.m_display_div.appendChild ( this.m_basic_advanced_switch_div );
         };
     
     /************************************************************************************//**
-    *	\brief This sets the state of the "BASIC/ADVANCED" tab switch div. It actually      *
-    *          changes the state of the anchors, so it is more than just a CSS class change.*
+    *	\brief This sets the state of the "MAP/TEXT" tab switch div. It actually changes    *
+    *          the state of the anchors, so it is more than just a CSS class change.        *
     ****************************************************************************************/
     this.setBasicAdvancedSwitch = function()
         {
-        if ( (this.m_current_view == 'text') || (this.m_current_view == 'map') )    // Set Up Basic Stuff.
+        if ( (this.m_current_view == 'advanced map') || (this.m_current_view == 'advanced text') )
             {
-            this.m_advanced_section_div.style.display = 'none';
-            this.m_text_go_button_div.style.display = 'block';
-            this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switcher_a';
-            }
-        else    // Set Up Advanced Stuff.
-            {
-            this.m_advanced_section_div.style.display = 'block';
-            this.m_text_go_button_div.style.display = 'none';
+            this.m_basic_switch_a.className = 'bmlt_nouveau_switch_a';
             this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switcher_a_selected';
+            this.m_advanced_section_div.style.display = 'block';
+            this.m_text_go_a.style.display = 'none';
+            }
+        else
+            {
+            this.m_advanced_switch_a.className = 'bmlt_nouveau_switch_a';
+            this.m_basic_switch_a.className = 'bmlt_nouveau_switch_a_selected';
+            this.m_advanced_section_div.style.display = 'none';
+            this.m_text_go_a.style.display = 'block';
             };
         };
     

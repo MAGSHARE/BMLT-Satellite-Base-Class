@@ -46,36 +46,11 @@ a.bmlt_nouveau_switch_a:visited
 }
 
 a.bmlt_nouveau_switch_a_selected,
-a.bmlt_nouveau_switch_a_selected:visited
+a.bmlt_nouveau_switch_a_selected:visited,
+a.bmlt_nouveau_advanced_switcher_a_selected,
+a.bmlt_nouveau_advanced_switcher_a_selected:visited
 {
     display:none;
-}
-
-a.bmlt_nouveau_advanced_switcher_a,
-a.bmlt_nouveau_advanced_switcher_a:visited,
-a.bmlt_nouveau_advanced_switcher_a_selected,
-a.bmlt_nouveau_advanced_switcher_a_selected:visited
-{
-    text-align:center;
-    font-size: large;
-    font-weight:bold;
-    display:block;
-    height:20px;
-    text-decoration:underline;
-}
-
-a.bmlt_nouveau_advanced_switcher_a,
-a.bmlt_nouveau_advanced_switcher_a:visited
-{
-    background-color:#555;
-    color:white;
-}
-
-a.bmlt_nouveau_advanced_switcher_a_selected,
-a.bmlt_nouveau_advanced_switcher_a_selected:visited
-{
-    background-color:yellow;
-    color:black;
 }
 
 div.bmlt_nouveau_breaker_div
