@@ -59,15 +59,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /// These variables hold quick references to the various elements of the screen.
     var m_container_div = null;             ///< This is the main outer container. It also contains the script.
     var m_display_div = null;               ///< This is the div where everything happens.
-    var m_header_div = null;                ///< This will contain the header components.
-    var m_content_div = null;               ///< This will contain the content (working) components.
     
     var m_basic_advanced_switch_div = null; ///< This will contain the "basic and "advanced" switch links.
     var m_map_text_switch_div = null;       ///< This will contain the 'Map' and 'Text' switch links.
-    var m_basic_switch_a = null;            ///< This is the "basic" anchor
     var m_advanced_switch_a = null;         ///< This is the "advanced" anchor
     var m_map_switch_a = null;              ///< This is the "map" anchor
     var m_text_switch_a = null;             ///< This is the "text" anchor
+    var m_advanced_section_div = null;      ///< This is the advanced display section
+    
+    var m_advanced_go_a = null;             ///< This will be a "GO" button in the advanced search section.
     
     var m_map_div = null;                   ///< This will contain the map.
     var m_main_map = null;                  ///< This is the actual Google Maps instance.
@@ -98,71 +98,22 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree = function ()
         {
-        this.m_display_div = document.createElement ( 'div' );   // Create the switch container.
+        this.m_display_div = document.createElement ( 'div' );
         this.m_display_div.className = 'bmlt_nouveau_div';
         this.m_display_div.id = this.m_uid;
         
-        this.m_header_div = document.createElement ( 'div' );   // Create the switch container.
-        this.m_header_div.className = 'bmlt_nouveau_header_div';
-        
-        this.m_content_div = document.createElement ( 'div' );   // Create the switch container.
-        this.m_content_div.className = 'bmlt_nouveau_content_div';
-        
-        this.buildDOMTree_Basic_Advanced_Switch();
         this.buildDOMTree_Map_Text_Switch();
         
         this.buildDOMTree_Map_Div();
         this.buildDOMTree_Text_Div();
         
+        this.buildDOMTree_Basic_Advanced_Switch();
+        this.buildDOMTree_AdvancedSection();
+        
         this.setBasicAdvancedSwitch();
         this.setMapTextSwitch();
         
-        this.m_display_div.appendChild ( this.m_header_div );
-        this.m_display_div.appendChild ( this.m_content_div );
         this.m_container_div.appendChild ( this.m_display_div );
-        };
-    
-    /************************************************************************************//**
-    *	\brief This sets up the "BASIC/ADVANCED" tab switch div.                            *
-    ****************************************************************************************/
-    this.buildDOMTree_Basic_Advanced_Switch = function ()
-        {
-        this.m_basic_advanced_switch_div = document.createElement ( 'div' );   // Create the switch container.
-        this.m_basic_advanced_switch_div.className = 'bmlt_nouveau_switcher_div';
-        
-        this.m_basic_switch_a = document.createElement ( 'a' );      // Create the basic switch anchor element.
-        var txt = document.createTextNode(g_NouveauMapSearch_basic_name_string);
-        this.m_basic_switch_a.appendChild ( txt );
-        this.m_basic_advanced_switch_div.appendChild ( this.m_basic_switch_a );
-        
-        this.m_advanced_switch_a = document.createElement ( 'a' );      // Create the advanced switch anchor element.
-        txt = document.createTextNode(g_NouveauMapSearch_advanced_name_string);
-        this.m_advanced_switch_a.appendChild ( txt );
-        this.m_basic_advanced_switch_div.appendChild ( this.m_advanced_switch_a );
-        
-        this.m_header_div.appendChild ( this.m_basic_advanced_switch_div );
-        };
-    
-    /************************************************************************************//**
-    *	\brief This sets the state of the "BASIC/ADVANCED" tab switch div. It actually      *
-    *          changes the state of the anchors, so it is more than just a CSS class change.*
-    ****************************************************************************************/
-    this.setBasicAdvancedSwitch = function()
-        {
-        if ( (this.m_current_view == 'text') || (this.m_current_view == 'map') )
-            {
-            this.m_basic_switch_a.className = 'bmlt_nouveau_basic_a_selected';
-            this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_a';
-            this.m_advanced_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.AdvancedButtonHit()' );
-            this.m_basic_switch_a.removeAttribute ( 'href' );
-            }
-        else
-            {
-            this.m_basic_switch_a.className = 'bmlt_nouveau_basic_a';
-            this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_a_selected';
-            this.m_basic_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.BasicButtonHit()' );
-            this.m_advanced_switch_a.removeAttribute ( 'href' );
-            };
         };
     
     /************************************************************************************//**
@@ -172,19 +123,17 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                                   )
         {
         this.m_map_text_switch_div = document.createElement ( 'div' );   // Create the switch container.
-        this.m_map_text_switch_div.className = 'bmlt_nouveau_switcher_div';
+        this.m_map_text_switch_div.className = 'bmlt_nouveau_switcher_div bmlt_nouveau_text_map_switcher_div';
         
         this.m_map_switch_a = document.createElement ( 'a' );      // Create the basic switch anchor element.
-        var txt = document.createTextNode(g_NouveauMapSearch_map_name_string);
-        this.m_map_switch_a.appendChild ( txt );
+        this.m_map_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_map_name_string) );
         this.m_map_text_switch_div.appendChild ( this.m_map_switch_a );
         
         this.m_text_switch_a = document.createElement ( 'a' );      // Create the advanced switch anchor element.
-        txt = document.createTextNode(g_NouveauMapSearch_text_name_string);
-        this.m_text_switch_a.appendChild ( txt );
+        this.m_text_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_text_name_string) );
         this.m_map_text_switch_div.appendChild ( this.m_text_switch_a );
         
-        this.m_header_div.appendChild ( this.m_map_text_switch_div );
+        this.m_display_div.appendChild ( this.m_map_text_switch_div );
         };
     
     /************************************************************************************//**
@@ -195,8 +144,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced map') )
             {
-            this.m_map_switch_a.className = 'bmlt_nouveau_map_a_selected';
-            this.m_text_switch_a.className = 'bmlt_nouveau_text_a';
+            this.m_map_switch_a.className = 'bmlt_nouveau_switch_a_selected';
+            this.m_text_switch_a.className = 'bmlt_nouveau_switch_a';
             this.m_text_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.TextButtonHit()' );
             this.m_map_switch_a.removeAttribute ( 'href' );
             this.m_map_div.style.display = 'block';
@@ -204,8 +153,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             }
         else
             {
-            this.m_map_switch_a.className = 'bmlt_nouveau_map_a';
-            this.m_text_switch_a.className = 'bmlt_nouveau_text_a_selected';
+            this.m_map_switch_a.className = 'bmlt_nouveau_switch_a';
+            this.m_text_switch_a.className = 'bmlt_nouveau_switch_a_selected';
             this.m_map_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.MapButtonHit()' );
             this.m_text_switch_a.removeAttribute ( 'href' );
             this.m_map_div.style.display = 'none';
@@ -221,7 +170,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_map_div = document.createElement ( 'div' );   // Create the map container.
         this.m_map_div.className = 'bmlt_nouveau_map_div';
         this.loadMap();
-        this.m_content_div.appendChild ( this.m_map_div );
+        this.m_display_div.appendChild ( this.m_map_div );
         };
     
     /************************************************************************************//**
@@ -240,15 +189,21 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         this.m_text_input = document.createElement ( 'input' );
         this.m_text_input.type = "text";
-        this.m_text_input.className = 'bmlt_nouveau_text_input_empty';
         this.m_text_input.defaultValue = g_Nouveau_text_item_default_text;
-        
+        this.m_text_input.className = 'bmlt_nouveau_text_input_empty';
+        this.m_text_input.value = this.m_text_input.defaultValue;
+
         // If we have any initial text, we enter that.
         if ( this.m_initial_text )
             {
             this.m_text_input.value = this.m_initial_text;
             this.m_text_input.className = 'bmlt_nouveau_text_input';
             };
+
+        // We just call the global handlers (since callbacks are in their own context, no worries).
+        this.m_text_input.onfocus = function () {NouveauMapSearch.prototype.CheckTextInputFocus(this);};
+        this.m_text_input.onblur = function () {NouveauMapSearch.prototype.CheckTextInputBlur(this);};
+        this.m_text_input.onkeyup = function () {NouveauMapSearch.prototype.CheckTextInputKeyUp(this);};
         
         this.m_text_item_div.appendChild ( this.m_text_input );
         this.m_text_inner_div.appendChild ( this.m_text_item_div );
@@ -257,10 +212,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div';
         
         this.m_text_go_a = document.createElement ( 'a' );
-        var txt = document.createTextNode(g_Nouveau_text_go_button_string);
-        this.m_text_go_a.className = 'bmlt_nouveau_text_go_button_a';
-        this.m_text_go_a.appendChild ( txt );
-        this.m_text_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.GoButtonHit()' );
+        this.m_text_go_a.className = 'bmlt_nouveau_text_go_button_a fourPixRound';
+        this.m_text_go_a.appendChild ( document.createTextNode(g_Nouveau_text_go_button_string) );
+        this.m_text_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.GoForIt()' );
         
         this.m_text_go_button_div.appendChild ( this.m_text_go_a );
         this.m_text_inner_div.appendChild ( this.m_text_go_button_div );
@@ -278,8 +232,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_location_checkbox_label.className = 'bmlt_nouveau_text_checkbox_label';
         this.m_location_checkbox_label.setAttribute ( 'for', this.m_uid + '_location_checkbox' );
         
-        txt = document.createTextNode(g_Nouveau_text_location_label_text);
-        this.m_location_checkbox_label.appendChild ( txt );
+        this.m_location_checkbox_label.appendChild ( document.createTextNode(g_Nouveau_text_location_label_text) );
 
         this.m_text_loc_checkbox_div.appendChild ( this.m_location_checkbox );
         this.m_text_loc_checkbox_div.appendChild ( this.m_location_checkbox_label );
@@ -292,7 +245,60 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_text_div.appendChild ( elem );
         
         this.m_location_checkbox = null;
-        this.m_content_div.appendChild ( this.m_text_div );
+        this.m_display_div.appendChild ( this.m_text_div );
+        };
+    
+    /************************************************************************************//**
+    *	\brief This sets up the "BASIC/ADVANCED" tab switch div.                            *
+    ****************************************************************************************/
+    this.buildDOMTree_Basic_Advanced_Switch = function ()
+        {
+        this.m_basic_advanced_switch_div = document.createElement ( 'div' );   // Create the switch container.
+        this.m_basic_advanced_switch_div.className = 'bmlt_nouveau_switcher_div bmlt_nouveau_advanced_switcher_div';
+        
+        this.m_advanced_switch_a = document.createElement ( 'a' );      // Create the advanced switch anchor element.
+        this.m_advanced_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_advanced_name_string) );
+        this.m_basic_advanced_switch_div.appendChild ( this.m_advanced_switch_a );
+        this.m_advanced_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.ToggleAdvanced()' );
+        
+        this.m_display_div.appendChild ( this.m_basic_advanced_switch_div );
+        };
+    
+    /************************************************************************************//**
+    *	\brief This sets the state of the "BASIC/ADVANCED" tab switch div. It actually      *
+    *          changes the state of the anchors, so it is more than just a CSS class change.*
+    ****************************************************************************************/
+    this.setBasicAdvancedSwitch = function()
+        {
+        if ( (this.m_current_view == 'text') || (this.m_current_view == 'map') )    // Set Up Basic Stuff.
+            {
+            this.m_advanced_section_div.style.display = 'none';
+            this.m_text_go_button_div.style.display = 'block';
+            this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switcher_a';
+            }
+        else    // Set Up Advanced Stuff.
+            {
+            this.m_advanced_section_div.style.display = 'block';
+            this.m_text_go_button_div.style.display = 'none';
+            this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switcher_a_selected';
+            };
+        };
+    
+    /************************************************************************************//**
+    *	\brief This sets up the "BASIC/ADVANCED" tab switch div.                            *
+    ****************************************************************************************/
+    this.buildDOMTree_AdvancedSection = function ()
+        {
+        this.m_advanced_section_div = document.createElement ( 'div' );
+        this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div';
+        
+        this.m_advanced_go_a = document.createElement ( 'a' );
+        this.m_advanced_go_a.className = 'bmlt_nouveau_advanced_go_button_a fourPixRound';
+        this.m_advanced_go_a.appendChild ( document.createTextNode(g_Nouveau_text_go_button_string) );
+        this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.GoForIt()' );
+        
+        this.m_advanced_section_div.appendChild ( this.m_advanced_go_a );
+        this.m_display_div.appendChild ( this.m_advanced_section_div );
         };
     
     /****************************************************************************************
@@ -367,16 +373,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.mapClicked = function ( in_event ///< The mouse event that caused the click.
                                 )
         {
-alert ( 'MAP CLICKED' );
-        };
-
-    /************************************************************************************//**
-    *	\brief 
-    ****************************************************************************************/
-    this.checkTextInput = function ( in_event ///< The mouse event that caused the click.
-                                    )
-        {
-alert ( 'TEXT INPUT CALLBACK' );
         };
 
     /************************************************************************************//**
@@ -385,7 +381,6 @@ alert ( 'TEXT INPUT CALLBACK' );
     this.locCheckClicked = function ( in_event ///< The mouse event that caused the click.
                                     )
         {
-alert ( 'LOCATION CHECKBOX CLICKED' );
         };
     
     /****************************************************************************************
@@ -425,26 +420,92 @@ alert ( 'LOCATION CHECKBOX CLICKED' );
 /********************************************************************************************
 *								  PUBLIC CLASS FUNCTIONS									*
 ********************************************************************************************/
-    
+
+/********************************************************************************************
+*################################ STATIC CALLBACK FUNCTIONS ################################*
+*                                                                                           *
+* These functions are statically, and have no object context (no 'this').                   *
+********************************************************************************************/
+
 /****************************************************************************************//**
 *	\brief 
 ********************************************************************************************/
-    
-NouveauMapSearch.prototype.GoButtonHit = function()
+NouveauMapSearch.prototype.CheckTextInputBlur = function ( in_text_element
+                                                            )
     {
-alert ( 'GO CLICKED' );
+    if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
+        {
+        in_text_element.className = 'bmlt_nouveau_text_input';
+        }
+    else
+        {
+        in_text_element.className = 'bmlt_nouveau_text_input_empty';
+        in_text_element.value = in_text_element.defaultValue;
+        };
     };
-    
+
+/****************************************************************************************//**
+*	\brief 
+********************************************************************************************/
+NouveauMapSearch.prototype.CheckTextInputKeyUp = function ( in_text_element
+                                                                )
+    {
+    if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
+        {
+        in_text_element.className = 'bmlt_nouveau_text_input';
+        }
+    else
+        {
+        in_text_element.className = 'bmlt_nouveau_text_input_empty';
+        in_text_element.value = (in_text_element.hasFocus()) ? '' : in_text_element.defaultValue;
+        };
+    };
+
+/****************************************************************************************//**
+*	\brief 
+********************************************************************************************/
+NouveauMapSearch.prototype.CheckTextInputFocus = function ( in_text_element
+                                                            )
+    {
+    if ( in_text_element.value && (in_text_element.value == in_text_element.defaultValue) )
+        {
+        in_text_element.value = '';
+        };
+    };
+
+/********************************************************************************************
+*############################### INSTANCE CALLBACK FUNCTIONS ###############################*
+*                                                                                           *
+* These functions are called for an instance, and have object context.                      *
+********************************************************************************************/
+
 /****************************************************************************************//**
 *	\brief 
 ********************************************************************************************/
     
-NouveauMapSearch.prototype.BasicButtonHit = function()
+NouveauMapSearch.prototype.GoForIt = function()
+    {
+alert ( 'GO' );
+    };
+
+/****************************************************************************************//**
+*	\brief 
+********************************************************************************************/
+    
+NouveauMapSearch.prototype.ToggleAdvanced = function()
     {
     switch ( this.m_current_view )   // Vet the class state.
         {
+        case 'map':
+            this.m_current_view = 'advanced map';
+        break;
+        
         case 'advanced map':
             this.m_current_view = 'map';
+        break;
+        
+        case 'text':
+            this.m_current_view = 'advanced text';
         break;
         
         case 'advanced text':
@@ -454,33 +515,12 @@ NouveauMapSearch.prototype.BasicButtonHit = function()
         
     this.setBasicAdvancedSwitch();
     };
-
-/****************************************************************************************//**
-*	\brief 
-********************************************************************************************/
-    
-NouveauMapSearch.prototype.AdvancedButtonHit = function()
-    {
-    switch ( this.m_current_view )   // Vet the class state.
-        {
-        case 'map':
-            this.m_current_view = 'advanced map';
-        break;
-        
-        case 'text':
-            this.m_current_view = 'advanced text';
-        break;
-        };
-        
-    this.setBasicAdvancedSwitch();
-    };
         
 /****************************************************************************************//**
 *	\brief 
 ********************************************************************************************/
     
-NouveauMapSearch.prototype.MapButtonHit = function( in_adv_basic    ///< If this is "advanced," then we apply to the "advanced" divs.
-                                                    )
+NouveauMapSearch.prototype.MapButtonHit = function()
     {
     switch ( this.m_current_view )   // Vet the class state.
         {
@@ -500,8 +540,7 @@ NouveauMapSearch.prototype.MapButtonHit = function( in_adv_basic    ///< If this
 *	\brief 
 ********************************************************************************************/
     
-NouveauMapSearch.prototype.TextButtonHit = function( in_adv_basic   ///< If this is "advanced," then we apply to the "advanced" divs.
-                                                    )
+NouveauMapSearch.prototype.TextButtonHit = function()
     {
     switch ( this.m_current_view )   // Vet the class state.
         {
