@@ -1731,13 +1731,20 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= $this->BMLTPlugin_nouveau_map_search_global_javascript_stuff ( );
                 // Most of the display is built in DOM, but this is how we get our localized strings into JS. We put them in globals.
                 $the_new_content .= '<script type="text/javascript">';
-                $the_new_content .= "var g_NouveauMapSearch_basic_name_string ='".htmlspecialchars ( self::$local_nouveau_basic_button )."';";
-                $the_new_content .= "var g_NouveauMapSearch_advanced_name_string ='".htmlspecialchars ( self::$local_nouveau_advanced_button )."';";
-                $the_new_content .= "var g_NouveauMapSearch_map_name_string ='".htmlspecialchars ( self::$local_nouveau_map_button )."';";
-                $the_new_content .= "var g_NouveauMapSearch_text_name_string ='".htmlspecialchars ( self::$local_nouveau_text_button )."';";
-                $the_new_content .= "var g_Nouveau_text_go_button_string ='".htmlspecialchars ( self::$local_nouveau_text_go_button )."';";
-                $the_new_content .= "var g_Nouveau_text_location_label_text ='".htmlspecialchars ( self::$local_nouveau_text_location_label_text )."';";
-                $the_new_content .= "var g_Nouveau_text_item_default_text ='".htmlspecialchars ( self::$local_nouveau_text_item_default_text )."';";
+                $the_new_content .= "var g_NouveauMapSearch_basic_name_string ='".$this->process_text ( self::$local_nouveau_basic_button )."';";
+                $the_new_content .= "var g_NouveauMapSearch_advanced_name_string ='".$this->process_text ( self::$local_nouveau_advanced_button )."';";
+                $the_new_content .= "var g_NouveauMapSearch_map_name_string ='".$this->process_text ( self::$local_nouveau_map_button )."';";
+                $the_new_content .= "var g_NouveauMapSearch_text_name_string ='".$this->process_text ( self::$local_nouveau_text_button )."';";
+                $the_new_content .= "var g_Nouveau_text_go_button_string ='".$this->process_text ( self::$local_nouveau_text_go_button )."';";
+                $the_new_content .= "var g_Nouveau_text_location_label_text ='".$this->process_text ( self::$local_nouveau_text_location_label_text )."';";
+                $the_new_content .= "var g_Nouveau_text_item_default_text ='".$this->process_text ( self::$local_nouveau_text_item_default_text )."';";
+                $the_new_content .= "var g_Nouveau_advanced_weekdays_disclosure_text ='".$this->process_text ( self::$local_nouveau_advanced_weekdays_disclosure_text )."';";
+                $the_new_content .= "var g_Nouveau_advanced_formats_disclosure_text ='".$this->process_text ( self::$local_nouveau_advanced_formats_disclosure_text )."';";
+                $the_new_content .= "var g_Nouveau_advanced_service_bodies_disclosure_text ='".$this->process_text ( self::$local_nouveau_advanced_service_bodies_disclosure_text )."';";
+                $the_new_content .= "var g_Nouveau_no_search_results_text ='".$this->process_text ( self::$local_cant_find_meetings_display )."';";
+                $the_new_content .= "var g_Nouveau_select_search_spec_text ='".$this->process_text ( self::$local_nouveau_select_search_spec_text )."';";
+                $the_new_content .= "var g_Nouveau_select_search_results_text ='".$this->process_text ( self::$local_nouveau_select_search_results_text )."';";
+                $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
                 
                 $the_new_content .= '</script>';
                 $first = false;
@@ -1748,7 +1755,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
             // This is the overall container div.
             $the_new_content .= '<div id="'.$uid.'_container" class="bmlt_nouveau_container">';
                 // What we do here, is tell the client to create a global variable (in JS DOM), with a unique handler for this instance of the Nouveau search.
-                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \'map\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].' );</script>';
+                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \'map\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".htmlspecialchars ( $this->get_ajax_base_uri() )."?redirect_ajax_json=".urlencode ( 'switcher=GetSearchResults' )."&bmlt_settings_id=$in_options_id');</script>";
             $the_new_content .= '</div>';
 
             $in_content = self::replace_shortcode ( $in_content, $theshortcode, $the_new_content );

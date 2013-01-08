@@ -97,6 +97,11 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_text_go_button = 'GO';                           ///< The button name for the "GO" button in the text search in the nouveau search.
     static  $local_nouveau_text_location_label_text = 'This is a location or postcode'; ///< The label text for the location checkbox.
     static  $local_nouveau_text_item_default_text = 'Enter Search Text';    ///< The text that fills an empty text item.
+    static  $local_nouveau_advanced_weekdays_disclosure_text = 'Selected Weekdays';                 ///< The text that is used for the weekdays disclosure link.
+    static  $local_nouveau_advanced_formats_disclosure_text = 'Selected Formats';                   ///< The text that is used for the formats disclosure link.
+    static  $local_nouveau_advanced_service_bodies_disclosure_text = 'Selected Service Bodies';     ///< The text that is used for the service bodies disclosure link.
+    static  $local_nouveau_select_search_spec_text = 'Specify A New Search';        ///< The text that is used for the link that tells you to select the search specification.
+    static  $local_nouveau_select_search_results_text = 'Look At Search Results';   ///< The text that is used for the link that tells you to select the search results.
 
     /// These are for the actual search displays
     static  $local_select_search = 'Select a Quick Search';                 ///< Used for the "filler" in the quick search popup.

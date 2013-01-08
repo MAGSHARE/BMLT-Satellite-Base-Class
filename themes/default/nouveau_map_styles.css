@@ -24,11 +24,19 @@ div.bmlt_nouveau_container
 {
 }
 
-div.bmlt_nouveau_header_div
+div.bmlt_nouveau_search_spec_div
 {
 }
 
-div.bmlt_nouveau_content_div
+div.bmlt_nouveau_search_results_div
+{
+}
+
+div.bmlt_nouveau_map_results_div
+{
+}
+
+div.bmlt_nouveau_list_results_div
 {
 }
 
@@ -43,14 +51,6 @@ a.bmlt_nouveau_switch_a:visited
     background-color:#555;
     color:white;
     text-decoration:underline;
-}
-
-a.bmlt_nouveau_switch_a_selected,
-a.bmlt_nouveau_switch_a_selected:visited,
-a.bmlt_nouveau_advanced_switcher_a_selected,
-a.bmlt_nouveau_advanced_switcher_a_selected:visited
-{
-    display:none;
 }
 
 div.bmlt_nouveau_breaker_div
@@ -86,6 +86,7 @@ div.bmlt_nouveau_text_inner_div
 div.bmlt_nouveau_text_item_div
 {
     float:left;
+    height:20px;
 }
 
 input.bmlt_nouveau_text_input,
@@ -141,7 +142,7 @@ a.bmlt_nouveau_advanced_go_button_a:active
     color:white;
 }
 
-.fourPixRound
+.round_button
 {
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
@@ -170,9 +171,110 @@ div.bmlt_nouveau_text_checkbox_label
     vertical-align:middle;
 }
 
+div.bmlt_nouveau_search_spec_switch_div
+{
+}
+
 div.bmlt_nouveau_advanced_section_div
 {
-    width: 100%;
-    height:100px;
-    background-color:yellow;
+}
+
+div.bmlt_nouveau_advanced_weekdays_div
+{
+}
+
+div.bmlt_nouveau_advanced_weekdays_header_div
+{
+}
+
+div.bmlt_nouveau_advanced_formats_div
+{
+}
+
+div.bmlt_nouveau_advanced_formats_header_div
+{
+}
+
+div.bmlt_nouveau_advanced_service_bodies_div
+{
+}
+
+div.bmlt_nouveau_advanced_service_bodies_header_div
+{
+}
+
+div.bmlt_nouveau_advanced_go_button_div
+{
+}
+
+a.bmlt_search_spec_switch_a,
+a.bmlt_search_spec_switch_a:visited,
+a.bmlt_search_results_switch_a,
+a.bmlt_search_results_switch_a:visited,
+a.bmlt_nouveau_advanced_weekdays_disclosure_a,
+a.bmlt_nouveau_advanced_formats_disclosure_a,
+a.bmlt_nouveau_advanced_service_bodies_disclosure_a,
+a.bmlt_nouveau_advanced_weekdays_disclosure_a:visited,
+a.bmlt_nouveau_advanced_formats_disclosure_a:visited,
+a.bmlt_nouveau_advanced_service_bodies_disclosure_a:visited,
+a.bmlt_nouveau_advanced_weekdays_disclosure_open_a,
+a.bmlt_nouveau_advanced_formats_disclosure_open_a,
+a.bmlt_nouveau_advanced_service_bodies_disclosure_open_a,
+a.bmlt_nouveau_advanced_weekdays_disclosure_open_a:visited,
+a.bmlt_nouveau_advanced_formats_disclosure_open_a:visited,
+a.bmlt_nouveau_advanced_service_bodies_disclosure_open_a:visited
+{
+    text-align:center;
+    font-size: large;
+    font-weight:bold;
+    display:block;
+    height:20px;
+    background-color:#555;
+    color:white;
+    text-decoration:underline;
+}
+
+div.bmlt_nouveau_advanced_map_options_shown_div
+{
+    height: 40px;
+    background-color:purple;
+}
+
+div.bmlt_nouveau_advanced_weekdays_content_shown_div
+{
+    height: 40px;
+    background-color:red;
+}
+
+div.bmlt_nouveau_advanced_formats_content_shown_div
+{
+    height: 40px;
+    background-color:green;
+}
+
+div.bmlt_nouveau_advanced_service_bodies_content_shown_div
+{
+    height: 40px;
+    background-color:blue;
+}
+
+div.bmlt_nouveau_advanced_weekdays_content_div,
+div.bmlt_nouveau_advanced_formats_content_div,
+div.bmlt_nouveau_advanced_service_bodies_content_div,
+div.bmlt_nouveau_advanced_map_options_div,
+div.text_div_hidden,
+div.map_div_hidden,
+div.advanced_div_hidden,
+div.text_go_a_hidden,
+div.bmlt_nouveau_spec_hidden,
+div.bmlt_nouveau_results_hidden,
+div.bmlt_nouveau_search_spec_switch_div_hidden,
+a.bmlt_search_results_switch_hidden,
+a.bmlt_search_spec_switch_hidden,
+a.bmlt_nouveau_switch_a_selected,
+a.bmlt_nouveau_switch_a_selected:visited,
+a.bmlt_nouveau_advanced_switcher_a_selected,
+a.bmlt_nouveau_advanced_switcher_a_selected:visited
+{
+    display:none;
 }

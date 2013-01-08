@@ -109,7 +109,7 @@ function BMLTPlugin_AjaxRequest (   url,        ///< The URI to be called
         {
         if ( req.readyState != 4 ) return;
         if( req.status != 200 ) return;
-        callback ( req );
+        callback ( req, req.extra_data );
         req = null;
         };
     req.send ( sVars );
