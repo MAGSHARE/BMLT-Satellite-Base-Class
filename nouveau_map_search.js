@@ -132,7 +132,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_ajax_request = null;              ///< This is used to handle AJAX calls.
         
     /****************************************************************************************
-    *								  PRIVATE CLASS FUNCTIONS							    *
+    *								  INTERNAL CLASS FUNCTIONS							    *
     ****************************************************************************************/
     
     /****************************************************************************************
@@ -468,7 +468,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the Advanced Map Options section.                                      *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_MapOptions = function ()
         {
@@ -478,7 +478,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the Advanced Weekdays section.                                         *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Weekdays = function ()
         {
@@ -492,7 +492,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the disclosure link for the Advanced Weekdays section.                 *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Weekdays_Header = function ()
         {
@@ -510,7 +510,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the content for the Advanced Weekdays section.                         *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Weekdays_Content = function ()
         {
@@ -538,7 +538,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the Formats section.                                                   *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Formats = function ()
         {
@@ -552,7 +552,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the disclosure link for the Formats section.                           *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Formats_Header = function ()
         {
@@ -570,7 +570,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the contents for the Formats section.                                  *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Formats_Content = function ()
         {
@@ -599,7 +599,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the Advanced Service Bodies section.                                   *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Service_Bodies = function ()
         {
@@ -613,7 +613,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the disclosure link for the Advanced Service Bodies.                   *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Service_Bodies_Header = function ()
         {
@@ -631,7 +631,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the content for the Advanced Service Bodies section.                   *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Service_Bodies_Content = function ()
         {
@@ -660,7 +660,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief 
+    *	\brief Build the GO button for the Advanced section.                                *
     ****************************************************************************************/
     this.buildDOMTree_Advanced_GoButton = function ()
         {
@@ -677,7 +677,17 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /****************************************************************************************
-    *##################################### PERFORM SEARCH ##################################*
+    *#################################### MAP HANDLERS #####################################*
+    ****************************************************************************************/
+    /************************************************************************************//**
+    *	\brief This moves the marker, in response to a map click.                           *
+    ****************************************************************************************/
+    this.advancedMapClicked = function ()
+        {
+        };
+
+    /****************************************************************************************
+    *################################### PERFORM SEARCH ####################################*
     ****************************************************************************************/
     /************************************************************************************//**
     *	\brief This function constructs a URI to the root server that reflects the search   *
@@ -685,17 +695,16 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.evaluateSearchEvent = function (   in_map_clicked
                                         )
         {
-        var uri = this.createSearchURI();
-        var do_search = true;
-        
         if ( in_map_clicked && (this.m_current_view == 'advanced map') )
             {
             do_search = false;
-            };
-            
-        if ( do_search )
+            }
+        else
             {
-            this.callRootServer ( uri );
+            this.m_search_results = null;
+            this.m_search_results_shown = false;
+            this.setDisplayedSearchResults();
+            this.callRootServer ( this.createSearchURI() );
             };
         };
 
@@ -854,9 +863,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 * These functions are statically, and have no object context (no 'this').                   *
 ********************************************************************************************/
 /****************************************************************************************//**
-*	\brief 
+*	\brief Will check a text element upon blur, and will fill it with the default string.   *
 ********************************************************************************************/
-NouveauMapSearch.prototype.CheckTextInputBlur = function ( in_text_element
+NouveauMapSearch.prototype.CheckTextInputBlur = function ( in_text_element  ///< The text element being evaluated.
                                                             )
     {
     if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
@@ -871,9 +880,9 @@ NouveauMapSearch.prototype.CheckTextInputBlur = function ( in_text_element
     };
 
 /****************************************************************************************//**
-*	\brief 
+*	\brief Will test a text element upon keyUp, and may change its appearance.              *
 ********************************************************************************************/
-NouveauMapSearch.prototype.CheckTextInputKeyUp = function ( in_text_element
+NouveauMapSearch.prototype.CheckTextInputKeyUp = function ( in_text_element ///< The text element being evaluated.
                                                             )
     {
     if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
@@ -888,9 +897,9 @@ NouveauMapSearch.prototype.CheckTextInputKeyUp = function ( in_text_element
     };
 
 /****************************************************************************************//**
-*	\brief 
+*	\brief Will test a text element upon focus, and remove any default string.              *
 ********************************************************************************************/
-NouveauMapSearch.prototype.CheckTextInputFocus = function ( in_text_element
+NouveauMapSearch.prototype.CheckTextInputFocus = function ( in_text_element ///< The text element being evaluated.
                                                             )
     {
     if ( in_text_element.value && (in_text_element.value == in_text_element.defaultValue) )
@@ -902,32 +911,41 @@ NouveauMapSearch.prototype.CheckTextInputFocus = function ( in_text_element
 /********************************************************************************************
 *######################## CONTEXT-ESTABLISHING CALLBACK FUNCTIONS ##########################*
 *                                                                                           *
-* These functions are statically, but establish context from an ID passed in.               *
+* These functions are called statically, but establish context from an ID passed in.        *
 ********************************************************************************************/
 /****************************************************************************************//**
-*	\brief 
+*	\brief Responds to a click in the map.                                                  *
 ********************************************************************************************/
-NouveauMapSearch.prototype.MapClicked = function (  in_event,
-                                                    in_id
+NouveauMapSearch.prototype.MapClicked = function (  in_event,   ///< The map event
+                                                    in_id       ///< The unique ID of the object (establishes context).
                                                     )
     {
     // This funky line creates an object context from the ID passed in.
+    // Each object is represented by a dynamically-created global variable, defined by ID, so we access that.
+    // 'context' becomes a placeholder for 'this'.
     eval ('var context = g_instance_' + in_id + '_js_handler');
 	
 	// We set the long/lat from the event.
 	context.m_current_long = in_event.latLng.lng().toString();
 	context.m_current_lat = in_event.latLng.lat().toString();
 
-    var uri = context.evaluateSearchEvent(true);
+    if ( context.m_current_view == 'map' ) // If it is a simple map, we go straight to a search.
+        {
+        context.evaluateSearchEvent();
+        }
+    else    // Otherwise, we simply move the marker.
+        {
+        context.advancedMapClicked();
+        };
     };
 	
 /****************************************************************************************//**
-*	\brief 
+*	\brief This is the AJAX callback from a search request.                                 *
 ********************************************************************************************/
-NouveauMapSearch.prototype.AJAXRouter = function ( in_response_object,
-                                                    in_id
+NouveauMapSearch.prototype.AJAXRouter = function ( in_response_object,  ///< The HTTPRequest response object.
+                                                    in_id               ///< The unique ID of the object (establishes context).
                                                     )
-{
+    {
     eval ('var context = g_instance_' + in_id + '_js_handler');
     
     if ( context )
@@ -962,7 +980,7 @@ NouveauMapSearch.prototype.AJAXRouter = function ( in_response_object,
         {
         alert ( g_Nouveau_no_search_results_text );
         };
-};
+    };
 
 /********************************************************************************************
 *############################### INSTANCE CALLBACK FUNCTIONS ###############################*
@@ -971,7 +989,7 @@ NouveauMapSearch.prototype.AJAXRouter = function ( in_response_object,
 ********************************************************************************************/
 
 /****************************************************************************************//**
-*	\brief 
+*	\brief Responds to the Specify A New Search link being hit.                             *
 ********************************************************************************************/
 NouveauMapSearch.prototype.SearchSpecHit = function()
     {
@@ -980,7 +998,7 @@ NouveauMapSearch.prototype.SearchSpecHit = function()
     };
     
 /****************************************************************************************//**
-*	\brief 
+*	\brief Responds to the Show Search Results link being hit.                              *
 ********************************************************************************************/
 NouveauMapSearch.prototype.SearchResultsHit = function()
     {
@@ -989,15 +1007,15 @@ NouveauMapSearch.prototype.SearchResultsHit = function()
     };
 
 /****************************************************************************************//**
-*	\brief 
+*	\brief Responds to either of the GO buttons being hit.                                  *
 ********************************************************************************************/
 NouveauMapSearch.prototype.GoForIt = function()
     {
-alert ( 'GO' );
+    this.evaluateSearchEvent();
     };
 
 /****************************************************************************************//**
-*	\brief 
+*	\brief Toggles the state of the Basic/Advanced search spec display.                     *
 ********************************************************************************************/
 NouveauMapSearch.prototype.ToggleAdvanced = function()
     {
@@ -1024,7 +1042,7 @@ NouveauMapSearch.prototype.ToggleAdvanced = function()
     };
         
 /****************************************************************************************//**
-*	\brief 
+*	\brief Responds to the Search By Map link being hit.                                    *
 ********************************************************************************************/
 NouveauMapSearch.prototype.MapButtonHit = function()
     {
@@ -1043,7 +1061,7 @@ NouveauMapSearch.prototype.MapButtonHit = function()
     };
         
 /****************************************************************************************//**
-*	\brief 
+*	\brief Responds to the Search By Text button being hit.                                 *
 ********************************************************************************************/
 NouveauMapSearch.prototype.TextButtonHit = function()
     {
@@ -1062,7 +1080,7 @@ NouveauMapSearch.prototype.TextButtonHit = function()
     };
         
 /****************************************************************************************//**
-*	\brief 
+*	\brief Toggles the display state of the Advanced Weekdays section.                      *
 ********************************************************************************************/
 NouveauMapSearch.prototype.ToggleWeekdaysDisclosure = function()
     {
@@ -1072,7 +1090,7 @@ NouveauMapSearch.prototype.ToggleWeekdaysDisclosure = function()
     };
         
 /****************************************************************************************//**
-*	\brief 
+*	\brief Toggles the display state of the Advanced Formats section.                       *
 ********************************************************************************************/
 NouveauMapSearch.prototype.ToggleFormatsDisclosure = function()
     {
@@ -1082,7 +1100,7 @@ NouveauMapSearch.prototype.ToggleFormatsDisclosure = function()
     };
         
 /****************************************************************************************//**
-*	\brief 
+*	\brief Toggles the display state of the Advanced Service Bodies section.                *
 ********************************************************************************************/
 NouveauMapSearch.prototype.ToggleServiceBodiesDisclosure = function()
     {

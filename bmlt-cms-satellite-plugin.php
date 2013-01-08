@@ -1741,7 +1741,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_advanced_weekdays_disclosure_text ='".$this->process_text ( self::$local_nouveau_advanced_weekdays_disclosure_text )."';";
                 $the_new_content .= "var g_Nouveau_advanced_formats_disclosure_text ='".$this->process_text ( self::$local_nouveau_advanced_formats_disclosure_text )."';";
                 $the_new_content .= "var g_Nouveau_advanced_service_bodies_disclosure_text ='".$this->process_text ( self::$local_nouveau_advanced_service_bodies_disclosure_text )."';";
-                $the_new_content .= "var g_Nouveau_no_search_results_text ='".$this->process_text ( self::$local_cant_find_meetings_display )."';";
+                $the_new_content .= "var g_Nouveau_no_search_results_text ='".$this->process_text ( self::$local_nouveau_cant_find_meetings_display )."';";
                 $the_new_content .= "var g_Nouveau_select_search_spec_text ='".$this->process_text ( self::$local_nouveau_select_search_spec_text )."';";
                 $the_new_content .= "var g_Nouveau_select_search_results_text ='".$this->process_text ( self::$local_nouveau_select_search_results_text )."';";
                 $the_new_content .= "var g_Nouveau_default_geo_width = -10;";

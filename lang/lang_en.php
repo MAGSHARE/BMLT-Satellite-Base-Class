@@ -72,7 +72,7 @@ class BMLT_Localized_BaseClass
     static  $local_options_mobile_grace_period_label = 'Grace Period:';     ///< When you do a "later today" search, you get a "Grace Period."
     static  $local_options_mobile_time_offset_label = 'Time Offset:';       ///< This may have an offset (time zone difference) from the main server.
     static  $local_options_initial_view = array (                           ///< The list of choices for presentation in the popup.
-                                                '' => 'Root Server Decides', 'map' => 'Map', 'text' => 'Text', 'advanced' => 'Advanced (Server Decides)', 'advanced_map' => 'Advanced Map', 'advanced_text' => 'Advanced Text'
+                                                'map' => 'Map', 'text' => 'Text', 'advanced_map' => 'Advanced Map', 'advanced_text' => 'Advanced Text'
                                                 );
     static  $local_options_initial_view_prompt = 'Initial Search Type:';    ///< The label for the initial view popup.
     static  $local_options_theme_prompt = 'Select a Color Theme:';          ///< The label for the theme selection popup.
@@ -90,18 +90,6 @@ class BMLT_Localized_BaseClass
     static  $local_options_kilometers = 'Kilometers';                       ///< The string for kilometers.
     
     static  $local_no_root_server = 'You need to provide a root server URI in order for this to work.';    ///< Displayed if there was no root server provided.
-    static  $local_nouveau_basic_button = 'Basic Search';                   ///< The button name for the basic search in the nouveau search.
-    static  $local_nouveau_advanced_button = 'Advanced Search';             ///< The button name for the advanced search in the nouveau search.
-    static  $local_nouveau_map_button = 'Search By Map';                    ///< The button name for the map search in the nouveau search.
-    static  $local_nouveau_text_button = 'Search By Text';                  ///< The button name for the text search in the nouveau search.
-    static  $local_nouveau_text_go_button = 'GO';                           ///< The button name for the "GO" button in the text search in the nouveau search.
-    static  $local_nouveau_text_location_label_text = 'This is a location or postcode'; ///< The label text for the location checkbox.
-    static  $local_nouveau_text_item_default_text = 'Enter Search Text';    ///< The text that fills an empty text item.
-    static  $local_nouveau_advanced_weekdays_disclosure_text = 'Selected Weekdays';                 ///< The text that is used for the weekdays disclosure link.
-    static  $local_nouveau_advanced_formats_disclosure_text = 'Selected Formats';                   ///< The text that is used for the formats disclosure link.
-    static  $local_nouveau_advanced_service_bodies_disclosure_text = 'Selected Service Bodies';     ///< The text that is used for the service bodies disclosure link.
-    static  $local_nouveau_select_search_spec_text = 'Specify A New Search';        ///< The text that is used for the link that tells you to select the search specification.
-    static  $local_nouveau_select_search_results_text = 'Look At Search Results';   ///< The text that is used for the link that tells you to select the search results.
 
     /// These are for the actual search displays
     static  $local_select_search = 'Select a Quick Search';                 ///< Used for the "filler" in the quick search popup.
@@ -119,6 +107,21 @@ class BMLT_Localized_BaseClass
     
     /// A simple message for most <noscript> elements. We have a different one for the older interactive search (below).
     static  $local_noscript = 'This will not work, because you do not have JavaScript active.';             ///< The string displayed in a <noscript> element.
+    
+    /// These are all for the [[bmlt_nouveau]] shortcode.
+    static  $local_nouveau_basic_button = 'Basic Search';                   ///< The button name for the basic search in the nouveau search.
+    static  $local_nouveau_advanced_button = 'Advanced Search';             ///< The button name for the advanced search in the nouveau search.
+    static  $local_nouveau_map_button = 'Search By Map Instead of Text';    ///< The button name for the map search in the nouveau search.
+    static  $local_nouveau_text_button = 'Search By Text instead of Map';   ///< The button name for the text search in the nouveau search.
+    static  $local_nouveau_text_go_button = 'GO';                           ///< The button name for the "GO" button in the text search in the nouveau search.
+    static  $local_nouveau_text_item_default_text = 'Enter Search Text';    ///< The text that fills an empty text item.
+    static  $local_nouveau_text_location_label_text = 'This is a location or postcode';         ///< The label text for the location checkbox.
+    static  $local_nouveau_advanced_weekdays_disclosure_text = 'Selected Weekdays';             ///< The text that is used for the weekdays disclosure link.
+    static  $local_nouveau_advanced_formats_disclosure_text = 'Selected Formats';               ///< The text that is used for the formats disclosure link.
+    static  $local_nouveau_advanced_service_bodies_disclosure_text = 'Selected Service Bodies'; ///< The text that is used for the service bodies disclosure link.
+    static  $local_nouveau_select_search_spec_text = 'Specify A New Search';                    ///< The text that is used for the link that tells you to select the search specification.
+    static  $local_nouveau_select_search_results_text = 'View the Results of the Last Search';  ///< The text that is used for the link that tells you to select the search results.
+    static  $local_nouveau_cant_find_meetings_display = 'No Meetings Found In This Search';     ///< When the new map search cannot find any meetings.
                                     
     /************************************************************************************//**
     *                      STATIC DATA MEMBERS (SPECIAL LOCALIZABLE)                        *
