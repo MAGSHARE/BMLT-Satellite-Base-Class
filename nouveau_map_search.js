@@ -143,7 +143,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_single_meeting_display_div = null;    ///< This is the div that will be used to display the details of a single meeting.
     
     var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
-    var m_search_results_fields = null;         ///< This will be an array that will hold all of the fields that we will display.
     var m_long_lat_northwest = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
     var m_long_lat_southeast = null;            ///< This will contain the long/lat for the maximum South and East coordinate to show all the meetings in the search.
     var m_search_results_shown = false;         ///< If this is true, then the results div is displayed.
@@ -699,7 +698,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         this.m_long_lat_northwest = null;
         this.m_long_lat_southeast = null;
-        this.m_search_results_fields = null;
         this.m_search_results = null;
         this.m_search_results_shown = false;
 //         this.m_mapResultsDisplayed = false;
@@ -1008,22 +1006,30 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.analyzeSearchResults = function ()
         {
         // These will be the result of this function.
-        this.m_search_results_fields = {};      // This will contain an array of fields to be displayed.
-        this.m_long_lat_northwest = new Array;  // This will contain the North, West corner of the map to encompass all the results.
-        this.m_long_lat_southeast = new Array;  // Same for South, East.
+        this.m_long_lat_northwest = new {'lng':var m_current_long.toFloat(), 'lat':var m_current_lat.toFloat()};  // This will contain the North, West corner of the map to encompass all the results.
+        this.m_long_lat_southeast = new {'lng':var m_current_long.toFloat(), 'lat':var m_current_lat.toFloat()};  // Same for South, East.
         // We loop through the whole response.
 		for ( var c = 0; c < this.m_search_results.length; c++ )
 		    {
 		    var theMeeting = this.m_search_results[c];
-		    
-		    for ( var i = 0; i < g_Nouveau_array_keys.length; i++ )
+		    if ( themeeting['longitude'].toFloat() < this.m_long_lat_northwest['lng'] )
 		        {
-		        var key_string = g_Nouveau_array_keys[i];
-                if ( theMeeting[key_string] )
-                    {
-                    this.m_search_results_fields[key_string] = key_string;
-                    };
-                };
+		        this.m_long_lat_northwest['lng'] = themeeting['longitude'].toFloat();
+		        };
+		        
+		    if ( themeeting['latitude'].toFloat() > this.m_long_lat_northwest['lat'] )
+		        {
+		        this.m_long_lat_northwest['lat'] = themeeting['latitude'].toFloat();
+		        };
+		    if ( themeeting['longitude'].toFloat() > this.m_long_lat_southeast['lng'] )
+		        {
+		        this.m_long_lat_southeast['lng'] = themeeting['longitude'].toFloat();
+		        };
+		        
+		    if ( themeeting['latitude'].toFloat() < this.m_long_lat_southeast['lat'] )
+		        {
+		        this.m_long_lat_southeast['lat'] = themeeting['latitude'].toFloat();
+		        };
 		    };
         };
     
