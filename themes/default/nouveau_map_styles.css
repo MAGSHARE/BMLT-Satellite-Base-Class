@@ -222,7 +222,11 @@ a.bmlt_nouveau_advanced_formats_disclosure_open_a,
 a.bmlt_nouveau_advanced_service_bodies_disclosure_open_a,
 a.bmlt_nouveau_advanced_weekdays_disclosure_open_a:visited,
 a.bmlt_nouveau_advanced_formats_disclosure_open_a:visited,
-a.bmlt_nouveau_advanced_service_bodies_disclosure_open_a:visited
+a.bmlt_nouveau_advanced_service_bodies_disclosure_open_a:visited,
+a.bmlt_nouveau_search_results_map_disclosure_a,
+a.bmlt_nouveau_search_results_map_disclosure_a:visited,
+a.bmlt_nouveau_search_results_list_disclosure_a,
+a.bmlt_nouveau_search_results_list_disclosure_a:visited
 {
     text-align:center;
     font-size: large;
@@ -234,34 +238,54 @@ a.bmlt_nouveau_advanced_service_bodies_disclosure_open_a:visited
     text-decoration:underline;
 }
 
-div.bmlt_nouveau_advanced_map_options_shown_div
+div.bmlt_nouveau_advanced_map_options_div
 {
     height: 40px;
     background-color:purple;
 }
 
-div.bmlt_nouveau_advanced_weekdays_content_shown_div
+div.bmlt_nouveau_advanced_weekdays_content_div
 {
     height: 40px;
     background-color:red;
 }
 
-div.bmlt_nouveau_advanced_formats_content_shown_div
+div.bmlt_nouveau_advanced_formats_content_div
 {
     height: 40px;
     background-color:green;
 }
 
-div.bmlt_nouveau_advanced_service_bodies_content_shown_div
+div.bmlt_nouveau_advanced_service_bodies_content_div
 {
     height: 40px;
     background-color:blue;
 }
 
-div.bmlt_nouveau_advanced_weekdays_content_div,
-div.bmlt_nouveau_advanced_formats_content_div,
-div.bmlt_nouveau_advanced_service_bodies_content_div,
-div.bmlt_nouveau_advanced_map_options_div,
+div.bmlt_nouveau_search_results_map_container_div
+{
+    height: 40px;
+    background-color:cyan;
+}
+
+div.bmlt_nouveau_search_results_list_container_div
+{
+    height: 40px;
+    background-color:magenta;
+}
+
+table.bmlt_nouveau_search_results_list_table
+{
+}
+
+thead.bmlt_nouveau_search_results_list_thead
+{
+}
+
+tbody.bmlt_nouveau_search_results_list_tbody
+{
+}
+
 div.text_div_hidden,
 div.map_div_hidden,
 div.advanced_div_hidden,
@@ -269,6 +293,12 @@ div.text_go_a_hidden,
 div.bmlt_nouveau_spec_hidden,
 div.bmlt_nouveau_results_hidden,
 div.bmlt_nouveau_search_spec_switch_div_hidden,
+div.bmlt_nouveau_advanced_map_options_div_hidden,
+div.bmlt_nouveau_advanced_weekdays_content_div_hidden,
+div.bmlt_nouveau_advanced_formats_content_div_hidden,
+div.bmlt_nouveau_advanced_service_bodies_content_div_hidden,
+div.bmlt_nouveau_search_results_map_container_div_hidden,
+div.bmlt_nouveau_search_results_list_container_div_hidden,
 a.bmlt_search_results_switch_hidden,
 a.bmlt_search_spec_switch_hidden,
 a.bmlt_nouveau_switch_a_selected,

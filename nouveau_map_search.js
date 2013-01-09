@@ -124,12 +124,31 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /// The GO Button
     var m_advanced_go_button_div = null;
     
+    /// The dynamic map search results
+    var m_map_search_results_disclosure_div = null;
+    var m_map_search_results_disclosure_a = null;
+    var m_map_search_results_container_div = null;
+    var m_map_search_results_div = null;
+    var m_mapResultsDisplayed = false;
+    
+    /// The dynamic list search results
+    var m_list_search_results_disclosure_div = null;
+    var m_list_search_results_disclosure_a = null;
+    var m_list_search_results_container_div = null;
+    var m_list_search_results_table = null;
+    var m_list_search_results_table_head = null;
+    var m_list_search_results_table_body = null;
+    var m_listResultsDisplayed = false;
+    
     var m_single_meeting_display_div = null;    ///< This is the div that will be used to display the details of a single meeting.
     
-    var m_search_results = null;            ///< If there are any search results, they are kept here (JSON object).
-    var m_search_results_shown = false;     ///< If this is true, then the results div is displayed.
+    var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
+    var m_search_results_fields = null;         ///< This will be an array that will hold all of the fields that we will display.
+    var m_long_lat_northwest = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
+    var m_long_lat_southeast = null;            ///< This will contain the long/lat for the maximum South and East coordinate to show all the meetings in the search.
+    var m_search_results_shown = false;         ///< If this is true, then the results div is displayed.
     
-    var m_ajax_request = null;              ///< This is used to handle AJAX calls.
+    var m_ajax_request = null;                  ///< This is used to handle AJAX calls.
         
     /****************************************************************************************
     *								  INTERNAL CLASS FUNCTIONS							    *
@@ -170,11 +189,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_display_div.appendChild ( this.m_search_spec_div );
         
         // Next, create the search results div.
-        this.m_search_results_div = document.createElement ( 'div' );
-        this.m_search_results_div.className = 'bmlt_nouveau_search_results_div';
+        this.buildDOMTree_SearchResults_Section();
         
-        this.m_display_div.appendChild ( this.m_search_results_div );
-
         this.setDisplayedSearchResults();   // Make sure that the proper div is displayed.
         
         // Finally, set everything into the container.
@@ -244,7 +260,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_text_switch_a.className = 'bmlt_nouveau_switch_a';
             this.m_text_div.className = 'bmlt_nouveau_text_div text_div_hidden';
             this.m_map_div.className = 'bmlt_nouveau_map_div';
-            this.m_advanced_map_options_div.className = 'bmlt_nouveau_advanced_map_options_shown_div';
+            this.m_advanced_map_options_div.className = 'bmlt_nouveau_advanced_map_options_div';
             }
         else
             {
@@ -252,7 +268,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_text_switch_a.className = 'bmlt_nouveau_switch_a_selected';
             this.m_map_div.className = 'bmlt_nouveau_map_div map_div_hidden';
             this.m_text_div.className = 'bmlt_nouveau_text_div';
-            this.m_advanced_map_options_div.className = 'bmlt_nouveau_advanced_map_options_div';
+            this.m_advanced_map_options_div.className = 'bmlt_nouveau_advanced_map_options_div bmlt_nouveau_advanced_map_options_div_hidden';
             this.m_text_input.select();
             };
         };
@@ -528,12 +544,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( this.m_advanced_weekdays_shown )
             {
             this.m_advanced_weekdays_disclosure_a.className = 'bmlt_nouveau_advanced_weekdays_disclosure_open_a';
-            this.m_advanced_weekdays_content_div.className = 'bmlt_nouveau_advanced_weekdays_content_shown_div';
+            this.m_advanced_weekdays_content_div.className = 'bmlt_nouveau_advanced_weekdays_content_div';
             }
         else
             {
             this.m_advanced_weekdays_disclosure_a.className = 'bmlt_nouveau_advanced_weekdays_disclosure_a';
-            this.m_advanced_weekdays_content_div.className = 'bmlt_nouveau_advanced_weekdays_content_div';
+            this.m_advanced_weekdays_content_div.className = 'bmlt_nouveau_advanced_weekdays_content_div bmlt_nouveau_advanced_weekdays_content_div_hidden';
             };
         };
     
@@ -589,12 +605,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( this.m_advanced_formats_shown )
             {
             this.m_advanced_formats_disclosure_a.className = 'bmlt_nouveau_advanced_formats_disclosure_open_a';
-            this.m_advanced_formats_content_div.className = 'bmlt_nouveau_advanced_formats_content_shown_div';
+            this.m_advanced_formats_content_div.className = 'bmlt_nouveau_advanced_formats_content_div';
             }
         else
             {
             this.m_advanced_formats_disclosure_a.className = 'bmlt_nouveau_advanced_formats_disclosure_a';
-            this.m_advanced_formats_content_div.className = 'bmlt_nouveau_advanced_formats_content_div';
+            this.m_advanced_formats_content_div.className = 'bmlt_nouveau_advanced_formats_content_div bmlt_nouveau_advanced_formats_content_div_hidden';
             };
         };
     
@@ -650,12 +666,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( this.m_advanced_service_bodies_shown )
             {
             this.m_advanced_service_bodies_disclosure_a.className = 'bmlt_nouveau_advanced_service_bodies_disclosure_open_a';
-            this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_shown_div';
+            this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_div';
             }
         else
             {
             this.m_advanced_service_bodies_disclosure_a.className = 'bmlt_nouveau_advanced_service_bodies_disclosure_a';
-            this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_div';
+            this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_div bmlt_nouveau_advanced_service_bodies_content_div_hidden';
             };
         };
     
@@ -675,14 +691,205 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_go_button_div.appendChild ( this.m_advanced_go_a );
         this.m_advanced_section_div.appendChild ( this.m_advanced_go_button_div );
         };
+    
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.clearSearchResults = function ()
+        {
+        this.m_long_lat_northwest = null;
+        this.m_long_lat_southeast = null;
+        this.m_search_results_fields = null;
+        this.m_search_results = null;
+        this.m_search_results_shown = false;
+//         this.m_mapResultsDisplayed = false;
+//         this.m_listResultsDisplayed = false;
+
+        if ( this.m_search_results_div )
+            {
+            this.m_display_div.removeChild ( this.m_search_results_div );
+            this.m_search_results_div.innerHTML = "";
+            };
+        
+        this.m_map_search_results_disclosure_div = null;
+        this.m_map_search_results_disclosure_a = null;
+        this.m_map_search_results_container_div = null;
+        this.m_map_search_results_div = null;
+        this.m_list_search_results_disclosure_div = null;
+        this.m_list_search_results_disclosure_a = null;
+        this.m_list_search_results_container_div = null;
+        this.m_list_search_results_table = null;
+        this.m_list_search_results_table_head = null;
+        this.m_list_search_results_table_body = null;
+        this.m_search_results_div = null;
+        };
+    
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.buildDOMTree_SearchResults_Section = function ()
+        {
+        this.m_search_results_div = document.createElement ( 'div' );
+        this.m_search_results_div.className = 'bmlt_nouveau_search_results_div';
+        
+        this.buildDOMTree_SearchResults_Map();
+        this.buildDOMTree_SearchResults_List();
+        
+        this.m_display_div.appendChild ( this.m_search_results_div );
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.buildDOMTree_SearchResults_Map = function ()
+        {
+        this.m_map_search_results_disclosure_div = document.createElement ( 'div' );
+        this.m_map_search_results_disclosure_div.className = 'bmlt_nouveau_search_results_map_disclosure_div';
+        
+        this.m_map_search_results_disclosure_a = document.createElement ( 'a' );
+        this.m_map_search_results_disclosure_a.appendChild ( document.createTextNode(g_Nouveau_display_map_results_text) );
+        this.m_map_search_results_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.DisplayMapResultsDiscolsureHit()' );
+        
+        this.m_map_search_results_disclosure_div.appendChild ( this.m_map_search_results_disclosure_a );
+        
+        this.m_search_results_div.appendChild ( this.m_map_search_results_disclosure_div );
+
+        this.m_map_search_results_container_div = document.createElement ( 'div' );
+        this.m_map_search_results_container_div.className = 'bmlt_nouveau_search_results_map_container_div';
+        
+        this.setMapResultsDisclosure();
+        
+        this.m_search_results_div.appendChild ( this.m_map_search_results_container_div );
+        };
+    
+    /************************************************************************************//**
+    *	\brief This sets the state of the "MAP/TEXT" tab switch div. It actually changes    *
+    *          the state of the anchors, so it is more than just a CSS class change.        *
+    ****************************************************************************************/
+    this.setMapResultsDisclosure = function()
+        {
+        if ( this.m_mapResultsDisplayed )
+            {
+            this.m_map_search_results_disclosure_a.className = 'bmlt_nouveau_search_results_map_disclosure_a bmlt_nouveau_search_results_map_disclosure_a_open';
+            this.m_map_search_results_container_div.className = 'bmlt_nouveau_search_results_map_container_div';
+            }
+        else
+            {
+            this.m_map_search_results_disclosure_a.className = 'bmlt_nouveau_search_results_map_disclosure_a';
+            this.m_map_search_results_container_div.className = 'bmlt_nouveau_search_results_map_container_div bmlt_nouveau_search_results_map_container_div_hidden';
+            };
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.buildDOMTree_SearchResults_List = function ()
+        {
+        this.m_list_search_results_disclosure_div = document.createElement ( 'div' );
+        this.m_list_search_results_disclosure_div.className = 'bmlt_nouveau_search_results_list_disclosure_div';
+        
+        this.m_list_search_results_disclosure_a = document.createElement ( 'a' );
+        this.m_list_search_results_disclosure_a.appendChild ( document.createTextNode(g_Nouveau_display_list_results_text) );
+        this.m_list_search_results_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.DisplayListResultsDiscolsureHit()' );
+        
+        this.m_list_search_results_disclosure_div.appendChild ( this.m_list_search_results_disclosure_a );
+        
+        this.m_search_results_div.appendChild ( this.m_list_search_results_disclosure_div );
+
+        this.m_list_search_results_container_div = document.createElement ( 'div' );
+        this.m_list_search_results_container_div.className = 'bmlt_nouveau_search_results_list_container_div';
+        this.buildDOMTree_SearchResults_List_Table();
+        
+        this.setListResultsDisclosure();
+        
+        this.m_search_results_div.appendChild ( this.m_list_search_results_container_div );
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.buildDOMTree_SearchResults_List_Table = function ()
+        {
+        this.m_list_search_results_table = document.createElement ( 'table' );
+        this.m_list_search_results_table.className = 'bmlt_nouveau_search_results_list_table';
+        this.m_list_search_results_table.setAttribute ( 'cellpadding', 0 );
+        this.m_list_search_results_table.setAttribute ( 'cellspacing', 0 );
+        this.m_list_search_results_table.setAttribute ( 'border', 'none' );
+        
+        this.m_list_search_results_table_head = document.createElement ( 'thead' );
+        this.m_list_search_results_table_head.className = 'bmlt_nouveau_search_results_list_thead';
+        this.buildDOMTree_SearchResults_List_Table_Header();
+        
+        this.m_list_search_results_table.appendChild ( this.m_list_search_results_table_head );
+        
+        this.m_list_search_results_table_body = document.createElement ( 'tbody' );
+        this.m_list_search_results_table_body.className = 'bmlt_nouveau_search_results_list_tbody';
+        
+        this.m_list_search_results_table.appendChild ( this.m_list_search_results_table_body );
+        
+        this.m_list_search_results_container_div.appendChild ( this.m_list_search_results_table );
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.buildDOMTree_SearchResults_List_Table_Header = function ()
+        {
+        // The header has one row.
+        var tr_element = document.createElement ( 'tr' );
+        tr_element.className = 'bmlt_nouveau_search_results_list_header_tr';
+        
+        // A list table is simple. It only has these components:
+        // 'Town,' which will include state/nation.
+        // 'Weekday,' Which will be the day of week the meeting gathers (Sun-Sat).
+        // 'Meeting Name,' which is just the meeting's name
+        // 'Format,' which is a list of format codes
+        // 'GPS,' which is a GPS link.
+        
+        this.m_list_search_results_table_head.appendChild ( tr_element );
+        };
+            
+    /************************************************************************************//**
+    *	\brief This sets the state of the "MAP/TEXT" tab switch div. It actually changes    *
+    *          the state of the anchors, so it is more than just a CSS class change.        *
+    ****************************************************************************************/
+    this.setListResultsDisclosure = function()
+        {
+        if ( this.m_listResultsDisplayed )
+            {
+            this.m_list_search_results_disclosure_a.className = 'bmlt_nouveau_search_results_list_disclosure_a bmlt_nouveau_search_results_list_disclosure_a_open';
+            this.m_list_search_results_container_div.className = 'bmlt_nouveau_search_results_list_container_div';
+            }
+        else
+            {
+            this.m_list_search_results_disclosure_a.className = 'bmlt_nouveau_search_results_list_disclosure_a';
+            this.m_list_search_results_container_div.className = 'bmlt_nouveau_search_results_list_container_div bmlt_nouveau_search_results_list_container_div_hidden';
+            };
+        };
         
     /****************************************************************************************
     *#################################### MAP HANDLERS #####################################*
     ****************************************************************************************/
     /************************************************************************************//**
+    *	\brief This starts a search immediately, for a basic map click.                     *
+    ****************************************************************************************/
+    this.basicdMapClicked = function ()
+        {
+        this.beginSearch();
+        };
+
+    /************************************************************************************//**
     *	\brief This moves the marker, in response to a map click.                           *
     ****************************************************************************************/
     this.advancedMapClicked = function ()
+        {
+        this.displayMarkerInAdvancedMap();
+        };
+
+    /************************************************************************************//**
+    *	\brief This displays the marker and overlay for the advanced map.                   *
+    ****************************************************************************************/
+    this.displayMarkerInAdvancedMap = function ()
         {
         };
 
@@ -692,20 +899,25 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /************************************************************************************//**
     *	\brief This function constructs a URI to the root server that reflects the search   *
     ****************************************************************************************/
-    this.evaluateSearchEvent = function (   in_map_clicked
-                                        )
+    this.beginSearch = function ()
         {
-        if ( in_map_clicked && (this.m_current_view == 'advanced map') )
-            {
-            do_search = false;
-            }
-        else
-            {
-            this.m_search_results = null;
-            this.m_search_results_shown = false;
-            this.setDisplayedSearchResults();
-            this.callRootServer ( this.createSearchURI() );
-            };
+        this.clearSearchResults;
+        this.setDisplayedSearchResults();
+        this.callRootServer ( this.createSearchURI() );
+        };
+        
+    /************************************************************************************//**
+    *	\brief This shows our "busy throbber."                                              *
+    ****************************************************************************************/
+    this.displayThrobber = function ()
+        {
+        };
+
+    /************************************************************************************//**
+    *	\brief This hides our "busy throbber."                                              *
+    ****************************************************************************************/
+    this.hideThrobber = function ()
+        {
         };
 
     /************************************************************************************//**
@@ -761,6 +973,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	this.callRootServer = function ( in_uri ///< The URI to call (with all the parameters).
 	                                )
 	{
+        this.displayThrobber();
 	    if ( this.m_ajax_request )   // This prevents the requests from piling up. We are single-threaded.
 	        {
 	        this.m_ajax_request.abort();
@@ -780,9 +993,38 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.processSearchResults = function( in_search_results_json_object ///< The search results, as a JSON object.
                                         )
         {
+        this.clearSearchResults();
         this.m_search_results = in_search_results_json_object;
+        this.analyzeSearchResults();
         this.m_search_results_shown = true;
+        this.buildDOMTree_SearchResults_Section();
         this.setDisplayedSearchResults();
+        };
+    
+    /************************************************************************************//**
+    *	\brief This sorts through all of the search results, and builds an array of fields  *
+    *          for their display.                                                           *
+    ****************************************************************************************/
+    this.analyzeSearchResults = function ()
+        {
+        // These will be the result of this function.
+        this.m_search_results_fields = {};      // This will contain an array of fields to be displayed.
+        this.m_long_lat_northwest = new Array;  // This will contain the North, West corner of the map to encompass all the results.
+        this.m_long_lat_southeast = new Array;  // Same for South, East.
+        // We loop through the whole response.
+		for ( var c = 0; c < this.m_search_results.length; c++ )
+		    {
+		    var theMeeting = this.m_search_results[c];
+		    
+		    for ( var i = 0; i < g_Nouveau_array_keys.length; i++ )
+		        {
+		        var key_string = g_Nouveau_array_keys[i];
+                if ( theMeeting[key_string] )
+                    {
+                    this.m_search_results_fields[key_string] = key_string;
+                    };
+                };
+		    };
         };
     
     /************************************************************************************//**
@@ -931,7 +1173,7 @@ NouveauMapSearch.prototype.MapClicked = function (  in_event,   ///< The map eve
 
     if ( context.m_current_view == 'map' ) // If it is a simple map, we go straight to a search.
         {
-        context.evaluateSearchEvent();
+        context.basicdMapClicked();
         }
     else    // Otherwise, we simply move the marker.
         {
@@ -942,7 +1184,7 @@ NouveauMapSearch.prototype.MapClicked = function (  in_event,   ///< The map eve
 /****************************************************************************************//**
 *	\brief This is the AJAX callback from a search request.                                 *
 ********************************************************************************************/
-NouveauMapSearch.prototype.AJAXRouter = function ( in_response_object,  ///< The HTTPRequest response object.
+NouveauMapSearch.prototype.AJAXRouter = function (  in_response_object, ///< The HTTPRequest response object.
                                                     in_id               ///< The unique ID of the object (establishes context).
                                                     )
     {
@@ -952,6 +1194,7 @@ NouveauMapSearch.prototype.AJAXRouter = function ( in_response_object,  ///< The
         {
         context.m_ajax_request = null;
         context.m_search_results = null;
+        context.hideThrobber();
         
         var text_reply = in_response_object.responseText;
     
@@ -1011,7 +1254,7 @@ NouveauMapSearch.prototype.SearchResultsHit = function()
 ********************************************************************************************/
 NouveauMapSearch.prototype.GoForIt = function()
     {
-    this.evaluateSearchEvent();
+    this.beginSearch();
     };
 
 /****************************************************************************************//**
@@ -1107,4 +1350,22 @@ NouveauMapSearch.prototype.ToggleServiceBodiesDisclosure = function()
     this.m_advanced_service_bodies_shown = !this.m_advanced_service_bodies_shown;
     
     this.setAdvancedServiceBodiesDisclosure();
+    };
+        
+/****************************************************************************************//**
+*	\brief This is called when the Display Map Results Disclosure link is hit.              *
+********************************************************************************************/
+NouveauMapSearch.prototype.DisplayMapResultsDiscolsureHit = function()
+    {
+    this.m_mapResultsDisplayed = !this.m_mapResultsDisplayed;
+    this.setMapResultsDisclosure();
+    };
+        
+/****************************************************************************************//**
+*	\brief This is called when the Display List Results Disclosure link is hit.             *
+********************************************************************************************/
+NouveauMapSearch.prototype.DisplayListResultsDiscolsureHit = function()
+    {
+    this.m_listResultsDisplayed = !this.m_listResultsDisplayed;
+    this.setListResultsDisclosure();
     };

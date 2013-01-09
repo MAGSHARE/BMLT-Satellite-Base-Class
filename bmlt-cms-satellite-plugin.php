@@ -1744,6 +1744,24 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_no_search_results_text ='".$this->process_text ( self::$local_nouveau_cant_find_meetings_display )."';";
                 $the_new_content .= "var g_Nouveau_select_search_spec_text ='".$this->process_text ( self::$local_nouveau_select_search_spec_text )."';";
                 $the_new_content .= "var g_Nouveau_select_search_results_text ='".$this->process_text ( self::$local_nouveau_select_search_results_text )."';";
+                $the_new_content .= "var g_Nouveau_display_map_results_text ='".$this->process_text ( self::$local_nouveau_display_map_results_text )."';";
+                $the_new_content .= "var g_Nouveau_display_list_results_text ='".$this->process_text ( self::$local_nouveau_display_list_results_text )."';";
+                $the_new_content .= "var g_Nouveau_array_keys = {";
+                
+                $first = true;
+                foreach ( self::$local_nouveau_prompt_array as $key => $value )
+                    {
+                    if ( !$first )
+                        {
+                        $the_new_content .= ',';
+                        }
+                    $first = false;
+                    $the_new_content .= '"'.$key.'":';
+                    $the_new_content .= '"'.$this->process_text ( $value ).'"';
+                    }
+                
+                $the_new_content .= "};";
+                
                 $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
                 
                 $the_new_content .= '</script>';

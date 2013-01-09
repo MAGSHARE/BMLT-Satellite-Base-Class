@@ -122,7 +122,27 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_select_search_spec_text = 'Specify A New Search';                    ///< The text that is used for the link that tells you to select the search specification.
     static  $local_nouveau_select_search_results_text = 'View the Results of the Last Search';  ///< The text that is used for the link that tells you to select the search results.
     static  $local_nouveau_cant_find_meetings_display = 'No Meetings Found In This Search';     ///< When the new map search cannot find any meetings.
-                                    
+    static  $local_nouveau_display_map_results_text = 'Display the Search Results in a Map';    ///< The text for the display map results disclosure link.
+    static  $local_nouveau_display_list_results_text = 'Display the Search Results in a List';  ///< The text for the display list results disclosure link.
+    static  $local_nouveau_prompt_array = array (
+                                                'weekday_tinyint' => 'Weekday',
+                                                'start_time' => 'Start Time',
+                                                'duration_time' => 'Duration',
+                                                'formats' => 'Format',
+                                                'distance_in_miles' => 'Distance In Miles',
+                                                'distance_in_km' => 'Distance In Kilometers',
+                                                'meeting_name' => 'Meeting Name',
+                                                'location_text' => 'Location Name',
+                                                'location_street' => 'Street Address',
+                                                'location_city_subsection' => 'Borough',
+                                                'location_neighborhood' => 'Neighborhood',
+                                                'location_municipality' => 'Town',
+                                                'location_sub_province' => 'County',
+                                                'location_province' => 'State',
+                                                'location_nation' => 'Nation',
+                                                'location_postal_code_1' => 'Zip Code'
+                                                );
+                                                
     /************************************************************************************//**
     *                      STATIC DATA MEMBERS (SPECIAL LOCALIZABLE)                        *
     ****************************************************************************************/
