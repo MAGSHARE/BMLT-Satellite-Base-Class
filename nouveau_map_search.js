@@ -1704,7 +1704,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_listResultsDisplayed = false;
     this.m_search_results_shown = false;         ///< If this is true, then the results div is displayed.
 
-    this.m_search_sort_key = 'name';             ///< This can be 'time', 'town', 'name', or 'distance'.
+    this.m_search_sort_key = 'time';             ///< This can be 'time', 'town', 'name', or 'distance'.
 
     this.m_container_div = document.getElementById ( this.m_uid + '_container' );   ///< This is the main outer container.
     
@@ -1977,8 +1977,8 @@ NouveauMapSearch.prototype.sSortCallback = function( in_obj_a,
                     }
                 else
                     {
-                    var time_a = (in_obj_a.start_time.toString().replace(':', '')).toInt();
-                    var time_b = (in_obj_a.start_time.toString().replace(':', '')).toInt();
+                    var time_a = parseInt ( (in_obj_a.start_time.toString().replace(/[\s:]/g, "")), 10);
+                    var time_b = parseInt ( (in_obj_b.start_time.toString().replace(/[\s:]/g, "")), 10);
                 
                     if ( time_a < time_b )
                         {
