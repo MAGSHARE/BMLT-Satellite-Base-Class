@@ -270,22 +270,201 @@ div.bmlt_nouveau_search_results_map_container_div
 
 div.bmlt_nouveau_search_results_list_container_div
 {
-    height: 40px;
-    background-color:magenta;
 }
 
 table.bmlt_nouveau_search_results_list_table
 {
+    width:100%;
 }
 
 thead.bmlt_nouveau_search_results_list_thead
 {
 }
 
-tbody.bmlt_nouveau_search_results_list_tbody
+tr.bmlt_nouveau_search_results_list_header_tr
 {
 }
 
+td.bmlt_nouveau_search_results_list_header_td
+{
+    font-size:small;
+    font-weight:bold;
+    vertical-align:top;
+}
+
+td.bmlt_nouveau_search_results_list_header_td_nation
+{
+}
+
+td.bmlt_nouveau_search_results_list_header_td_state
+{
+}
+
+td.bmlt_nouveau_search_results_list_header_td_county
+{
+}
+
+td.bmlt_nouveau_search_results_list_header_td_town
+{
+}
+
+td.bmlt_nouveau_search_results_list_header_td_name
+{
+}
+
+td.bmlt_nouveau_search_results_list_header_td_weekday
+{
+}
+
+td.bmlt_nouveau_search_results_list_header_td_start
+{
+}
+
+td.bmlt_nouveau_search_results_list_header_td_location
+{
+}
+
+td.bmlt_nouveau_search_results_list_header_td_GPS
+{
+}
+
+tbody.bmlt_nouveau_search_results_list_tbody
+{
+    vertical-align:top;
+}
+
+tr.bmlt_nouveau_search_results_list_body_tr
+{
+}
+
+tr.bmlt_nouveau_search_results_list_body_tr_even td
+{
+    background-color:#cff;
+}
+
+td.bmlt_nouveau_search_results_list_body_td
+{
+    padding:2px;
+}
+
+td.bmlt_nouveau_search_results_list_body_td_nation
+{
+}
+
+div.bmlt_nouveau_search_results_list_nation_name_div
+{
+}
+
+td.bmlt_nouveau_search_results_list_body_td_state
+{
+}
+
+div.bmlt_nouveau_search_results_list_state_name_div
+{
+}
+
+td.bmlt_nouveau_search_results_list_body_td_county
+{
+}
+
+div.bmlt_nouveau_search_results_list_county_name_div
+{
+}
+
+div.bmlt_nouveau_search_results_list_town_name_county_has_borough_div
+{
+}
+
+td.bmlt_nouveau_search_results_list_body_td_town
+{
+}
+
+div.bmlt_nouveau_search_results_list_town_name_div
+{
+}
+
+div.bmlt_nouveau_search_results_list_town_name_has_county_div
+{
+}
+
+span.bmlt_nouveau_search_results_list_town_name_town_span
+{
+    display:block;
+    float:left;
+    padding-right:4px;
+}
+
+span.bmlt_nouveau_search_results_list_town_name_town_has_borough_span
+{
+}
+
+span.bmlt_nouveau_search_results_list_town_name_borough_span
+{
+    display:block;
+    float:left;
+    padding-right:4px;
+}
+
+span.bmlt_nouveau_search_results_list_town_name_borough_has_town_span
+{
+}
+
+span.bmlt_nouveau_search_results_list_town_name_neighborhood_span
+{
+    display:block;
+    float:left;
+    font-style:italic;
+}
+
+td.bmlt_nouveau_search_results_list_body_td_name
+{
+}
+
+div.bmlt_nouveau_search_results_list_meeting_name_div
+{
+}
+
+td.bmlt_nouveau_search_results_list_body_td_weekday
+{
+}
+
+div.bmlt_nouveau_search_results_list_weekday_div
+{
+}
+
+td.bmlt_nouveau_search_results_list_body_td_start
+{
+}
+
+div.bmlt_nouveau_search_results_list_start_time_div
+{
+}
+
+td.bmlt_nouveau_search_results_list_body_td_location
+{
+}
+
+div.bmlt_nouveau_search_results_list_location_div
+{
+}
+
+td.bmlt_nouveau_search_results_list_body_td_GPS
+{
+}
+
+div.bmlt_nouveau_search_results_list_gps_div
+{
+}
+
+td.bmlt_nouveau_search_results_list_header_td_nation,
+td.bmlt_nouveau_search_results_list_header_td_state,
+td.bmlt_nouveau_search_results_list_header_td_county,
+td.bmlt_nouveau_search_results_list_body_td_nation,
+td.bmlt_nouveau_search_results_list_body_td_state,
+td.bmlt_nouveau_search_results_list_body_td_county,
+div.bmlt_nouveau_search_results_list_town_name_county_has_borough_div,
+span.bmlt_nouveau_search_results_list_town_name_town_has_borough_span,
+.nouveau_hidden,
 div.text_div_hidden,
 div.map_div_hidden,
 div.advanced_div_hidden,

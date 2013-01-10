@@ -28,11 +28,107 @@
 *   You should have received a copy of the GNU General Public License                       *
 *   along with this code.  If not, see <http://www.gnu.org/licenses/>.                      *
 ********************************************************************************************/
+/**
+sprintf() for JavaScript 0.6
+
+Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+    * Redistributions of source code must retain the above copyright
+      notice, this list of conditions and the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright
+      notice, this list of conditions and the following disclaimer in the
+      documentation and/or other materials provided with the distribution.
+    * Neither the name of sprintf() for JavaScript nor the
+      names of its contributors may be used to endorse or promote products
+      derived from this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
+DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+Changelog:
+2007.04.03 - 0.1:
+ - initial release
+2007.09.11 - 0.2:
+ - feature: added argument swapping
+2007.09.17 - 0.3:
+ - bug fix: no longer throws exception on empty paramenters (Hans Pufal)
+2007.10.21 - 0.4:
+ - unit test and patch (David Baird)
+2010.05.09 - 0.5:
+ - bug fix: 0 is now preceeded with a + sign
+ - bug fix: the sign was not at the right position on padded results (Kamal Abdali)
+ - switched from GPL to BSD license
+2010.05.22 - 0.6:
+ - reverted to 0.4 and fixed the bug regarding the sign of the number 0
+ Note:
+ Thanks to Raphael Pigulla <raph (at] n3rd [dot) org> (http://www.n3rd.org/)
+ who warned me about a bug in 0.5, I discovered that the last update was
+ a regress. I appologize for that.
+**/
+
+function str_repeat(i, m) {
+	for (var o = []; m > 0; o[--m] = i);
+	return o.join('');
+}
+
+function sprintf() {
+	var i = 0, a, f = arguments[i++], o = [], m, p, c, x, s = '';
+	while (f) {
+		if (m = /^[^\x25]+/.exec(f)) {
+			o.push(m[0]);
+		}
+		else if (m = /^\x25{2}/.exec(f)) {
+			o.push('%');
+		}
+		else if (m = /^\x25(?:(\d+)\$)?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(f)) {
+			if (((a = arguments[m[1] || i++]) == null) || (a == undefined)) {
+				throw('Too few arguments.');
+			}
+			if (/[^s]/.test(m[7]) && (typeof(a) != 'number')) {
+				throw('Expecting number but found ' + typeof(a));
+			}
+			switch (m[7]) {
+				case 'b': a = a.toString(2); break;
+				case 'c': a = String.fromCharCode(a); break;
+				case 'd': a = parseInt(a,10); break;
+				case 'e': a = m[6] ? a.toExponential(m[6]) : a.toExponential(); break;
+				case 'f': a = m[6] ? parseFloat(a).toFixed(m[6]) : parseFloat(a); break;
+				case 'o': a = a.toString(8); break;
+				case 's': a = ((a = String(a)) && m[6] ? a.substring(0, m[6]) : a); break;
+				case 'u': a = Math.abs(a); break;
+				case 'x': a = a.toString(16); break;
+				case 'X': a = a.toString(16).toUpperCase(); break;
+			}
+			a = (/[def]/.test(m[7]) && m[2] && a >= 0 ? '+'+ a : a);
+			c = m[3] ? m[3] == '0' ? '0' : m[3].charAt(1) : ' ';
+			x = m[5] - String(a).length - s.length;
+			p = m[5] ? str_repeat(c, x) : '';
+			o.push(s + (m[4] ? a + p : p + a));
+		}
+		else {
+			throw('Huh ?!');
+		}
+		f = f.substring(m[0].length);
+	}
+	return o.join('');
+}
 
 /****************************************************************************************//**
-*	\brief  
+*	\brief  This class implements our bmlt_nouveau instance as an entirely DOM-generated    *
+*           JavaScript Web app.                                                             *
 ********************************************************************************************/
-
 function NouveauMapSearch ( in_unique_id,           ///< The UID of the container (will be used to get elements)
                             in_initial_view,        ///< This contains the initial view, as specified in the settings.
                             in_initial_lat,         ///< The initial latitude for the map.
@@ -56,7 +152,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_current_zoom = null;              ///< The current map zoom. It will change as the map state changes.
     var m_root_server_uri = null;           ///< A string, containing the URI of the root server. It will not change after construction.
     var m_initial_text = null;              ///< This will contain any initial text for the search text box.
-    var m_checked_location = false;         ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
+    var m_checked_location = null;         ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
     var m_single_meeting_id = null;         ///< This will contain the ID of any single meeting being displayed.
     
     /// These variables hold quick references to the various elements of the screen.
@@ -105,21 +201,21 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_advanced_weekdays_header_div = null;
     var m_advanced_weekdays_disclosure_a = null;
     var m_advanced_weekdays_content_div = null;
-    var m_advanced_weekdays_shown = false;
+    var m_advanced_weekdays_shown = null;
     
     /// Meeting Formats
     var m_advanced_formats_div = null;
     var m_advanced_formats_header_div = null;
     var m_advanced_formats_disclosure_a = null;
     var m_advanced_formats_content_div = null;
-    var m_advanced_formats_shown = false;
+    var m_advanced_formats_shown = null;
     
     /// Service Bodies
     var m_advanced_service_bodies_div = null;
     var m_advanced_service_bodies_header_div = null;
     var m_advanced_service_bodies_disclosure_a = null;
     var m_advanced_service_bodies_content_div = null;
-    var m_advanced_service_bodies_shown = false;
+    var m_advanced_service_bodies_shown = null;
     
     /// The GO Button
     var m_advanced_go_button_div = null;
@@ -129,7 +225,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_map_search_results_disclosure_a = null;
     var m_map_search_results_container_div = null;
     var m_map_search_results_div = null;
-    var m_mapResultsDisplayed = false;
+    var m_mapResultsDisplayed = null;
     
     /// The dynamic list search results
     var m_list_search_results_disclosure_div = null;
@@ -138,16 +234,18 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_list_search_results_table = null;
     var m_list_search_results_table_head = null;
     var m_list_search_results_table_body = null;
-    var m_listResultsDisplayed = false;
+    var m_listResultsDisplayed = null;
     
     var m_single_meeting_display_div = null;    ///< This is the div that will be used to display the details of a single meeting.
     
     var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
     var m_long_lat_northwest = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
     var m_long_lat_southeast = null;            ///< This will contain the long/lat for the maximum South and East coordinate to show all the meetings in the search.
-    var m_search_results_shown = false;         ///< If this is true, then the results div is displayed.
+    var m_search_results_shown = null;         ///< If this is true, then the results div is displayed.
     
     var m_ajax_request = null;                  ///< This is used to handle AJAX calls.
+    
+    var m_search_sort_key = null;             ///< This can be 'time', 'town', 'name', or 'distance'.
         
     /****************************************************************************************
     *								  INTERNAL CLASS FUNCTIONS							    *
@@ -215,8 +313,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_search_results_switch_a.appendChild ( document.createTextNode(g_Nouveau_select_search_results_text) );
         this.m_search_spec_switch_div.appendChild ( this.m_search_results_switch_a );
         
-        this.m_search_spec_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.SearchSpecHit()' );
-        this.m_search_results_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.SearchResultsHit()' );
+        this.m_search_spec_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.searchSpecButtonHit()' );
+        this.m_search_results_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.searchResultsButtonHit()' );
         
         this.m_display_div.appendChild ( this.m_search_spec_switch_div );
         };
@@ -241,8 +339,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_text_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_text_name_string) );
         this.m_map_text_switch_div.appendChild ( this.m_text_switch_a );
         
-        this.m_text_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.TextButtonHit()' );
-        this.m_map_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.MapButtonHit()' );
+        this.m_text_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.textButtonHit()' );
+        this.m_map_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.mapButtonHit()' );
         
         this.m_search_spec_div.appendChild ( this.m_map_text_switch_div );
         };
@@ -324,7 +422,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_main_map.geo_width = null;
                 var id = this.m_uid;
                 
-                google.maps.event.addListener ( this.m_main_map, 'click', function(in_event) { NouveauMapSearch.prototype.MapClicked( in_event, id ); } );
+                google.maps.event.addListener ( this.m_main_map, 'click', function(in_event) { NouveauMapSearch.prototype.sMapClicked( in_event, id ); } );
                     
                 // Options for circle overlay object
 
@@ -371,9 +469,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             };
 
         // We just call the global handlers (since callbacks are in their own context, no worries).
-        this.m_text_input.onfocus = function () {NouveauMapSearch.prototype.CheckTextInputFocus(this);};
-        this.m_text_input.onblur = function () {NouveauMapSearch.prototype.CheckTextInputBlur(this);};
-        this.m_text_input.onkeyup = function () {NouveauMapSearch.prototype.CheckTextInputKeyUp(this);};
+        this.m_text_input.onfocus = function () {NouveauMapSearch.prototype.sCheckTextInputFocus(this);};
+        this.m_text_input.onblur = function () {NouveauMapSearch.prototype.sCheckTextInputBlur(this);};
+        this.m_text_input.onkeyup = function () {NouveauMapSearch.prototype.sCheckTextInputKeyUp(this);};
         
         this.m_text_item_div.appendChild ( this.m_text_input );
         this.m_text_inner_div.appendChild ( this.m_text_item_div );
@@ -384,7 +482,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_text_go_a = document.createElement ( 'a' );
         this.m_text_go_a.className = 'bmlt_nouveau_text_go_button_a round_button';
         this.m_text_go_a.appendChild ( document.createTextNode(g_Nouveau_text_go_button_string) );
-        this.m_text_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.GoForIt()' );
+        this.m_text_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
         
         this.m_text_go_button_div.appendChild ( this.m_text_go_a );
         this.m_text_inner_div.appendChild ( this.m_text_go_button_div );
@@ -429,12 +527,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_switch_a = document.createElement ( 'a' );      // Create the advanced switch anchor element.
         this.m_advanced_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_advanced_name_string) );
         this.m_basic_advanced_switch_div.appendChild ( this.m_advanced_switch_a );
-        this.m_advanced_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.ToggleAdvanced()' );
+        this.m_advanced_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.toggleAdvanced()' );
         
         this.m_basic_switch_a = document.createElement ( 'a' );      // Create the advanced switch anchor element.
         this.m_basic_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_basic_name_string) );
         this.m_basic_advanced_switch_div.appendChild ( this.m_basic_switch_a );
-        this.m_basic_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.ToggleAdvanced()' );
+        this.m_basic_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.toggleAdvanced()' );
         
         this.m_search_spec_div.appendChild ( this.m_basic_advanced_switch_div );
         };
@@ -517,7 +615,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_weekdays_header_div.className = 'bmlt_nouveau_advanced_weekdays_header_div';
         
         this.m_advanced_weekdays_disclosure_a = document.createElement ( 'a' );
-        this.m_advanced_weekdays_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.ToggleWeekdaysDisclosure()' );
+        this.m_advanced_weekdays_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.toggleWeekdaysDisclosure()' );
         this.m_advanced_weekdays_disclosure_a.appendChild ( document.createTextNode(g_Nouveau_advanced_weekdays_disclosure_text) );
         this.m_advanced_weekdays_header_div.appendChild ( this.m_advanced_weekdays_disclosure_a );
         
@@ -577,7 +675,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_formats_header_div.className = 'bmlt_nouveau_advanced_formats_header_div';
         
         this.m_advanced_formats_disclosure_a = document.createElement ( 'a' );
-        this.m_advanced_formats_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.ToggleFormatsDisclosure()' );
+        this.m_advanced_formats_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.toggleFormatsDisclosure()' );
         this.m_advanced_formats_disclosure_a.appendChild ( document.createTextNode(g_Nouveau_advanced_formats_disclosure_text) );
         this.m_advanced_formats_header_div.appendChild ( this.m_advanced_formats_disclosure_a );
         
@@ -638,7 +736,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_service_bodies_header_div.className = 'bmlt_nouveau_advanced_service_bodies_header_div';
         
         this.m_advanced_service_bodies_disclosure_a = document.createElement ( 'a' );
-        this.m_advanced_service_bodies_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.ToggleServiceBodiesDisclosure()' );
+        this.m_advanced_service_bodies_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.toggleServiceBodiesDisclosure()' );
         this.m_advanced_service_bodies_disclosure_a.appendChild ( document.createTextNode(g_Nouveau_advanced_service_bodies_disclosure_text) );
         this.m_advanced_service_bodies_header_div.appendChild ( this.m_advanced_service_bodies_disclosure_a );
         
@@ -685,7 +783,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_go_a = document.createElement ( 'a' );
         this.m_advanced_go_a.className = 'bmlt_nouveau_advanced_go_button_a round_button';
         this.m_advanced_go_a.appendChild ( document.createTextNode(g_Nouveau_text_go_button_string) );
-        this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.GoForIt()' );
+        this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
         
         this.m_advanced_go_button_div.appendChild ( this.m_advanced_go_a );
         this.m_advanced_section_div.appendChild ( this.m_advanced_go_button_div );
@@ -730,8 +828,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_search_results_div = document.createElement ( 'div' );
         this.m_search_results_div.className = 'bmlt_nouveau_search_results_div';
         
-        this.buildDOMTree_SearchResults_Map();
-        this.buildDOMTree_SearchResults_List();
+        if ( this.m_search_results && this.m_search_results.length )
+            {
+            this.buildDOMTree_SearchResults_Map();
+            this.buildDOMTree_SearchResults_List();
+            };
         
         this.m_display_div.appendChild ( this.m_search_results_div );
         };
@@ -746,7 +847,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         this.m_map_search_results_disclosure_a = document.createElement ( 'a' );
         this.m_map_search_results_disclosure_a.appendChild ( document.createTextNode(g_Nouveau_display_map_results_text) );
-        this.m_map_search_results_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.DisplayMapResultsDiscolsureHit()' );
+        this.m_map_search_results_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.displayMapResultsDiscolsureHit()' );
         
         this.m_map_search_results_disclosure_div.appendChild ( this.m_map_search_results_disclosure_a );
         
@@ -788,7 +889,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         this.m_list_search_results_disclosure_a = document.createElement ( 'a' );
         this.m_list_search_results_disclosure_a.appendChild ( document.createTextNode(g_Nouveau_display_list_results_text) );
-        this.m_list_search_results_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.DisplayListResultsDiscolsureHit()' );
+        this.m_list_search_results_disclosure_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.displayListResultsDiscolsureHit()' );
         
         this.m_list_search_results_disclosure_div.appendChild ( this.m_list_search_results_disclosure_a );
         
@@ -812,7 +913,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_list_search_results_table.className = 'bmlt_nouveau_search_results_list_table';
         this.m_list_search_results_table.setAttribute ( 'cellpadding', 0 );
         this.m_list_search_results_table.setAttribute ( 'cellspacing', 0 );
-        this.m_list_search_results_table.setAttribute ( 'border', 'none' );
+        this.m_list_search_results_table.setAttribute ( 'border', 0 );
         
         this.m_list_search_results_table_head = document.createElement ( 'thead' );
         this.m_list_search_results_table_head.className = 'bmlt_nouveau_search_results_list_thead';
@@ -822,6 +923,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         this.m_list_search_results_table_body = document.createElement ( 'tbody' );
         this.m_list_search_results_table_body.className = 'bmlt_nouveau_search_results_list_tbody';
+        this.buildDOMTree_SearchResults_List_Table_Contents();
         
         this.m_list_search_results_table.appendChild ( this.m_list_search_results_table_body );
         
@@ -837,16 +939,363 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         var tr_element = document.createElement ( 'tr' );
         tr_element.className = 'bmlt_nouveau_search_results_list_header_tr';
         
-        // A list table is simple. It only has these components:
-        // 'Town,' which will include state/nation.
-        // 'Weekday,' Which will be the day of week the meeting gathers (Sun-Sat).
-        // 'Meeting Name,' which is just the meeting's name
-        // 'Format,' which is a list of format codes
-        // 'GPS,' which is a GPS link.
+        for ( var i = 0; i < g_Nouveau_array_header_text.length; i++ )
+            {
+            var td_element = document.createElement ( 'td' );
+            td_element.className = 'bmlt_nouveau_search_results_list_header_td';
+        
+            switch ( i )
+                {
+                case    0:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_nation';
+                break;
+            
+                case    1:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_state';
+                break;
+            
+                case    2:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_county';
+                break;
+            
+                case    3:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_town';
+                break;
+            
+                case    4:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_name';
+                break;
+            
+                case    5:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_weekday';
+                break;
+            
+                case    6:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_start';
+                break;
+            
+                case    7:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_location';
+                break;
+
+                default:
+                    td_element.className += ' nouveau_hidden';
+                break;
+                };
+        
+            td_element.appendChild ( document.createTextNode(g_Nouveau_array_header_text[i]) );
+            tr_element.appendChild ( td_element );
+            };
         
         this.m_list_search_results_table_head.appendChild ( tr_element );
         };
+        
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.buildDOMTree_SearchResults_List_Table_Contents = function ()
+        {
+        // The header has one row.
+        for ( var i = 0; i < this.m_search_results.length; i++ )
+            {
+            var tr_element = document.createElement ( 'tr' );
+            tr_element.className = 'bmlt_nouveau_search_results_list_body_tr ' + 'bmlt_nouveau_search_results_list_body_tr_' + (((i % 2) == 0) ? 'even' : 'odd');
+        
+            for ( var c = 0; c < g_Nouveau_array_header_text.length; c++ )
+                {
+                this.buildDOMTree_SearchResults_List_Table_Contents_Node_TD(this.m_search_results[i], c, tr_element);
+                };
+            this.m_list_search_results_table_body.appendChild ( tr_element );
+            };
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.buildDOMTree_SearchResults_List_Table_Contents_Node_TD = function (    in_meeting_object,  ///< The meeting data line object.
+                                                                                index,              ///< Which column it will be using.
+                                                                                tr_element          ///< The tr element that will receive this line.
+                                                                            )
+        {
+        var td_element = document.createElement ( 'td' );
+        td_element.className = 'bmlt_nouveau_search_results_list_body_td';
+        
+        switch ( index )
+            {
+            case    0:
+                td_element.className += ' bmlt_nouveau_search_results_list_body_td_nation';
+                td_element.appendChild ( this.buildDOMTree_ConstructNationName ( in_meeting_object ) );
+            break;
             
+            case    1:
+                td_element.className += ' bmlt_nouveau_search_results_list_body_td_state';
+                td_element.appendChild ( this.buildDOMTree_ConstructStateName ( in_meeting_object ) );
+            break;
+            
+            case    2:
+                td_element.className += ' bmlt_nouveau_search_results_list_body_td_county';
+                td_element.appendChild ( this.buildDOMTree_ConstructCountyName ( in_meeting_object ) );
+            break;
+            
+            case    3:
+                td_element.className += ' bmlt_nouveau_search_results_list_body_td_town';
+                td_element.appendChild ( this.buildDOMTree_ConstructTownName ( in_meeting_object ) );
+            break;
+            
+            case    4:
+                td_element.className += ' bmlt_nouveau_search_results_list_body_td_name';
+                td_element.appendChild ( this.buildDOMTree_ConstructMeetingName ( in_meeting_object ) );
+            break;
+            
+            case    5:
+                td_element.className += ' bmlt_nouveau_search_results_list_body_td_weekday';
+                td_element.appendChild ( this.buildDOMTree_ConstructWeekday ( in_meeting_object ) );
+            break;
+            
+            case    6:
+                td_element.className += ' bmlt_nouveau_search_results_list_body_td_start';
+                td_element.appendChild ( this.buildDOMTree_ConstructStartTime( in_meeting_object ) );
+            break;
+            
+            case    7:
+                td_element.className += ' bmlt_nouveau_search_results_list_body_td_location';
+                td_element.appendChild ( this.buildDOMTree_ConstructLocation( in_meeting_object ) );
+            break;
+            
+            default:
+                td_element.className += ' nouveau_hidden';
+            break;
+            };
+        
+        tr_element.appendChild ( td_element );
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    *   \returns
+    ****************************************************************************************/
+    this.buildDOMTree_ConstructNationName = function ( in_meeting_object  ///< The meeting data line object.
+                                                     )
+        {
+        var container_element = document.createElement ( 'div' );
+        container_element.className = 'bmlt_nouveau_search_results_list_nation_name_div';
+
+        if ( in_meeting_object['location_nation'] )
+            {
+            container_element.appendChild ( document.createTextNode ( in_meeting_object['location_nation'] ) );
+            };
+        
+        return container_element;
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    *   \returns
+    ****************************************************************************************/
+    this.buildDOMTree_ConstructStateName = function ( in_meeting_object  ///< The meeting data line object.
+                                                    )
+        {
+        var container_element = document.createElement ( 'div' );
+        container_element.className = 'bmlt_nouveau_search_results_list_state_name_div';
+        
+        if ( in_meeting_object['location_province'] )
+            {
+            container_element.appendChild ( document.createTextNode ( in_meeting_object['location_province'] ) );
+            };
+        
+        return container_element;
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    *   \returns
+    ****************************************************************************************/
+    this.buildDOMTree_ConstructCountyName = function ( in_meeting_object  ///< The meeting data line object.
+                                                     )
+        {
+        var container_element = document.createElement ( 'div' );
+        container_element.className = 'bmlt_nouveau_search_results_list_county_name_div';
+        
+        if ( in_meeting_object['location_city_subsection'] )
+            {
+            container_element.className += ' bmlt_nouveau_search_results_list_town_name_county_has_borough_div';
+            };
+
+        container_element.appendChild ( document.createTextNode ( in_meeting_object['location_sub_province'] ) );
+        
+        return container_element;
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    *   \returns
+    ****************************************************************************************/
+    this.buildDOMTree_ConstructTownName = function ( in_meeting_object  ///< The meeting data line object.
+                                                   )
+        {
+        var container_element = document.createElement ( 'div' );
+        container_element.className = 'bmlt_nouveau_search_results_list_town_name_div';
+        
+        if ( in_meeting_object['location_sub_province'] )
+            {
+            container_element.className += ' bmlt_nouveau_search_results_list_town_name_has_county_div';
+            };
+        
+        var span_element = null;
+
+        if ( in_meeting_object['location_municipality'] )
+            {
+            span_element = document.createElement ( 'span' );
+            span_element.className = 'bmlt_nouveau_search_results_list_town_name_town_span';
+            
+            if ( in_meeting_object['location_city_subsection'] )
+                {
+                span_element.className += ' bmlt_nouveau_search_results_list_town_name_town_has_borough_span';
+                };
+                
+            span_element.appendChild ( document.createTextNode ( in_meeting_object['location_municipality'] ) );
+            container_element.appendChild ( span_element );
+            };
+        
+        if ( in_meeting_object['location_city_subsection'] )
+            {
+            span_element = document.createElement ( 'span' );
+            span_element.className = 'bmlt_nouveau_search_results_list_town_name_borough_span';
+            
+            if ( in_meeting_object['location_municipality'] )
+                {
+                span_element.className += ' bmlt_nouveau_search_results_list_town_name_borough_has_town_span';
+                };
+
+            span_element.appendChild ( document.createTextNode ( in_meeting_object['location_city_subsection'] ) );
+            container_element.appendChild ( span_element );
+            }
+        
+        if ( in_meeting_object['location_neighborhood'] )
+            {
+            span_element = document.createElement ( 'span' );
+            span_element.className = 'bmlt_nouveau_search_results_list_town_name_neighborhood_span';
+            span_element.appendChild ( document.createTextNode ( in_meeting_object['location_neighborhood'] ) );
+            container_element.appendChild ( span_element );
+            }
+
+        return container_element;
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    *   \returns
+    ****************************************************************************************/
+    this.buildDOMTree_ConstructMeetingName = function ( in_meeting_object  ///< The meeting data line object.
+                                                        )
+        {
+        var container_element = document.createElement ( 'div' );
+        container_element.className = 'bmlt_nouveau_search_results_list_meeting_name_div';
+        
+        if ( in_meeting_object['meeting_name'] )
+            {
+            container_element.appendChild ( document.createTextNode ( in_meeting_object['meeting_name'] ) );
+            }
+                    
+        return container_element;
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    *   \returns
+    ****************************************************************************************/
+    this.buildDOMTree_ConstructWeekday = function ( in_meeting_object  ///< The meeting data line object.
+                                                    )
+        {
+        var container_element = document.createElement ( 'div' );
+        container_element.className = 'bmlt_nouveau_search_results_list_weekday_div';
+        container_element.appendChild ( document.createTextNode(g_Nouveau_weekday_long_array[in_meeting_object['weekday_tinyint'] - 1] ) );
+                    
+        return container_element;
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    *   \returns
+    ****************************************************************************************/
+    this.buildDOMTree_ConstructStartTime = function ( in_meeting_object  ///< The meeting data line object.
+                                                    )
+        {
+        var container_element = document.createElement ( 'div' );
+        container_element.className = 'bmlt_nouveau_search_results_list_start_time_div';
+        
+        var time = (in_meeting_object['start_time'].toString()).split(':');
+
+        time[0] = parseInt ( time[0], 10 );
+        time[1] = parseInt ( time[1], 10 );
+        var st = null;
+        
+        if ( (time[0] == 12) && (time[1] == 0) )
+            {
+            st = g_Nouveau_noon;
+            }
+        else if ( (time[0] == 23) && (time[1] > 45) )
+            {
+            st = g_Nouveau_noon;
+            }
+        else
+            {
+            var hours = (time[0] > 12) ? time[0] - 12 : time[0];
+            var minutes = time[1];
+            var a = ((time[0] > 12) || ((time[0] == 12) && (time[1] > 0))) ? g_Nouveau_pm : g_Nouveau_am;
+            st = sprintf ( g_Nouveau_time_sprintf_format, hours, time[1], a );
+            };
+        
+        container_element.appendChild ( document.createTextNode( st ) );
+                    
+        return container_element;
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    *   \returns
+    ****************************************************************************************/
+    this.buildDOMTree_ConstructLocation = function ( in_meeting_object  ///< The meeting data line object.
+                                                    )
+        {
+        var container_element = document.createElement ( 'div' );
+        container_element.className = 'bmlt_nouveau_search_results_list_location_div';
+        
+        var loc_text = '';
+        
+        if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+            {
+            loc_text = sprintf ( g_Nouveau_location_sprintf_format_loc_street_info, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_info'] );
+            }
+        else if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] )
+            {
+            loc_text = sprintf ( g_Nouveau_location_sprintf_format_loc_street, in_meeting_object['location_text'], in_meeting_object['location_street'] );
+            }
+        else if ( in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+            {
+            loc_text = sprintf ( g_Nouveau_location_sprintf_format_street_info, in_meeting_object['location_street'], in_meeting_object['location_info'] );
+            }
+        else if ( in_meeting_object['location_text'] && in_meeting_object['location_info'] )
+            {
+            loc_text = sprintf ( g_Nouveau_location_sprintf_format_loc_info, in_meeting_object['location_text'], in_meeting_object['location_info'] );
+            }
+        else if ( in_meeting_object['location_street'] )
+            {
+            loc_text = sprintf ( g_Nouveau_location_sprintf_format_street, in_meeting_object['location_street'] );
+            }
+        else if ( in_meeting_object['location_text'] )
+            {
+            loc_text = sprintf ( g_Nouveau_location_sprintf_format_loc, in_meeting_object['location_text'] );
+            }
+        else
+            {
+            loc_text = g_Nouveau_location_sprintf_format_wtf;
+            };
+
+        container_element.appendChild ( document.createTextNode( loc_text ) );
+        return container_element;
+        };
+                
     /************************************************************************************//**
     *	\brief This sets the state of the "MAP/TEXT" tab switch div. It actually changes    *
     *          the state of the anchors, so it is more than just a CSS class change.        *
@@ -978,7 +1427,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	        this.m_ajax_request = null;
 	        };
 	    
-        this.m_ajax_request = BMLTPlugin_AjaxRequest ( in_uri, NouveauMapSearch.prototype.AJAXRouter, 'get', this.m_uid );
+        this.m_ajax_request = BMLTPlugin_AjaxRequest ( in_uri, NouveauMapSearch.prototype.sAJAXRouter, 'get', this.m_uid );
 	};
         
     /****************************************************************************************
@@ -1002,37 +1451,60 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /************************************************************************************//**
     *	\brief This sorts through all of the search results, and builds an array of fields  *
     *          for their display.                                                           *
+    *          The principal reason for this function is to create a "box" that contains    *
+    *          all of the meetings. This will be used to select an initial projection on    *
+    *          the map display.                                                             *
+    *          TODO: This needs some work to make it effective for the antimeridian.        *
     ****************************************************************************************/
     this.analyzeSearchResults = function ()
         {
         // These will be the result of this function.
-        this.m_long_lat_northwest = new {'lng':var m_current_long.toFloat(), 'lat':var m_current_lat.toFloat()};  // This will contain the North, West corner of the map to encompass all the results.
-        this.m_long_lat_southeast = new {'lng':var m_current_long.toFloat(), 'lat':var m_current_lat.toFloat()};  // Same for South, East.
+        this.m_long_lat_northwest = { 'lng':this.m_current_long, 'lat':this.m_current_lat };  // This will contain the North, West corner of the map to encompass all the results.
+        this.m_long_lat_southeast = { 'lng':this.m_current_long, 'lat':this.m_current_lat };  // Same for South, East.
+
         // We loop through the whole response.
 		for ( var c = 0; c < this.m_search_results.length; c++ )
 		    {
+		    this.m_search_results[c].uid = this.m_uid;    // This will be used to anchor context in future callbacks. This is a convenient place to set it.
 		    var theMeeting = this.m_search_results[c];
-		    if ( themeeting['longitude'].toFloat() < this.m_long_lat_northwest['lng'] )
+		    var mLNG = theMeeting['longitude'];
+		    var mLAT = theMeeting['latitude'];
+		    
+		    if ( mLNG < this.m_long_lat_northwest.lng )
 		        {
-		        this.m_long_lat_northwest['lng'] = themeeting['longitude'].toFloat();
+		        this.m_long_lat_northwest.lng = mLNG;
 		        };
-		        
-		    if ( themeeting['latitude'].toFloat() > this.m_long_lat_northwest['lat'] )
+		    
+		    if ( mLAT > this.m_long_lat_northwest.lat )
 		        {
-		        this.m_long_lat_northwest['lat'] = themeeting['latitude'].toFloat();
+		        this.m_long_lat_northwest.lat = mLAT;
 		        };
-		    if ( themeeting['longitude'].toFloat() > this.m_long_lat_southeast['lng'] )
+		    
+		    if ( mLNG > this.m_long_lat_southeast.lng )
 		        {
-		        this.m_long_lat_southeast['lng'] = themeeting['longitude'].toFloat();
+		        this.m_long_lat_southeast.lng = mLNG;
 		        };
-		        
-		    if ( themeeting['latitude'].toFloat() < this.m_long_lat_southeast['lat'] )
+		    
+		    if ( mLAT < this.m_long_lat_southeast.lat )
 		        {
-		        this.m_long_lat_southeast['lat'] = themeeting['latitude'].toFloat();
+		        this.m_long_lat_southeast.lat = mLAT;
 		        };
 		    };
+		    
+		this.sortSearchResults();
         };
     
+    /************************************************************************************//**
+    *	\brief This either hides or shows the search results.                               *
+    ****************************************************************************************/
+    this.sortSearchResults = function()
+        {
+        if ( this.m_search_results && this.m_search_results.length )    // Make sure we have something to sort.
+            {
+            this.m_search_results.sort ( NouveauMapSearch.prototype.sSortCallback );
+            };
+        };
+        
     /************************************************************************************//**
     *	\brief This either hides or shows the search results.                               *
     ****************************************************************************************/
@@ -1065,6 +1537,150 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 };
             };
         };
+
+    /***************************************************************************************
+    *############################ INSTANCE CALLBACK FUNCTIONS #############################*
+    *                                                                                      *
+    * These functions are called for an instance, and have object context.                 *
+    ****************************************************************************************/
+    /************************************************************************************//**
+    *	\brief Responds to the Specify A New Search link being hit.                         *
+    ****************************************************************************************/
+    this.searchSpecButtonHit = function()
+        {
+        this.m_search_results_shown = false;
+        this.setDisplayedSearchResults();
+        };
+    
+    /************************************************************************************//**
+    *	\brief Responds to the Show Search Results link being hit.                          *
+    ****************************************************************************************/
+    this.searchResultsButtonHit = function()
+        {
+        this.m_search_results_shown = true;
+        this.setDisplayedSearchResults();
+        };
+
+    /************************************************************************************//**
+    *	\brief Responds to either of the GO buttons being hit.                              *
+    ****************************************************************************************/
+    this.goButtonHit = function()
+        {
+        this.beginSearch();
+        };
+
+    /************************************************************************************//**
+    *	\brief Toggles the state of the Basic/Advanced search spec display.                 *
+    ****************************************************************************************/
+    this.toggleAdvanced = function()
+        {
+        switch ( this.m_current_view )   // Vet the class state.
+            {
+            case 'map':
+                this.m_current_view = 'advanced map';
+            break;
+        
+            case 'advanced map':
+                this.m_current_view = 'map';
+            break;
+        
+            case 'text':
+                this.m_current_view = 'advanced text';
+            break;
+        
+            case 'advanced text':
+                this.m_current_view = 'text';
+            break;
+            };
+        
+        this.setBasicAdvancedSwitch();
+        };
+        
+    /************************************************************************************//**
+    *	\brief Responds to the Search By Map link being hit.                                *
+    ****************************************************************************************/
+    this.mapButtonHit = function()
+        {
+        switch ( this.m_current_view )   // Vet the class state.
+            {
+            case 'text':
+                this.m_current_view = 'map';
+            break;
+        
+            case 'advanced text':
+                this.m_current_view = 'advanced map';
+            break;
+            };
+        
+        this.setMapTextSwitch();
+        };
+        
+    /************************************************************************************//**
+    *	\brief Responds to the Search By Text button being hit.                             *
+    ****************************************************************************************/
+    this.textButtonHit = function()
+        {
+        switch ( this.m_current_view )   // Vet the class state.
+            {
+            case 'map':
+                this.m_current_view = 'text';
+            break;
+        
+            case 'advanced map':
+                this.m_current_view = 'advanced text';
+            break;
+            };
+        
+        this.setMapTextSwitch();
+        };
+        
+    /************************************************************************************//**
+    *	\brief Toggles the display state of the Advanced Weekdays section.                  *
+    ****************************************************************************************/
+    this.toggleWeekdaysDisclosure = function()
+        {
+        this.m_advanced_weekdays_shown = !this.m_advanced_weekdays_shown;
+    
+        this.setAdvancedWeekdaysDisclosure();
+        };
+        
+    /************************************************************************************//**
+    *	\brief Toggles the display state of the Advanced Formats section.                   *
+    ****************************************************************************************/
+    this.toggleFormatsDisclosure = function()
+        {
+        this.m_advanced_formats_shown = !this.m_advanced_formats_shown;
+    
+        this.setAdvancedFormatsDisclosure();
+        };
+        
+    /************************************************************************************//**
+    *	\brief Toggles the display state of the Advanced Service Bodies section.            *
+    ****************************************************************************************/
+    this.toggleServiceBodiesDisclosure = function()
+        {
+        this.m_advanced_service_bodies_shown = !this.m_advanced_service_bodies_shown;
+    
+        this.setAdvancedServiceBodiesDisclosure();
+        };
+        
+    /************************************************************************************//**
+    *	\brief This is called when the Display Map Results Disclosure link is hit.          *
+    ****************************************************************************************/
+    this.displayMapResultsDiscolsureHit = function()
+        {
+        this.m_mapResultsDisplayed = !this.m_mapResultsDisplayed;
+        this.setMapResultsDisclosure();
+        };
+        
+    /************************************************************************************//**
+    *	\brief This is called when the Display List Results Disclosure link is hit.         *
+    ****************************************************************************************/
+    this.displayListResultsDiscolsureHit = function()
+        {
+        this.m_listResultsDisplayed = !this.m_listResultsDisplayed;
+        this.setListResultsDisclosure();
+        };
     
     /****************************************************************************************
     *##################################### CONSTRUCTOR #####################################*
@@ -1079,6 +1695,16 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_initial_text = in_initial_text;
     this.m_checked_location = in_checked_location;
     this.m_single_meeting_id = in_single_meeting_id;
+    
+    this.m_checked_location = false;         ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
+    this.m_advanced_weekdays_shown = false;
+    this.m_advanced_formats_shown = false;
+    this.m_advanced_service_bodies_shown = false;
+    this.m_mapResultsDisplayed = false;
+    this.m_listResultsDisplayed = false;
+    this.m_search_results_shown = false;         ///< If this is true, then the results div is displayed.
+
+    this.m_search_sort_key = 'name';             ///< This can be 'time', 'town', 'name', or 'distance'.
 
     this.m_container_div = document.getElementById ( this.m_uid + '_container' );   ///< This is the main outer container.
     
@@ -1113,7 +1739,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 /****************************************************************************************//**
 *	\brief Will check a text element upon blur, and will fill it with the default string.   *
 ********************************************************************************************/
-NouveauMapSearch.prototype.CheckTextInputBlur = function ( in_text_element  ///< The text element being evaluated.
+NouveauMapSearch.prototype.sCheckTextInputBlur = function ( in_text_element  ///< The text element being evaluated.
                                                             )
     {
     if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
@@ -1130,7 +1756,7 @@ NouveauMapSearch.prototype.CheckTextInputBlur = function ( in_text_element  ///<
 /****************************************************************************************//**
 *	\brief Will test a text element upon keyUp, and may change its appearance.              *
 ********************************************************************************************/
-NouveauMapSearch.prototype.CheckTextInputKeyUp = function ( in_text_element ///< The text element being evaluated.
+NouveauMapSearch.prototype.sCheckTextInputKeyUp = function ( in_text_element ///< The text element being evaluated.
                                                             )
     {
     if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
@@ -1147,7 +1773,7 @@ NouveauMapSearch.prototype.CheckTextInputKeyUp = function ( in_text_element ///<
 /****************************************************************************************//**
 *	\brief Will test a text element upon focus, and remove any default string.              *
 ********************************************************************************************/
-NouveauMapSearch.prototype.CheckTextInputFocus = function ( in_text_element ///< The text element being evaluated.
+NouveauMapSearch.prototype.sCheckTextInputFocus = function ( in_text_element ///< The text element being evaluated.
                                                             )
     {
     if ( in_text_element.value && (in_text_element.value == in_text_element.defaultValue) )
@@ -1164,7 +1790,7 @@ NouveauMapSearch.prototype.CheckTextInputFocus = function ( in_text_element ///<
 /****************************************************************************************//**
 *	\brief Responds to a click in the map.                                                  *
 ********************************************************************************************/
-NouveauMapSearch.prototype.MapClicked = function (  in_event,   ///< The map event
+NouveauMapSearch.prototype.sMapClicked = function ( in_event,   ///< The map event
                                                     in_id       ///< The unique ID of the object (establishes context).
                                                     )
     {
@@ -1190,7 +1816,7 @@ NouveauMapSearch.prototype.MapClicked = function (  in_event,   ///< The map eve
 /****************************************************************************************//**
 *	\brief This is the AJAX callback from a search request.                                 *
 ********************************************************************************************/
-NouveauMapSearch.prototype.AJAXRouter = function (  in_response_object, ///< The HTTPRequest response object.
+NouveauMapSearch.prototype.sAJAXRouter = function ( in_response_object, ///< The HTTPRequest response object.
                                                     in_id               ///< The unique ID of the object (establishes context).
                                                     )
     {
@@ -1230,148 +1856,160 @@ NouveauMapSearch.prototype.AJAXRouter = function (  in_response_object, ///< The
         alert ( g_Nouveau_no_search_results_text );
         };
     };
-
+    
 /********************************************************************************************
-*############################### INSTANCE CALLBACK FUNCTIONS ###############################*
-*                                                                                           *
-* These functions are called for an instance, and have object context.                      *
+*	\brief Used to sort the search results. Context is established by fetching the          *
+*          'context' data member of either of the passed in objects.                        *
+*   \returns -1 if a<b, 0 if a==b, and 1 if a>b                                             *
 ********************************************************************************************/
-
-/****************************************************************************************//**
-*	\brief Responds to the Specify A New Search link being hit.                             *
-********************************************************************************************/
-NouveauMapSearch.prototype.SearchSpecHit = function()
+NouveauMapSearch.prototype.sSortCallback = function( in_obj_a,
+                                                     in_obj_b
+                                                    )
     {
-    this.m_search_results_shown = false;
-    this.setDisplayedSearchResults();
-    };
+    eval ('var context = g_instance_' + in_obj_a.uid.toString() + '_js_handler;' );
     
-/****************************************************************************************//**
-*	\brief Responds to the Show Search Results link being hit.                              *
-********************************************************************************************/
-NouveauMapSearch.prototype.SearchResultsHit = function()
-    {
-    this.m_search_results_shown = true;
-    this.setDisplayedSearchResults();
-    };
-
-/****************************************************************************************//**
-*	\brief Responds to either of the GO buttons being hit.                                  *
-********************************************************************************************/
-NouveauMapSearch.prototype.GoForIt = function()
-    {
-    this.beginSearch();
-    };
-
-/****************************************************************************************//**
-*	\brief Toggles the state of the Basic/Advanced search spec display.                     *
-********************************************************************************************/
-NouveauMapSearch.prototype.ToggleAdvanced = function()
-    {
-    switch ( this.m_current_view )   // Vet the class state.
+    var ret = 0;
+    
+    switch ( context.m_search_sort_key )
         {
-        case 'map':
-            this.m_current_view = 'advanced map';
-        break;
+        case 'distance':
+            if ( in_obj_a.distance_in_km < in_obj_b.distance_in_km )
+                {
+                ret = -1;
+                }
+            else if ( in_obj_a.distance_in_km > in_obj_b.distance_in_km )
+                {
+                ret = 1;
+                };
         
-        case 'advanced map':
-            this.m_current_view = 'map';
-        break;
+        // We try the town, next (Very doubtful this will ever happen).
         
-        case 'text':
-            this.m_current_view = 'advanced text';
-        break;
+        case 'town':
+            if ( ret == 0 )
+                {
+                var a_nation = in_obj_a.location_province.replace(/\s/g, "").toLowerCase();
+                var a_state = in_obj_a.location_province.replace(/\s/g, "").toLowerCase();
+                var a_county = in_obj_a.location_sub_province.replace(/\s/g, "").toLowerCase();
+                var a_town = in_obj_a.location_municipality.replace(/\s/g, "").toLowerCase();
+                var a_borough = in_obj_a.location_city_subsection.replace(/\s/g, "").toLowerCase();
+            
+                var b_nation = in_obj_b.location_province.replace(/\s/g, "").toLowerCase();
+                var b_state = in_obj_b.location_province.replace(/\s/g, "").toLowerCase();
+                var b_county = in_obj_b.location_sub_province.replace(/\s/g, "").toLowerCase();
+                var b_town = in_obj_b.location_municipality.replace(/\s/g, "").toLowerCase();
+                var b_borough = in_obj_b.location_city_subsection.replace(/\s/g, "").toLowerCase();
+            
+                // We bubble down through the various levels of location.
+                // One of the participants being missing prevents comparison.
+                if ( a_nation && b_nation )
+                    {
+                    if ( a_nation < b_nation )
+                        {
+                        ret = -1;
+                        }
+                    else if ( a_nation > b_nation )
+                        {
+                        ret = 1;
+                        };
+                    };
+                
+                if ( ret == 0 && a_state && b_state )
+                    {
+                    if ( a_state < b_state )
+                        {
+                        ret = -1;
+                        }
+                    else if ( a_state > b_state )
+                        {
+                        ret = 1;
+                        };
+                    };
+                
+                if ( ret == 0 && a_county && b_county )
+                    {
+                    if ( a_county < b_county )
+                        {
+                        ret = -1;
+                        }
+                    else if ( a_county > b_county )
+                        {
+                        ret = 1;
+                        };
+                    };
+                
+                if ( ret == 0 && a_town && b_town )
+                    {
+                    if ( a_town < b_town )
+                        {
+                        ret = -1;
+                        }
+                    else if ( a_town > b_town )
+                        {
+                        ret = 1;
+                        };
+                    };
+                
+                if ( ret == 0 && a_borough && b_borough )
+                    {
+                    if ( a_borough < b_borough )
+                        {
+                        ret = -1;
+                        }
+                    else if ( a_borough > b_borough )
+                        {
+                        ret = 1;
+                        };
+                    };
+                };
+            
+        // We sort by time for the same town.
         
-        case 'advanced text':
-            this.m_current_view = 'text';
+        default:    // 'time' is default
+            if ( ret == 0 )
+                {
+                if ( in_obj_a.weekday_tinyint < in_obj_b.weekday_tinyint )
+                    {
+                    ret = -1;
+                    }
+                else if ( in_obj_a.weekday_tinyint > in_obj_b.weekday_tinyint )
+                    {
+                    ret = 1;
+                    }
+                else
+                    {
+                    var time_a = (in_obj_a.start_time.toString().replace(':', '')).toInt();
+                    var time_b = (in_obj_a.start_time.toString().replace(':', '')).toInt();
+                
+                    if ( time_a < time_b )
+                        {
+                        ret = -1;
+                        }
+                    else if ( time_a > time_b )
+                        {
+                        ret = 1;
+                        };
+                    };
+                };
+        
+        // And finally, by meeting name.
+                
+        case 'name':
+            if ( ret == 0 )
+                {
+                var a_name = in_obj_a.meeting_name.replace(/\s/g, "").toLowerCase();
+                var b_name = in_obj_b.meeting_name.replace(/\s/g, "").toLowerCase();
+            
+                if ( a_name < b_name )
+                    {
+                    ret = -1;
+                    }
+                else if ( a_name > b_name )
+                    {
+                    ret = 1;
+                    };
+                };
         break;
         };
         
-    this.setBasicAdvancedSwitch();
-    };
-        
-/****************************************************************************************//**
-*	\brief Responds to the Search By Map link being hit.                                    *
-********************************************************************************************/
-NouveauMapSearch.prototype.MapButtonHit = function()
-    {
-    switch ( this.m_current_view )   // Vet the class state.
-        {
-        case 'text':
-            this.m_current_view = 'map';
-        break;
-        
-        case 'advanced text':
-            this.m_current_view = 'advanced map';
-        break;
-        };
-        
-    this.setMapTextSwitch();
-    };
-        
-/****************************************************************************************//**
-*	\brief Responds to the Search By Text button being hit.                                 *
-********************************************************************************************/
-NouveauMapSearch.prototype.TextButtonHit = function()
-    {
-    switch ( this.m_current_view )   // Vet the class state.
-        {
-        case 'map':
-            this.m_current_view = 'text';
-        break;
-        
-        case 'advanced map':
-            this.m_current_view = 'advanced text';
-        break;
-        };
-        
-    this.setMapTextSwitch();
-    };
-        
-/****************************************************************************************//**
-*	\brief Toggles the display state of the Advanced Weekdays section.                      *
-********************************************************************************************/
-NouveauMapSearch.prototype.ToggleWeekdaysDisclosure = function()
-    {
-    this.m_advanced_weekdays_shown = !this.m_advanced_weekdays_shown;
-    
-    this.setAdvancedWeekdaysDisclosure();
-    };
-        
-/****************************************************************************************//**
-*	\brief Toggles the display state of the Advanced Formats section.                       *
-********************************************************************************************/
-NouveauMapSearch.prototype.ToggleFormatsDisclosure = function()
-    {
-    this.m_advanced_formats_shown = !this.m_advanced_formats_shown;
-    
-    this.setAdvancedFormatsDisclosure();
-    };
-        
-/****************************************************************************************//**
-*	\brief Toggles the display state of the Advanced Service Bodies section.                *
-********************************************************************************************/
-NouveauMapSearch.prototype.ToggleServiceBodiesDisclosure = function()
-    {
-    this.m_advanced_service_bodies_shown = !this.m_advanced_service_bodies_shown;
-    
-    this.setAdvancedServiceBodiesDisclosure();
-    };
-        
-/****************************************************************************************//**
-*	\brief This is called when the Display Map Results Disclosure link is hit.              *
-********************************************************************************************/
-NouveauMapSearch.prototype.DisplayMapResultsDiscolsureHit = function()
-    {
-    this.m_mapResultsDisplayed = !this.m_mapResultsDisplayed;
-    this.setMapResultsDisclosure();
-    };
-        
-/****************************************************************************************//**
-*	\brief This is called when the Display List Results Disclosure link is hit.             *
-********************************************************************************************/
-NouveauMapSearch.prototype.DisplayListResultsDiscolsureHit = function()
-    {
-    this.m_listResultsDisplayed = !this.m_listResultsDisplayed;
-    this.setListResultsDisclosure();
+    return ret;
     };

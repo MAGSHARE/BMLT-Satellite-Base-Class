@@ -1746,6 +1746,18 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_select_search_results_text ='".$this->process_text ( self::$local_nouveau_select_search_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_map_results_text ='".$this->process_text ( self::$local_nouveau_display_map_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_list_results_text ='".$this->process_text ( self::$local_nouveau_display_list_results_text )."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_loc_street_info = '".self::$local_nouveau_location_sprintf_format_loc_street_info."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_loc_street = '".self::$local_nouveau_location_sprintf_format_loc_street."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_street_info = '".self::$local_nouveau_location_sprintf_format_street_info."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_loc_info = '".self::$local_nouveau_location_sprintf_format_loc_info."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_street = '".self::$local_nouveau_location_sprintf_format_street."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_loc = '".self::$local_nouveau_location_sprintf_format_loc."';";
+                $the_new_content .= "var g_Nouveau_time_sprintf_format = '".self::$local_nouveau_time_sprintf_format."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_wtf ='".$this->process_text ( self::$local_nouveau_location_sprintf_format_wtf )."';";
+                $the_new_content .= "var g_Nouveau_am ='".$this->process_text ( self::$local_nouveau_am )."';";
+                $the_new_content .= "var g_Nouveau_pm ='".$this->process_text ( self::$local_nouveau_pm )."';";
+                $the_new_content .= "var g_Nouveau_noon ='".$this->process_text ( self::$local_nouveau_noon )."';";
+                $the_new_content .= "var g_Nouveau_midnight ='".$this->process_text ( self::$local_nouveau_midnight )."';";
                 $the_new_content .= "var g_Nouveau_array_keys = {";
                 
                 $first = true;
@@ -1761,7 +1773,9 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                     }
                 
                 $the_new_content .= "};";
-                
+                $the_new_content .= 'var g_Nouveau_array_header_text = new Array ( "'.join ( '","', self::$local_nouveau_table_header_array ).'");';
+                $the_new_content .= 'var g_Nouveau_weekday_long_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_long_array ).'");';
+                $the_new_content .= 'var g_Nouveau_weekday_short_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_short_array ).'");';
                 $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
                 
                 $the_new_content .= '</script>';

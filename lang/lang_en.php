@@ -124,6 +124,21 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_cant_find_meetings_display = 'No Meetings Found In This Search';     ///< When the new map search cannot find any meetings.
     static  $local_nouveau_display_map_results_text = 'Display the Search Results in a Map';    ///< The text for the display map results disclosure link.
     static  $local_nouveau_display_list_results_text = 'Display the Search Results in a List';  ///< The text for the display list results disclosure link.
+    static  $local_nouveau_table_header_array = array ( 'Nation', 'State', 'County', 'Town', 'Meeting Name', 'Weekday', 'Start Time', 'Location' );
+    static  $local_nouveau_weekday_long_array = array ( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
+    static  $local_nouveau_weekday_short_array = array ( 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' );
+    static  $local_nouveau_location_sprintf_format_loc_street_info = '%s, %s (%s)';
+    static  $local_nouveau_location_sprintf_format_loc_street = '%s, %s';
+    static  $local_nouveau_location_sprintf_format_street_info = '%s (%s)';
+    static  $local_nouveau_location_sprintf_format_loc_info = '%s (%s)';
+    static  $local_nouveau_location_sprintf_format_street = '%s';
+    static  $local_nouveau_location_sprintf_format_loc = '%s';
+    static  $local_nouveau_location_sprintf_format_wtf = 'No Location Given';
+    static  $local_nouveau_time_sprintf_format = '%d:%02d %s';
+    static  $local_nouveau_am = 'AM';
+    static  $local_nouveau_pm = 'PM';
+    static  $local_nouveau_noon = 'Noon';
+    static  $local_nouveau_midnight = 'Midnight';
     static  $local_nouveau_prompt_array = array (
                                                 'weekday_tinyint' => 'Weekday',
                                                 'start_time' => 'Start Time',
@@ -140,7 +155,8 @@ class BMLT_Localized_BaseClass
                                                 'location_sub_province' => 'County',
                                                 'location_province' => 'State',
                                                 'location_nation' => 'Nation',
-                                                'location_postal_code_1' => 'Zip Code'
+                                                'location_postal_code_1' => 'Zip Code',
+                                                'location_info' => 'Extra Information'
                                                 );
                                                 
     /************************************************************************************//**

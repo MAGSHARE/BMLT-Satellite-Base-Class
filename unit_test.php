@@ -105,10 +105,10 @@ function u_test_operation()
         
         $seconds = $BMLTPluginOp->getBMLTOptions(-1);
         
-        $seconds['setting_name'] = 'UKNA';
-        $seconds['root_server'] = 'http://www.ukna.org/BMLT/main_server';
-        $seconds['map_center_latitude'] = 53.067626642387374;
-        $seconds['map_center_longitude'] = -1.23046875;
+        $seconds['setting_name'] = 'GNYR';
+        $seconds['root_server'] = 'http://bmlt.newyorkna.org/main_server';
+        $seconds['map_center_latitude'] = 41.37;
+        $seconds['map_center_longitude'] = -73.18;
         $seconds['map_zoom'] = 5;
         $seconds['id'] = '2';
         $seconds['distance_units'] = 'km';
