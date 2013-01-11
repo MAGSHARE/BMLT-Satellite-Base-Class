@@ -294,6 +294,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.buildDOMTree_SearchResults_Section();
         
         this.setDisplayedSearchResults();   // Make sure that the proper div is displayed.
+        this.validateGoButtons();
         
         this.buildDOMTree_CreateThrobberDiv();
         this.hideThrobber();
@@ -425,9 +426,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             
             if ( this.m_main_map )
                 {
-                this.m_main_map.response_object = null;
                 this.m_main_map.center_marker = null;
                 this.m_main_map.geo_width = null;
+                
                 var id = this.m_uid;
                 
                 google.maps.event.addListener ( this.m_main_map, 'click', function(in_event) { NouveauMapSearch.prototype.sMapClicked( in_event, id ); } );
@@ -485,10 +486,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             
             if ( this.m_map_search_results_map )
                 {
-                this.m_map_search_results_map.response_object = null;
-                this.m_map_search_results_map.center_marker = null;
-                this.m_map_search_results_map.geo_width = null;
+                this.m_map_search_results_map.meeting_marker_array = null;
+                
                 var id = this.m_uid;
+                
+                google.maps.event.addListener ( this.m_map_search_results_map, 'zoom_changed', function(in_event) { NouveauMapSearch.prototype.sMapZoomChanged( in_event, id ); } );
 
                 this.m_map_search_results_map.fitBounds ( new google.maps.LatLngBounds ( new google.maps.LatLng ( this.m_long_lat_southwest.lat, this.m_long_lat_southwest.lng ), new google.maps.LatLng ( this.m_long_lat_northeast.lat, this.m_long_lat_northeast.lng ) ) );
                 };
@@ -523,6 +525,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             };
 
         // We just call the global handlers (since callbacks are in their own context, no worries).
+        this.m_text_input.uid = this.m_uid; // Used to establish context in the callbacks.
         this.m_text_input.onfocus = function () {NouveauMapSearch.prototype.sCheckTextInputFocus(this);};
         this.m_text_input.onblur = function () {NouveauMapSearch.prototype.sCheckTextInputBlur(this);};
         this.m_text_input.onkeyup = function () {NouveauMapSearch.prototype.sCheckTextInputKeyUp(this);};
@@ -534,9 +537,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div';
         
         this.m_text_go_a = document.createElement ( 'a' );
-        this.m_text_go_a.className = 'bmlt_nouveau_text_go_button_a round_button';
         this.m_text_go_a.appendChild ( document.createTextNode(g_Nouveau_text_go_button_string) );
-        this.m_text_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
         
         this.m_text_go_button_div.appendChild ( this.m_text_go_a );
         this.m_text_inner_div.appendChild ( this.m_text_go_button_div );
@@ -827,7 +828,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_go_button_div.className = 'bmlt_nouveau_advanced_go_button_div';
         
         this.m_advanced_go_a = document.createElement ( 'a' );
-        this.m_advanced_go_a.className = 'bmlt_nouveau_advanced_go_button_a round_button';
+        this.m_advanced_go_a.className = 'bmlt_nouveau_advanced_go_button_a';
         this.m_advanced_go_a.appendChild ( document.createTextNode(g_Nouveau_text_go_button_string) );
         this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
         
@@ -1035,7 +1036,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 break;
 
                 default:
-                    td_element.className += ' nouveau_hidden';
+                    td_element.className += ' bmlt_nouveau_hidden';
                 break;
                 };
         
@@ -1119,7 +1120,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             break;
             
             default:
-                td_element.className += ' nouveau_hidden';
+                td_element.className += ' bmlt_nouveau_hidden';
             break;
             };
         
@@ -1467,7 +1468,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         var uri_elements = new Array;
         var index = 0;
         
-        // We always send in a search location. This gives results something to compare against.
         uri_elements[index] = new Array;
         uri_elements[index][0] = 'long_val';
         uri_elements[index++][1] = this.m_current_long;
@@ -1515,7 +1515,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             ret += '&' + uri_elements[i][0] + '=' + uri_elements[i][1];
             };
-
         // Return the complete URI for a JSON response.
         return ret;
         };
@@ -1560,6 +1559,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_listResultsDisplayed = true;
         this.setDisplayedSearchResults();
         this.loadResultsMap();
+        this.redrawMapMarkers();
         };
     
     /************************************************************************************//**
@@ -1603,8 +1603,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 		        {
 		        this.m_long_lat_southwest.lat = mLAT;
 		        };
-		    };
 		    
+		    if ( !theMeeting['distance_in_km'] )    // This should never be necessary, but just in case...
+		        {
+		        var distance_in_km = Math.abs ( google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng ( this.m_current_lat, this.m_current_long ), new google.maps.LatLng ( theMeeting['latitude'], theMeeting['longitude'] )) / 1000.0 );
+		        this.m_search_results[c].distance_in_km = distance_in_km;
+		        this.m_search_results[c].distance_in_miles = distance_in_km / 1.60934;
+		        };
+		    };
+		
 		this.sortSearchResults();
         };
     
@@ -1698,6 +1705,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             case 'map':
                 this.m_current_view = 'advanced map';
+                this.validateGoButtons();
             break;
         
             case 'advanced map':
@@ -1706,10 +1714,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
             case 'text':
                 this.m_current_view = 'advanced text';
+                this.validateGoButtons();
             break;
         
             case 'advanced text':
                 this.m_current_view = 'text';
+                this.validateGoButtons();
             break;
             };
         
@@ -1729,6 +1739,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
             case 'advanced text':
                 this.m_current_view = 'advanced map';
+                this.validateGoButtons();
             break;
             };
         
@@ -1744,10 +1755,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             case 'map':
                 this.m_current_view = 'text';
+                this.validateGoButtons();
             break;
         
             case 'advanced map':
                 this.m_current_view = 'advanced text';
+                this.validateGoButtons();
             break;
             };
         
@@ -1801,6 +1814,45 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_listResultsDisplayed = !this.m_listResultsDisplayed;
         this.setListResultsDisclosure();
         };
+        
+    /************************************************************************************//**
+    *	\brief Sets the state of the two GO buttons, as necessary.                          *
+    ****************************************************************************************/
+    this.validateGoButtons = function()
+        {
+        if ( this.m_text_input.value && (this.m_text_input.value != this.m_text_input.defaultValue) )
+            {
+            this.m_advanced_go_a.className = 'bmlt_nouveau_text_go_button_a';
+            this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
+            this.m_text_go_a.className = 'bmlt_nouveau_text_go_button_a';
+            this.m_text_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
+            }
+        else
+            {
+            if ( this.m_current_view == 'advanced text' )
+                {
+                this.m_advanced_go_a.className = 'bmlt_nouveau_text_go_button_a bmlt_nouveau_button_disabled';
+                this.m_advanced_go_a.removeAttribute ( 'href' );
+                }
+            else
+                {
+                this.m_advanced_go_a.className = 'bmlt_nouveau_text_go_button_a';
+                this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
+                };
+            
+            this.m_text_go_a.className = 'bmlt_nouveau_text_go_button_a bmlt_nouveau_button_disabled';
+            this.m_text_go_a.removeAttribute ( 'href' );
+            };
+        };
+    
+    /************************************************************************************//**
+    *	\brief Redraws the blue/red meeting markers.                                        *
+    ****************************************************************************************/
+    this.redrawMapMarkers = function()
+        {
+        // First, recalculate all the map markers.
+        this.m_map_search_results_map.meeting_marker_array = NouveauMapSearch.prototype.sMapOverlappingMarkers ( this.m_search_results, this.m_map_search_results_map );
+        };
     
     /****************************************************************************************
     *##################################### CONSTRUCTOR #####################################*
@@ -1853,9 +1905,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 ********************************************************************************************/
 
 /********************************************************************************************
-*################################ STATIC CALLBACK FUNCTIONS ################################*
+*######################## CONTEXT-ESTABLISHING CALLBACK FUNCTIONS ##########################*
 *                                                                                           *
-* These functions are statically, and have no object context (no 'this').                   *
+* These functions are called statically, but establish context from an ID passed in.        *
 ********************************************************************************************/
 /****************************************************************************************//**
 *	\brief Will check a text element upon blur, and will fill it with the default string.   *
@@ -1863,6 +1915,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 NouveauMapSearch.prototype.sCheckTextInputBlur = function ( in_text_element  ///< The text element being evaluated.
                                                             )
     {
+    // This funky line creates an object context from the ID passed in.
+    // Each object is represented by a dynamically-created global variable, defined by ID, so we access that.
+    // 'context' becomes a placeholder for 'this'.
+    eval ('var context = g_instance_' + in_text_element.uid + '_js_handler');
+
+    context.validateGoButtons();
+        
     if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
         {
         in_text_element.className = 'bmlt_nouveau_text_input';
@@ -1880,6 +1939,10 @@ NouveauMapSearch.prototype.sCheckTextInputBlur = function ( in_text_element  ///
 NouveauMapSearch.prototype.sCheckTextInputKeyUp = function ( in_text_element ///< The text element being evaluated.
                                                             )
     {
+    eval ('var context = g_instance_' + in_text_element.uid + '_js_handler');
+
+    context.validateGoButtons();
+
     if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
         {
         in_text_element.className = 'bmlt_nouveau_text_input';
@@ -1897,17 +1960,16 @@ NouveauMapSearch.prototype.sCheckTextInputKeyUp = function ( in_text_element ///
 NouveauMapSearch.prototype.sCheckTextInputFocus = function ( in_text_element ///< The text element being evaluated.
                                                             )
     {
+    eval ('var context = g_instance_' + in_text_element.uid + '_js_handler');
+
+    context.validateGoButtons();
+    
     if ( in_text_element.value && (in_text_element.value == in_text_element.defaultValue) )
         {
         in_text_element.value = '';
         };
     };
 
-/********************************************************************************************
-*######################## CONTEXT-ESTABLISHING CALLBACK FUNCTIONS ##########################*
-*                                                                                           *
-* These functions are called statically, but establish context from an ID passed in.        *
-********************************************************************************************/
 /****************************************************************************************//**
 *	\brief Responds to a click in the map.                                                  *
 ********************************************************************************************/
@@ -1915,9 +1977,6 @@ NouveauMapSearch.prototype.sMapClicked = function ( in_event,   ///< The map eve
                                                     in_id       ///< The unique ID of the object (establishes context).
                                                     )
     {
-    // This funky line creates an object context from the ID passed in.
-    // Each object is represented by a dynamically-created global variable, defined by ID, so we access that.
-    // 'context' becomes a placeholder for 'this'.
     eval ('var context = g_instance_' + in_id + '_js_handler');
 	
 	// We set the long/lat from the event.
@@ -1932,6 +1991,18 @@ NouveauMapSearch.prototype.sMapClicked = function ( in_event,   ///< The map eve
         {
         context.advancedMapClicked();
         };
+    };
+
+/****************************************************************************************//**
+*	\brief Responds to a click in the map.                                                  *
+********************************************************************************************/
+NouveauMapSearch.prototype.sMapZoomChanged = function ( in_event,   ///< The map event
+                                                        in_id       ///< The unique ID of the object (establishes context).
+                                                        )
+    {
+    eval ('var context = g_instance_' + in_id + '_js_handler');
+    
+    context.redrawMapMarkers();
     };
 	
 /****************************************************************************************//**
@@ -2132,5 +2203,113 @@ NouveauMapSearch.prototype.sSortCallback = function( in_obj_a,
         break;
         };
         
+    return ret;
+    };
+	
+/****************************************************************************************//**
+*	\brief	This returns an array, mapping out markers that overlap.					    *
+*																						    *
+*	\returns An array of arrays. Each array element is an array with n >= 1 elements, each  *
+*	of which is a meeting object. Each of the array elements corresponds to a single        *
+*	marker, and all the objects in that element's array will be covered by that one marker. *
+*	The returned sub-arrays will be sorted in order of ascending weekday.	                *
+********************************************************************************************/
+	
+NouveauMapSearch.prototype.sMapOverlappingMarkers = function (  in_meeting_array,	///< Used to draw the markers when done.
+	                                                            in_map_object       ///< The map instance to use.
+									                        )
+    {
+    var tolerance = 8;	/* This is how many pixels we allow. */
+    var tmp = new Array;
+    
+    for ( var c = 0; c < in_meeting_array.length; c++ )
+        {
+        tmp[c] = new Object;
+        tmp[c].matched = false;
+        tmp[c].matches = null;
+        tmp[c].object = in_meeting_array[c];
+        tmp[c].coords = NouveauMapSearch.prototype.sFromLatLngToPixel ( new google.maps.LatLng ( tmp[c].object.latitude, tmp[c].object.longitude ), in_map_object );
+        };
+    
+    for ( var c = 0; c < in_meeting_array.length; c++ )
+        {
+        if ( false == tmp[c].matched )
+            {
+            tmp[c].matched = true;
+            tmp[c].matches = new Array;
+            tmp[c].matches[0] = tmp[c].object;
+
+            for ( var c2 = 0; c2 < in_meeting_array.length; c2++ )
+                {
+                if ( false == tmp[c2].matched )
+                    {
+                    var outer_coords = tmp[c].coords;
+                    var inner_coords = tmp[c2].coords;
+                    
+                    var xmin = outer_coords.x - tolerance;
+                    var xmax = outer_coords.x + tolerance;
+                    var ymin = outer_coords.y - tolerance;
+                    var ymax = outer_coords.y + tolerance;
+                    
+                    /* We have an overlap. */
+                    if ( (inner_coords.x >= xmin) && (inner_coords.x <= xmax) && (inner_coords.y >= ymin) && (inner_coords.y <= ymax) )
+                        {
+                        tmp[c].matches[tmp[c].matches.length] = tmp[c2].object;
+                        tmp[c2].matched = true;
+                        };
+                    };
+                };
+            };
+        };
+
+    var ret = new Array;
+    
+    for ( var c = 0; c < tmp.length; c++ )
+        {
+        if ( tmp[c].matches )
+            {
+            tmp[c].matches.sort ( function(a,b){return a.weekday_tinyint-b.weekday_tinyint});
+            ret[ret.length] = tmp[c].matches;
+            };
+        };
+    
+    return ret;
+    };
+    
+/****************************************************************************************//**
+*	\brief This takes a latitude/longitude location, and returns an x/y pixel location for  *
+*	it.																				        *
+*																						    *
+*	\returns a Google Maps API V3 Point, with the pixel coordinates (top, left origin).	    *
+********************************************************************************************/
+    
+NouveauMapSearch.prototype.sFromLatLngToPixel = function (  in_Latng,
+                                                            in_map_object
+                                                        )
+    {
+    var	ret = null;
+    
+    // We measure the container div element.
+    var	div = in_map_object.getDiv();
+    
+    if ( div )
+        {
+        var	pixel_width = div.offsetWidth;
+        var	pixel_height = div.offsetHeight;
+        var	lat_lng_bounds = in_map_object.getBounds();
+        var north_west_corner = new google.maps.LatLng ( lat_lng_bounds.getNorthEast().lat(), lat_lng_bounds.getSouthWest().lng() );
+        var lng_width = lat_lng_bounds.getNorthEast().lng()-lat_lng_bounds.getSouthWest().lng();
+        var	lat_height = lat_lng_bounds.getNorthEast().lat()-lat_lng_bounds.getSouthWest().lat();
+        
+        // We do this, so we have the largest values possible, to get the most accuracy.
+        var	pixels_per_degree = (( pixel_width > pixel_height ) ? (pixel_width / lng_width) : (pixel_height / lat_height));
+        
+        // Figure out the offsets, in long/lat degrees.
+        var	offset_vert = north_west_corner.lat() - in_Latng.lat();
+        var	offset_horiz = in_Latng.lng() - north_west_corner.lng();
+        
+        ret = new google.maps.Point ( Math.round(offset_horiz * pixels_per_degree),  Math.round(offset_vert * pixels_per_degree) );
+        };
+
     return ret;
     };
