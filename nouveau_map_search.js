@@ -1467,24 +1467,26 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         var uri_elements = new Array;
         var index = 0;
         
-        // First, if we have a map up, we will use that as the location (not done if the search is specified using text).
+        // We always send in a search location. This gives results something to compare against.
+        uri_elements[index] = new Array;
+        uri_elements[index][0] = 'long_val';
+        uri_elements[index++][1] = this.m_current_long;
+        
+        uri_elements[index] = new Array;
+        uri_elements[index][0] = 'lat_val';
+        uri_elements[index++][1] = this.m_current_lat;
+            
+        // First, if we have a map up, we use the specified width. (not done if the search is specified using text).
+        // This restricts the search area.
         if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced map') )
             {
-            uri_elements[index] = new Array;
-            uri_elements[index][0] = 'long_val';
-            uri_elements[index++][1] = this.m_current_long;
-            
-            uri_elements[index] = new Array;
-            uri_elements[index][0] = 'lat_val';
-            uri_elements[index++][1] = this.m_current_lat;
-            
             uri_elements[index] = new Array;
             uri_elements[index][0] = 'geo_width';
 
             // In the case of the advanced map, we will also have a radius value. Otherwise, we use the default auto.
             uri_elements[index++][1] = (this.m_current_view == 'advanced map') ? this.m_search_radius : g_Nouveau_default_geo_width;
             }
-        else
+        else    // Otherwise, we use whatever is in the text box.
             {
             var search_text = this.m_text_input.value;
             
@@ -1493,6 +1495,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 uri_elements[index] = new Array;
                 uri_elements[index][0] = 'SearchString';
                 uri_elements[index++][1] = escape(search_text);
+                
+                // Make sure that all the text is used.
+                uri_elements[index] = new Array;
+                uri_elements[index][0] = 'SearchStringAll';
+                uri_elements[index++][1] = 1;
                 };
                 
             if ( this.m_location_checkbox.checked )
