@@ -208,7 +208,8 @@ div#bmlt_page_items.bmlt_page_items div.bmlt_nouveau_div div.bmlt_nouveau_search
 div#bmlt_page_items.bmlt_page_items div.bmlt_nouveau_div div.bmlt_nouveau_advanced_switcher_div,
 div#bmlt_page_items.bmlt_page_items div.bmlt_nouveau_div div.bmlt_nouveau_advanced_weekdays_header_div,
 div#bmlt_page_items.bmlt_page_items div.bmlt_nouveau_div div.bmlt_nouveau_advanced_formats_header_div,
-div#bmlt_page_items.bmlt_page_items div.bmlt_nouveau_div div.bmlt_nouveau_advanced_service_bodies_header_div
+div#bmlt_page_items.bmlt_page_items div.bmlt_nouveau_div div.bmlt_nouveau_advanced_service_bodies_header_div,
+div#bmlt_page_items.bmlt_page_items div.bmlt_nouveau_div div.bmlt_nouveau_switcher_div
 {
     background-color:#555;
     padding-bottom:2px;
