@@ -1293,7 +1293,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             }
         else if ( (time[0] == 23) && (time[1] > 45) )
             {
-            st = g_Nouveau_noon;
+            st = g_Nouveau_midnight;
             }
         else
             {
