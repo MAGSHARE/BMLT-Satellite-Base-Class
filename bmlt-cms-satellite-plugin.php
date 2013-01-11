@@ -1613,12 +1613,13 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
     function content_filter ( $in_the_content   ///< The content in need of filtering.
                             )
         {
+        $old_content = $in_the_content; // We check to see if we added anything.
         // Simple searches can be mixed in with other content.
         $in_the_content = $this->display_simple_search ( $in_the_content );
 
         $in_the_content = $this->display_changes ( $in_the_content );
 
-        $in_the_content = $this->display_old_search ( $in_the_content );
+//         $in_the_content = $this->display_old_search ( $in_the_content );
         
         $in_the_content = $this->display_new_map_search ( $in_the_content );
         
@@ -1627,6 +1628,11 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         // This simply ensures that we remove any unused mobile shortcodes.
         $in_the_content = self::replace_shortcode ( $in_the_content, 'bmlt_mobile', '' );
         
+        if ( $in_the_content != $old_content )  // If we made changes, we add a wrapper element, so we can have some strong specificity.
+            {
+            $in_the_content = "<div id=\"bmlt_page_items\" class=\"bmlt_page_items\">$in_the_content</div>";
+            }
+            
         return $in_the_content;
         }
         
@@ -1704,7 +1710,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
     function display_bmlt_nouveau ($in_content      ///< This is the content to be filtered.
                                     )
         {
-        $theshortcode = 'bmlt_nouveau';
+        $theshortcode = 'bmlt';
         
         $options_id = $this->cms_get_page_settings_id( $in_content );
 
@@ -1777,6 +1783,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= 'var g_Nouveau_weekday_long_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_long_array ).'");';
                 $the_new_content .= 'var g_Nouveau_weekday_short_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_short_array ).'");';
                 $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
+	            $the_new_content .= "var g_Nouveau_throbber_image_src = '".$this->get_plugin_path()."/themes/".$options['theme']."/images/Throbber.gif';";
                 
                 $the_new_content .= '</script>';
                 $first = false;

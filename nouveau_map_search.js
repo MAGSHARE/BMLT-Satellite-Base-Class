@@ -28,102 +28,6 @@
 *   You should have received a copy of the GNU General Public License                       *
 *   along with this code.  If not, see <http://www.gnu.org/licenses/>.                      *
 ********************************************************************************************/
-/**
-sprintf() for JavaScript 0.6
-
-Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
-All rights reserved.
-
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
-    * Redistributions of source code must retain the above copyright
-      notice, this list of conditions and the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright
-      notice, this list of conditions and the following disclaimer in the
-      documentation and/or other materials provided with the distribution.
-    * Neither the name of sprintf() for JavaScript nor the
-      names of its contributors may be used to endorse or promote products
-      derived from this software without specific prior written permission.
-
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
-DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-(INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-Changelog:
-2007.04.03 - 0.1:
- - initial release
-2007.09.11 - 0.2:
- - feature: added argument swapping
-2007.09.17 - 0.3:
- - bug fix: no longer throws exception on empty paramenters (Hans Pufal)
-2007.10.21 - 0.4:
- - unit test and patch (David Baird)
-2010.05.09 - 0.5:
- - bug fix: 0 is now preceeded with a + sign
- - bug fix: the sign was not at the right position on padded results (Kamal Abdali)
- - switched from GPL to BSD license
-2010.05.22 - 0.6:
- - reverted to 0.4 and fixed the bug regarding the sign of the number 0
- Note:
- Thanks to Raphael Pigulla <raph (at] n3rd [dot) org> (http://www.n3rd.org/)
- who warned me about a bug in 0.5, I discovered that the last update was
- a regress. I appologize for that.
-**/
-
-function str_repeat(i, m) {
-	for (var o = []; m > 0; o[--m] = i);
-	return o.join('');
-}
-
-function sprintf() {
-	var i = 0, a, f = arguments[i++], o = [], m, p, c, x, s = '';
-	while (f) {
-		if (m = /^[^\x25]+/.exec(f)) {
-			o.push(m[0]);
-		}
-		else if (m = /^\x25{2}/.exec(f)) {
-			o.push('%');
-		}
-		else if (m = /^\x25(?:(\d+)\$)?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(f)) {
-			if (((a = arguments[m[1] || i++]) == null) || (a == undefined)) {
-				throw('Too few arguments.');
-			}
-			if (/[^s]/.test(m[7]) && (typeof(a) != 'number')) {
-				throw('Expecting number but found ' + typeof(a));
-			}
-			switch (m[7]) {
-				case 'b': a = a.toString(2); break;
-				case 'c': a = String.fromCharCode(a); break;
-				case 'd': a = parseInt(a,10); break;
-				case 'e': a = m[6] ? a.toExponential(m[6]) : a.toExponential(); break;
-				case 'f': a = m[6] ? parseFloat(a).toFixed(m[6]) : parseFloat(a); break;
-				case 'o': a = a.toString(8); break;
-				case 's': a = ((a = String(a)) && m[6] ? a.substring(0, m[6]) : a); break;
-				case 'u': a = Math.abs(a); break;
-				case 'x': a = a.toString(16); break;
-				case 'X': a = a.toString(16).toUpperCase(); break;
-			}
-			a = (/[def]/.test(m[7]) && m[2] && a >= 0 ? '+'+ a : a);
-			c = m[3] ? m[3] == '0' ? '0' : m[3].charAt(1) : ' ';
-			x = m[5] - String(a).length - s.length;
-			p = m[5] ? str_repeat(c, x) : '';
-			o.push(s + (m[4] ? a + p : p + a));
-		}
-		else {
-			throw('Huh ?!');
-		}
-		f = f.substring(m[0].length);
-	}
-	return o.join('');
-}
 
 /****************************************************************************************//**
 *	\brief  This class implements our bmlt_nouveau instance as an entirely DOM-generated    *
@@ -168,8 +72,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     
     var m_basic_advanced_switch_div = null; ///< This will contain the "basic and "advanced" switch links.
     var m_map_text_switch_div = null;       ///< This will contain the 'Map' and 'Text' switch links.
-    var m_advanced_switch_a = null;         ///< This is the "advanced" anchor
-    var m_basic_switch_a = null;            ///< This is the "basic" anchor
+    var m_advanced_switch_a = null;         ///< This is the "advanced" disclosure switch
     var m_map_switch_a = null;              ///< This is the "map" anchor
     var m_text_switch_a = null;             ///< This is the "text" anchor
     var m_advanced_section_div = null;      ///< This is the advanced display section
@@ -178,7 +81,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     
     var m_map_div = null;                   ///< This will contain the map.
     var m_main_map = null;                  ///< This is the actual Google Maps instance.
-    var m_search_radius = -10;              ///< This is the chosen search radius (if the advanced search is open and the map is open).
+    var m_search_radius = null;             ///< This is the chosen search radius (if the advanced search is open and the map is open).
     
     var m_text_div = null;                  ///< This will contain the text div.
     var m_text_inner_div = null;            ///< This will be an inner container, allowing more precise positioning.
@@ -224,7 +127,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_map_search_results_disclosure_div = null;
     var m_map_search_results_disclosure_a = null;
     var m_map_search_results_container_div = null;
-    var m_map_search_results_div = null;
+    var m_map_search_results_inner_container_div = null;
+    var m_map_search_results_map_div = null;
+    var m_map_search_results_map = null;
     var m_mapResultsDisplayed = null;
     
     /// The dynamic list search results
@@ -237,19 +142,119 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_listResultsDisplayed = null;
     
     var m_single_meeting_display_div = null;    ///< This is the div that will be used to display the details of a single meeting.
+    var m_throbber_div = null;                  ///< This will show the throbber.
     
     var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
-    var m_long_lat_northwest = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
-    var m_long_lat_southeast = null;            ///< This will contain the long/lat for the maximum South and East coordinate to show all the meetings in the search.
-    var m_search_results_shown = null;         ///< If this is true, then the results div is displayed.
+    var m_long_lat_northeast = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
+    var m_long_lat_southwest = null;            ///< This will contain the long/lat for the maximum South and East coordinate to show all the meetings in the search.
+    var m_search_results_shown = null;          ///< If this is true, then the results div is displayed.
     
     var m_ajax_request = null;                  ///< This is used to handle AJAX calls.
     
-    var m_search_sort_key = null;             ///< This can be 'time', 'town', 'name', or 'distance'.
+    var m_search_sort_key = null;               ///< This can be 'time', 'town', 'name', or 'distance'.
         
     /****************************************************************************************
     *								  INTERNAL CLASS FUNCTIONS							    *
     ****************************************************************************************/
+    /****************************************************************************************
+    *#################################### THIRD-PARTY CODE #################################*
+    ****************************************************************************************/
+    /**
+    sprintf() for JavaScript 0.6
+
+    Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
+    All rights reserved.
+
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+        * Redistributions of source code must retain the above copyright
+          notice, this list of conditions and the following disclaimer.
+        * Redistributions in binary form must reproduce the above copyright
+          notice, this list of conditions and the following disclaimer in the
+          documentation and/or other materials provided with the distribution.
+        * Neither the name of sprintf() for JavaScript nor the
+          names of its contributors may be used to endorse or promote products
+          derived from this software without specific prior written permission.
+
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+    DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
+    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+    Changelog:
+    2007.04.03 - 0.1:
+     - initial release
+    2007.09.11 - 0.2:
+     - feature: added argument swapping
+    2007.09.17 - 0.3:
+     - bug fix: no longer throws exception on empty paramenters (Hans Pufal)
+    2007.10.21 - 0.4:
+     - unit test and patch (David Baird)
+    2010.05.09 - 0.5:
+     - bug fix: 0 is now preceeded with a + sign
+     - bug fix: the sign was not at the right position on padded results (Kamal Abdali)
+     - switched from GPL to BSD license
+    2010.05.22 - 0.6:
+     - reverted to 0.4 and fixed the bug regarding the sign of the number 0
+     Note:
+     Thanks to Raphael Pigulla <raph (at] n3rd [dot) org> (http://www.n3rd.org/)
+     who warned me about a bug in 0.5, I discovered that the last update was
+     a regress. I appologize for that.
+    **/
+
+    function str_repeat(i, m) {
+        for (var o = []; m > 0; o[--m] = i);
+        return o.join('');
+    }
+
+    function sprintf() {
+        var i = 0, a, f = arguments[i++], o = [], m, p, c, x, s = '';
+        while (f) {
+            if (m = /^[^\x25]+/.exec(f)) {
+                o.push(m[0]);
+            }
+            else if (m = /^\x25{2}/.exec(f)) {
+                o.push('%');
+            }
+            else if (m = /^\x25(?:(\d+)\$)?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(f)) {
+                if (((a = arguments[m[1] || i++]) == null) || (a == undefined)) {
+                    throw('Too few arguments.');
+                }
+                if (/[^s]/.test(m[7]) && (typeof(a) != 'number')) {
+                    throw('Expecting number but found ' + typeof(a));
+                }
+                switch (m[7]) {
+                    case 'b': a = a.toString(2); break;
+                    case 'c': a = String.fromCharCode(a); break;
+                    case 'd': a = parseInt(a,10); break;
+                    case 'e': a = m[6] ? a.toExponential(m[6]) : a.toExponential(); break;
+                    case 'f': a = m[6] ? parseFloat(a).toFixed(m[6]) : parseFloat(a); break;
+                    case 'o': a = a.toString(8); break;
+                    case 's': a = ((a = String(a)) && m[6] ? a.substring(0, m[6]) : a); break;
+                    case 'u': a = Math.abs(a); break;
+                    case 'x': a = a.toString(16); break;
+                    case 'X': a = a.toString(16).toUpperCase(); break;
+                }
+                a = (/[def]/.test(m[7]) && m[2] && a >= 0 ? '+'+ a : a);
+                c = m[3] ? m[3] == '0' ? '0' : m[3].charAt(1) : ' ';
+                x = m[5] - String(a).length - s.length;
+                p = m[5] ? str_repeat(c, x) : '';
+                o.push(s + (m[4] ? a + p : p + a));
+            }
+            else {
+                throw('Huh ?!');
+            }
+            f = f.substring(m[0].length);
+        }
+        return o.join('');
+    }
     
     /****************************************************************************************
     *################################# INITIAL SETUP ROUTINES ##############################*
@@ -290,6 +295,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         this.setDisplayedSearchResults();   // Make sure that the proper div is displayed.
         
+        this.buildDOMTree_CreateThrobberDiv();
+        this.hideThrobber();
+        
         // Finally, set everything into the container.
         this.m_container_div.appendChild ( this.m_display_div );
         };
@@ -297,11 +305,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /****************************************************************************************
     *######################## SET UP SEARCH SPEC AND RESULTS SWITCH ########################*
     ****************************************************************************************/
+
     /************************************************************************************//**
     *	\brief This sets up the "MAP/TEXT" tab switch div.                                  *
     ****************************************************************************************/
-    this.buildDOMTree_ResultsSpec_Switch = function ( in_container_node   ///< This holds the node that will contain the switch.
-                                                  )
+    this.buildDOMTree_ResultsSpec_Switch = function ()
         {
         this.m_search_spec_switch_div = document.createElement ( 'div' );   // Create the switch container.
         
@@ -442,6 +450,52 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	    };
     
     /************************************************************************************//**
+    *	\brief This creates the map for the search spec.                                    *
+    ****************************************************************************************/
+	this.loadResultsMap = function ( )
+	    {
+        if ( this.m_map_search_results_map_div )
+            {
+            var myOptions = {
+                            'center': new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
+                            'zoom': this.m_current_zoom,
+                            'mapTypeId': google.maps.MapTypeId.ROADMAP,
+                            'mapTypeControlOptions': { 'style': google.maps.MapTypeControlStyle.DROPDOWN_MENU },
+                            'zoomControl': true,
+                            'mapTypeControl': true,
+                            'disableDoubleClickZoom' : true,
+                            'draggableCursor': "pointer",
+                            'scaleControl' : true
+                            };
+
+            var	pixel_width = this.m_map_search_results_map_div.offsetWidth;
+            var	pixel_height = this.m_map_search_results_map_div.offsetHeight;
+            
+            if ( (pixel_width < 640) || (pixel_height < 640) )
+                {
+                myOptions.scrollwheel = true;
+                myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.SMALL };
+                }
+            else
+                {
+                myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
+                };
+
+            this.m_map_search_results_map = new google.maps.Map ( this.m_map_search_results_map_div, myOptions );
+            
+            if ( this.m_map_search_results_map )
+                {
+                this.m_map_search_results_map.response_object = null;
+                this.m_map_search_results_map.center_marker = null;
+                this.m_map_search_results_map.geo_width = null;
+                var id = this.m_uid;
+
+                this.m_map_search_results_map.fitBounds ( new google.maps.LatLngBounds ( new google.maps.LatLng ( this.m_long_lat_southwest.lat, this.m_long_lat_southwest.lng ), new google.maps.LatLng ( this.m_long_lat_northeast.lat, this.m_long_lat_northeast.lng ) ) );
+                };
+            };
+	    };
+    
+    /************************************************************************************//**
     *	\brief This constructs the text div (used by the text search).                      *
     ****************************************************************************************/
     this.buildDOMTree_Text_Div = function ()
@@ -512,7 +566,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         elem.className = 'bmlt_nouveau_breaker_div';
         this.m_text_div.appendChild ( elem );
         
-        this.m_location_checkbox = null;
         this.m_search_spec_div.appendChild ( this.m_text_div );
         };
     
@@ -526,37 +579,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         this.m_advanced_switch_a = document.createElement ( 'a' );      // Create the advanced switch anchor element.
         this.m_advanced_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_advanced_name_string) );
-        this.m_basic_advanced_switch_div.appendChild ( this.m_advanced_switch_a );
         this.m_advanced_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.toggleAdvanced()' );
-        
-        this.m_basic_switch_a = document.createElement ( 'a' );      // Create the advanced switch anchor element.
-        this.m_basic_switch_a.appendChild ( document.createTextNode(g_NouveauMapSearch_basic_name_string) );
-        this.m_basic_advanced_switch_div.appendChild ( this.m_basic_switch_a );
-        this.m_basic_switch_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.toggleAdvanced()' );
+        this.m_basic_advanced_switch_div.appendChild ( this.m_advanced_switch_a );
         
         this.m_search_spec_div.appendChild ( this.m_basic_advanced_switch_div );
-        };
-    
-    /************************************************************************************//**
-    *	\brief This sets the state of the "MAP/TEXT" tab switch div. It actually changes    *
-    *          the state of the anchors, so it is more than just a CSS class change.        *
-    ****************************************************************************************/
-    this.setBasicAdvancedSwitch = function()
-        {
-        if ( (this.m_current_view == 'advanced map') || (this.m_current_view == 'advanced text') )
-            {
-            this.m_basic_switch_a.className = 'bmlt_nouveau_switch_a';
-            this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switcher_a_selected';
-            this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div';
-            this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div text_go_a_hidden';
-            }
-        else
-            {
-            this.m_advanced_switch_a.className = 'bmlt_nouveau_switch_a';
-            this.m_basic_switch_a.className = 'bmlt_nouveau_switch_a_selected';
-            this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div advanced_div_hidden';
-            this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div';
-            };
         };
     
     /************************************************************************************//**
@@ -578,6 +604,26 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.setAdvancedServiceBodiesDisclosure();
         
         this.m_search_spec_div.appendChild ( this.m_advanced_section_div );
+        };
+    
+    /************************************************************************************//**
+    *	\brief This sets the state of the "MAP/TEXT" tab switch div. It actually changes    *
+    *          the state of the anchors, so it is more than just a CSS class change.        *
+    ****************************************************************************************/
+    this.setBasicAdvancedSwitch = function()
+        {
+        if ( (this.m_current_view == 'advanced map') || (this.m_current_view == 'advanced text') )
+            {
+            this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switch_disclosure_open_a';
+            this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div';
+            this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div text_go_a_hidden';
+            }
+        else
+            {
+            this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switch_disclosure_a';
+            this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div advanced_div_hidden';
+            this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div';
+            };
         };
     
     /************************************************************************************//**
@@ -798,8 +844,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_long_lat_southeast = null;
         this.m_search_results = null;
         this.m_search_results_shown = false;
-//         this.m_mapResultsDisplayed = false;
-//         this.m_listResultsDisplayed = false;
+        this.m_map_search_results_map = null;
+        this.m_mapResultsDisplayed = false;
+        this.m_listResultsDisplayed = false;
 
         if ( this.m_search_results_div )
             {
@@ -810,7 +857,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_map_search_results_disclosure_div = null;
         this.m_map_search_results_disclosure_a = null;
         this.m_map_search_results_container_div = null;
-        this.m_map_search_results_div = null;
+        this.m_map_search_results_map_div = null;
         this.m_list_search_results_disclosure_div = null;
         this.m_list_search_results_disclosure_a = null;
         this.m_list_search_results_container_div = null;
@@ -856,6 +903,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_map_search_results_container_div = document.createElement ( 'div' );
         this.m_map_search_results_container_div.className = 'bmlt_nouveau_search_results_map_container_div';
         
+        this.m_map_search_results_inner_container_div = document.createElement ( 'div' );
+        this.m_map_search_results_inner_container_div.className = 'bmlt_nouveau_search_results_map_inner_container_div';
+        
+        this.m_map_search_results_map_div = document.createElement ( 'div' );
+        this.m_map_search_results_map_div.className = 'bmlt_nouveau_search_results_map_div';
+        
+        this.m_map_search_results_inner_container_div.appendChild ( this.m_map_search_results_map_div );
+        this.m_map_search_results_container_div.appendChild ( this.m_map_search_results_inner_container_div );
+        
         this.setMapResultsDisclosure();
         
         this.m_search_results_div.appendChild ( this.m_map_search_results_container_div );
@@ -869,7 +925,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         if ( this.m_mapResultsDisplayed )
             {
-            this.m_map_search_results_disclosure_a.className = 'bmlt_nouveau_search_results_map_disclosure_a bmlt_nouveau_search_results_map_disclosure_a_open';
+            this.m_map_search_results_disclosure_a.className = 'bmlt_nouveau_search_results_map_disclosure_a bmlt_nouveau_search_results_map_disclosure_open_a';
             this.m_map_search_results_container_div.className = 'bmlt_nouveau_search_results_map_container_div';
             }
         else
@@ -1304,7 +1360,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         if ( this.m_listResultsDisplayed )
             {
-            this.m_list_search_results_disclosure_a.className = 'bmlt_nouveau_search_results_list_disclosure_a bmlt_nouveau_search_results_list_disclosure_a_open';
+            this.m_list_search_results_disclosure_a.className = 'bmlt_nouveau_search_results_list_disclosure_a bmlt_nouveau_search_results_list_disclosure_open_a';
             this.m_list_search_results_container_div.className = 'bmlt_nouveau_search_results_list_container_div';
             }
         else
@@ -1314,6 +1370,34 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             };
         };
         
+    /************************************************************************************//**
+    *	\brief This establishes the (usually invisible) throbber display.                   *
+    ****************************************************************************************/
+    this.buildDOMTree_CreateThrobberDiv = function ()
+        {
+        this.m_throbber_div = document.createElement ( 'div' );
+        this.m_throbber_div.className = 'bmlt_nouveau_throbber_div bmlt_nouveau_throbber_div_hidden';
+        
+        var inner_div = document.createElement ( 'div' );
+        inner_div.className = 'bmlt_nouveau_throbber_mask_div';
+
+        this.m_throbber_div.appendChild ( inner_div );
+        
+        var inner_div = document.createElement ( 'div' );
+        inner_div.className = 'bmlt_nouveau_throbber_inner_container_div';
+
+        var inner_img = document.createElement ( 'img' );
+        inner_img.className = 'bmlt_nouveau_throbber_img';
+        inner_img.src = g_Nouveau_throbber_image_src;
+        inner_img.setAttribute ( 'alt', 'Busy Throbber' );
+        
+        inner_div.appendChild ( inner_img );
+        
+        this.m_throbber_div.appendChild ( inner_div );
+        
+        this.m_display_div.appendChild ( this.m_throbber_div );
+        };
+    
     /****************************************************************************************
     *#################################### MAP HANDLERS #####################################*
     ****************************************************************************************/
@@ -1348,8 +1432,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.beginSearch = function ()
         {
-        this.clearSearchResults;
+        this.m_search_results = null;
         this.setDisplayedSearchResults();
+        this.clearSearchResults();
         this.callRootServer ( this.createSearchURI() );
         };
         
@@ -1358,6 +1443,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.displayThrobber = function ()
         {
+        this.m_throbber_div.className = 'bmlt_nouveau_throbber_div';
         };
 
     /************************************************************************************//**
@@ -1365,6 +1451,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.hideThrobber = function ()
         {
+        this.m_throbber_div.className = 'bmlt_nouveau_throbber_div bmlt_nouveau_throbber_div_hidden';
         };
 
     /************************************************************************************//**
@@ -1396,14 +1483,32 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 
             // In the case of the advanced map, we will also have a radius value. Otherwise, we use the default auto.
             uri_elements[index++][1] = (this.m_current_view == 'advanced map') ? this.m_search_radius : g_Nouveau_default_geo_width;
+            }
+        else
+            {
+            var search_text = this.m_text_input.value;
+            
+            if ( search_text )
+                {
+                uri_elements[index] = new Array;
+                uri_elements[index][0] = 'SearchString';
+                uri_elements[index++][1] = escape(search_text);
+                };
+                
+            if ( this.m_location_checkbox.checked )
+                {
+                uri_elements[index] = new Array;
+                uri_elements[index][0] = 'StringSearchIsAnAddress';
+                uri_elements[index++][1] = 1;
+                };
             };
         
         // Concatenate all the various parameters we gathered.
         for ( var i = 0; i < index; i++ )
             {
             ret += '&' + uri_elements[i][0] + '=' + uri_elements[i][1];
-            }
-        
+            };
+
         // Return the complete URI for a JSON response.
         return ret;
         };
@@ -1440,12 +1545,14 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.processSearchResults = function( in_search_results_json_object ///< The search results, as a JSON object.
                                         )
         {
-        this.clearSearchResults();
         this.m_search_results = in_search_results_json_object;
         this.analyzeSearchResults();
         this.m_search_results_shown = true;
         this.buildDOMTree_SearchResults_Section();
+        this.m_mapResultsDisplayed = true;
+        this.m_listResultsDisplayed = true;
         this.setDisplayedSearchResults();
+        this.loadResultsMap();
         };
     
     /************************************************************************************//**
@@ -1459,8 +1566,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.analyzeSearchResults = function ()
         {
         // These will be the result of this function.
-        this.m_long_lat_northwest = { 'lng':this.m_current_long, 'lat':this.m_current_lat };  // This will contain the North, West corner of the map to encompass all the results.
-        this.m_long_lat_southeast = { 'lng':this.m_current_long, 'lat':this.m_current_lat };  // Same for South, East.
+        this.m_long_lat_northeast = { 'lng':this.m_current_long, 'lat':this.m_current_lat };  // This will contain the North, East corner of the map to encompass all the results.
+        this.m_long_lat_southwest = { 'lng':this.m_current_long, 'lat':this.m_current_lat };  // Same for South, West.
 
         // We loop through the whole response.
 		for ( var c = 0; c < this.m_search_results.length; c++ )
@@ -1470,24 +1577,24 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 		    var mLNG = theMeeting['longitude'];
 		    var mLAT = theMeeting['latitude'];
 		    
-		    if ( mLNG < this.m_long_lat_northwest.lng )
+		    if ( mLNG < this.m_long_lat_northeast.lng )
 		        {
-		        this.m_long_lat_northwest.lng = mLNG;
+		        this.m_long_lat_northeast.lng = mLNG;
 		        };
 		    
-		    if ( mLAT > this.m_long_lat_northwest.lat )
+		    if ( mLAT > this.m_long_lat_northeast.lat )
 		        {
-		        this.m_long_lat_northwest.lat = mLAT;
+		        this.m_long_lat_northeast.lat = mLAT;
 		        };
 		    
-		    if ( mLNG > this.m_long_lat_southeast.lng )
+		    if ( mLNG > this.m_long_lat_southwest.lng )
 		        {
-		        this.m_long_lat_southeast.lng = mLNG;
+		        this.m_long_lat_southwest.lng = mLNG;
 		        };
 		    
-		    if ( mLAT < this.m_long_lat_southeast.lat )
+		    if ( mLAT < this.m_long_lat_southwest.lat )
 		        {
-		        this.m_long_lat_southeast.lat = mLAT;
+		        this.m_long_lat_southwest.lat = mLAT;
 		        };
 		    };
 		    
@@ -1513,9 +1620,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( !this.m_search_results )
             {
             this.m_search_results_shown = false;    // Can't show what doesn't exist.
-            this.m_search_spec_switch_div.className = 'bmlt_nouveau_search_spec_switch_div bmlt_nouveau_search_spec_switch_div_hidden';
-            this.m_search_results_div.className = 'bmlt_nouveau_search_results_div bmlt_nouveau_results_hidden';
-            this.m_search_spec_div.className = 'bmlt_nouveau_search_spec_div';
+            if ( this.m_search_results_div )
+                {
+                this.m_search_spec_switch_div.className = 'bmlt_nouveau_search_spec_switch_div bmlt_nouveau_search_spec_switch_div_hidden';
+                this.m_search_results_div.className = 'bmlt_nouveau_search_results_div bmlt_nouveau_results_hidden';
+                this.m_search_spec_div.className = 'bmlt_nouveau_search_spec_div';
+                };
             }
         else
             {
@@ -1535,6 +1645,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_search_results_div.className = 'bmlt_nouveau_search_results_div bmlt_nouveau_results_hidden';
                 this.m_search_spec_div.className = 'bmlt_nouveau_search_spec_div';
                 };
+
+            this.setMapResultsDisclosure();
+            this.setListResultsDisclosure();
             };
         };
 
@@ -1703,7 +1816,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_mapResultsDisplayed = false;
     this.m_listResultsDisplayed = false;
     this.m_search_results_shown = false;         ///< If this is true, then the results div is displayed.
-
+    this.m_search_radius = g_Nouveau_default_geo_width;
+    
     this.m_search_sort_key = 'time';             ///< This can be 'time', 'town', 'name', or 'distance'.
 
     this.m_container_div = document.getElementById ( this.m_uid + '_container' );   ///< This is the main outer container.

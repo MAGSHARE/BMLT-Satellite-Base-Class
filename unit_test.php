@@ -58,6 +58,7 @@ function u_test()
         $ret .= $header;
         $ret .= '<style type="text/css">';
         $ret .= '*{margin:0;padding:0}';
+        $ret .= 'html,body {width:100%;height:100%}';
         $ret .= 'body{font-family:Courier;font-size:small}';
         $ret .= '.test_container_div{padding-left:20px}';
         $ret .= '.return_button,.utest_input_form_container_div,.centered_div{text-align:center;margin:8px}';
