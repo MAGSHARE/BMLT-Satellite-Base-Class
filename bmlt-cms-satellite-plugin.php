@@ -1782,9 +1782,11 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= 'var g_Nouveau_array_header_text = new Array ( "'.join ( '","', self::$local_nouveau_table_header_array ).'");';
                 $the_new_content .= 'var g_Nouveau_weekday_long_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_long_array ).'");';
                 $the_new_content .= 'var g_Nouveau_weekday_short_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_short_array ).'");';
-                $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
 	            $the_new_content .= "var g_Nouveau_throbber_image_src = '".$this->get_plugin_path()."/themes/".$options['theme']."/images/Throbber.gif';";
                 
+                $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
+                $the_new_content .= "var g_Nouveau_default_marker_aggregation_threshold_in_pixels = 8;";
+
                 $the_new_content .= '</script>';
                 $first = false;
                 }

@@ -259,7 +259,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /****************************************************************************************
     *################################# INITIAL SETUP ROUTINES ##############################*
     ****************************************************************************************/
-    
     /************************************************************************************//**
     *	\brief Sets up all the various DOM elements that comprise the search screen.        *
     ****************************************************************************************/
@@ -306,7 +305,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /****************************************************************************************
     *######################## SET UP SEARCH SPEC AND RESULTS SWITCH ########################*
     ****************************************************************************************/
-
     /************************************************************************************//**
     *	\brief This sets up the "MAP/TEXT" tab switch div.                                  *
     ****************************************************************************************/
@@ -492,7 +490,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 
                 google.maps.event.addListener ( this.m_map_search_results_map, 'zoom_changed', function(in_event) { NouveauMapSearch.prototype.sMapZoomChanged( in_event, id ); } );
 
-                this.m_map_search_results_map.fitBounds ( new google.maps.LatLngBounds ( new google.maps.LatLng ( this.m_long_lat_southwest.lat, this.m_long_lat_southwest.lng ), new google.maps.LatLng ( this.m_long_lat_northeast.lat, this.m_long_lat_northeast.lng ) ) );
+                this.m_map_search_results_map.fitBounds ( new google.maps.LatLngBounds ( this.m_long_lat_southwest, this.m_long_lat_northeast ) );
                 };
             };
 	    };
@@ -1034,6 +1032,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 case    7:
                     td_element.className += ' bmlt_nouveau_search_results_list_header_td_location';
                 break;
+            
+                case    8:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_format';
+                break;
 
                 default:
                     td_element.className += ' bmlt_nouveau_hidden';
@@ -1048,7 +1050,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
+    *	\brief This populates the results list (a table).                                   *
     ****************************************************************************************/
     this.buildDOMTree_SearchResults_List_Table_Contents = function ()
         {
@@ -1067,7 +1069,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
+    *	\brief This creates a single node for one meeting in the table.                     *
     ****************************************************************************************/
     this.buildDOMTree_SearchResults_List_Table_Contents_Node_TD = function (    in_meeting_object,  ///< The meeting data line object.
                                                                                 index,              ///< Which column it will be using.
@@ -1119,6 +1121,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 td_element.appendChild ( this.buildDOMTree_ConstructLocation( in_meeting_object ) );
             break;
             
+            case    8:
+                td_element.className += ' bmlt_nouveau_search_results_list_body_td_format';
+                td_element.appendChild ( this.buildDOMTree_ConstructFormat( in_meeting_object ) );
+            break;
+            
             default:
                 td_element.className += ' bmlt_nouveau_hidden';
             break;
@@ -1128,8 +1135,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
-    *   \returns
+    *	\brief This gets the nation name as a div.                                          *
+    *   \returns a new DOM div, with the name in it.                                        *
     ****************************************************************************************/
     this.buildDOMTree_ConstructNationName = function ( in_meeting_object  ///< The meeting data line object.
                                                      )
@@ -1146,8 +1153,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
-    *   \returns
+    *	\brief This gets the state name as a div.                                           *
+    *   \returns a new DOM div, with the name in it.                                        *
     ****************************************************************************************/
     this.buildDOMTree_ConstructStateName = function ( in_meeting_object  ///< The meeting data line object.
                                                     )
@@ -1164,8 +1171,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
-    *   \returns
+    *	\brief This gets the county name as a div.                                          *
+    *   \returns a new DOM div, with the name in it.                                        *
     ****************************************************************************************/
     this.buildDOMTree_ConstructCountyName = function ( in_meeting_object  ///< The meeting data line object.
                                                      )
@@ -1184,8 +1191,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
-    *   \returns
+    *	\brief This gets the town name as a div. It will do a "smart" build, where it uses  *
+    *          special dynamic CSS classes to allow the implementor to control things like  *
+    *          a borough being displayed instead of a town, etc.                            *
+    *   \returns a new DOM div, with the name in it.                                        *
     ****************************************************************************************/
     this.buildDOMTree_ConstructTownName = function ( in_meeting_object  ///< The meeting data line object.
                                                    )
@@ -1240,8 +1249,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
-    *   \returns
+    *	\brief This gets the meeting name as a div.                                         *
+    *   \returns a new DOM div, with the name in it.                                        *
     ****************************************************************************************/
     this.buildDOMTree_ConstructMeetingName = function ( in_meeting_object  ///< The meeting data line object.
                                                         )
@@ -1258,8 +1267,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
-    *   \returns
+    *	\brief This gets the weekday name as a div.                                         *
+    *   \returns a new DOM div, with the name in it.                                        *
     ****************************************************************************************/
     this.buildDOMTree_ConstructWeekday = function ( in_meeting_object  ///< The meeting data line object.
                                                     )
@@ -1272,8 +1281,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
-    *   \returns
+    *	\brief This gets the start time name as a div.                                      *
+    *   \returns a new DOM div, with the time in it. It will use "noon" and "midnight."     *
     ****************************************************************************************/
     this.buildDOMTree_ConstructStartTime = function ( in_meeting_object  ///< The meeting data line object.
                                                     )
@@ -1309,8 +1318,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief 
-    *   \returns
+    *	\brief This gets the location address as a div. It uses a formatted output to make  *
+    *          a string that provides a readable, useful location.                          *
+    *   \returns a new DOM div, with the location in it.                                    *
     ****************************************************************************************/
     this.buildDOMTree_ConstructLocation = function ( in_meeting_object  ///< The meeting data line object.
                                                     )
@@ -1349,6 +1359,22 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             loc_text = g_Nouveau_location_sprintf_format_wtf;
             };
 
+        container_element.appendChild ( document.createTextNode( loc_text ) );
+        return container_element;
+        };
+        
+    /************************************************************************************//**
+    *	\brief This gets the format codes as a div.                                         *
+    *   \returns a new DOM div, with the format codes in it.                                *
+    ****************************************************************************************/
+    this.buildDOMTree_ConstructFormat = function ( in_meeting_object  ///< The meeting data line object.
+                                                    )
+        {
+        var container_element = document.createElement ( 'div' );
+        container_element.className = 'bmlt_nouveau_search_results_list_format_div';
+        
+        var loc_text = 'FORMAT';
+        
         container_element.appendChild ( document.createTextNode( loc_text ) );
         return container_element;
         };
@@ -1573,45 +1599,35 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.analyzeSearchResults = function ()
         {
         // These will be the result of this function.
-        this.m_long_lat_northeast = { 'lng':this.m_current_long, 'lat':this.m_current_lat };  // This will contain the North, East corner of the map to encompass all the results.
-        this.m_long_lat_southwest = { 'lng':this.m_current_long, 'lat':this.m_current_lat };  // Same for South, West.
+        this.m_long_lat_northeast = new google.maps.LatLng ( this.m_current_lat, this.m_current_long );
+        this.m_long_lat_southwest = new google.maps.LatLng ( this.m_current_lat, this.m_current_long );
 
         // We loop through the whole response.
 		for ( var c = 0; c < this.m_search_results.length; c++ )
 		    {
 		    this.m_search_results[c].uid = this.m_uid;    // This will be used to anchor context in future callbacks. This is a convenient place to set it.
-		    var theMeeting = this.m_search_results[c];
-		    var mLNG = theMeeting['longitude'];
-		    var mLAT = theMeeting['latitude'];
 		    
-		    if ( mLNG < this.m_long_lat_northeast.lng )
+		    if ( this.m_search_results[c].longitude > this.m_long_lat_northeast.lng() )
 		        {
-		        this.m_long_lat_northeast.lng = mLNG;
+                this.m_long_lat_northeast = new google.maps.LatLng ( this.m_long_lat_northeast.lat(), this.m_search_results[c].longitude );
 		        };
 		    
-		    if ( mLAT > this.m_long_lat_northeast.lat )
+		    if ( this.m_search_results[c].latitude > this.m_long_lat_northeast.lat() )
 		        {
-		        this.m_long_lat_northeast.lat = mLAT;
+                this.m_long_lat_northeast = new google.maps.LatLng ( this.m_search_results[c].latitude, this.m_long_lat_northeast.lng() );
 		        };
 		    
-		    if ( mLNG > this.m_long_lat_southwest.lng )
+		    if ( this.m_search_results[c].longitude < this.m_long_lat_southwest.lng() )
 		        {
-		        this.m_long_lat_southwest.lng = mLNG;
+                this.m_long_lat_southwest = new google.maps.LatLng ( this.m_long_lat_southwest.lat(), this.m_search_results[c].longitude );
 		        };
 		    
-		    if ( mLAT < this.m_long_lat_southwest.lat )
+		    if ( this.m_search_results[c].latitude < this.m_long_lat_southwest.lat() )
 		        {
-		        this.m_long_lat_southwest.lat = mLAT;
-		        };
-		    
-		    if ( !theMeeting['distance_in_km'] )    // This should never be necessary, but just in case...
-		        {
-		        var distance_in_km = Math.abs ( google.maps.geometry.spherical.computeDistanceBetween(new google.maps.LatLng ( this.m_current_lat, this.m_current_long ), new google.maps.LatLng ( theMeeting['latitude'], theMeeting['longitude'] )) / 1000.0 );
-		        this.m_search_results[c].distance_in_km = distance_in_km;
-		        this.m_search_results[c].distance_in_miles = distance_in_km / 1.60934;
+                this.m_long_lat_southwest = new google.maps.LatLng ( this.m_search_results[c].latitude, this.m_long_lat_southwest.lng() );
 		        };
 		    };
-		
+
 		this.sortSearchResults();
         };
     
@@ -2205,6 +2221,12 @@ NouveauMapSearch.prototype.sSortCallback = function( in_obj_a,
         
     return ret;
     };
+
+/********************************************************************************************
+*############################ SIMPLE STATIC UTILITY FUNCTIONS ##############################*
+*                                                                                           *
+* These functions are called statically, and have no need for object context.               *
+********************************************************************************************/
 	
 /****************************************************************************************//**
 *	\brief	This returns an array, mapping out markers that overlap.					    *
@@ -2219,7 +2241,7 @@ NouveauMapSearch.prototype.sMapOverlappingMarkers = function (  in_meeting_array
 	                                                            in_map_object       ///< The map instance to use.
 									                        )
     {
-    var tolerance = 8;	/* This is how many pixels we allow. */
+    var tolerance = g_Nouveau_default_marker_aggregation_threshold_in_pixels;	/* This is how many pixels we allow. */
     var tmp = new Array;
     
     for ( var c = 0; c < in_meeting_array.length; c++ )
