@@ -38,6 +38,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                             in_initial_lat,         ///< The initial latitude for the map.
                             in_initial_long,        ///< The initial longitude for the map.
                             in_initial_zoom,        ///< The initial zoom level for the map.
+                            in_distance_units,      ///< The distance units (km or mi).
                             in_root_server_uri,     ///< The base root server URI,
                             in_initial_text,        ///< If there is any initial text to be displayed, it should be here.
                             in_checked_location,    ///< If the "Location" checkbox should be checked, this should be TRUE.
@@ -54,6 +55,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_current_long = null;              ///< The current map longitude. It will change as the map state changes.
     var m_current_lat = null;               ///< The current map latitude. It will change as the map state changes.
     var m_current_zoom = null;              ///< The current map zoom. It will change as the map state changes.
+    var m_distance_units = null;            ///< The distance units for this instance (km or mi)
     var m_root_server_uri = null;           ///< A string, containing the URI of the root server. It will not change after construction.
     var m_initial_text = null;              ///< This will contain any initial text for the search text box.
     var m_checked_location = null;          ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
@@ -61,6 +63,17 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     
     var m_default_duration = null;          ///< The default meeting length.
     
+	var m_icon_image_single = null;
+	var m_icon_image_multi = null;
+	var m_icon_image_selected = null;
+	var m_icon_shadow = null;
+	var m_icon_shape = null;
+	
+	/// These describe the "You are here" icon.
+	var m_center_icon_image = null;
+	var m_center_icon_shadow = null;
+	var m_center_icon_shape = null;
+	
     /// These variables hold quick references to the various elements of the screen.
     var m_container_div = null;             ///< This is the main outer container. It also contains the script.
     var m_display_div = null;               ///< This is the div where everything happens.
@@ -154,6 +167,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_ajax_request = null;                  ///< This is used to handle AJAX calls.
     
     var m_search_sort_key = null;               ///< This can be 'time', 'town', 'name', or 'distance'.
+    
+    var m_format_descriptions = null;           ///< This will contain our formats.
         
     /****************************************************************************************
     *								  INTERNAL CLASS FUNCTIONS							    *
@@ -298,6 +313,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( this.m_map_div )
             {
             var myOptions = {
+                            'scrollwheel' : false,
                             'center': new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
                             'zoom': this.m_current_zoom,
                             'mapTypeId': google.maps.MapTypeId.ROADMAP,
@@ -335,15 +351,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                     
                 // Options for circle overlay object
 
-                var circle_options =   {
-                                'center': this.m_main_map.getCenter(),
-                                'fillColor': "#999",
-                                'radius':1000,
-                                'fillOpacity': 0.25,
-                                'strokeOpacity': 0.0,
-                                'map': null,
-                                'clickable': false
-                                };
+                var circle_options = {
+                                    'center': this.m_main_map.getCenter(),
+                                    'fillColor': "#999",
+                                    'radius':1000,
+                                    'fillOpacity': 0.25,
+                                    'strokeOpacity': 0.0,
+                                    'map': null,
+                                    'clickable': false
+                                    };
 
                 this.m_main_map._circle_overlay = new google.maps.Circle(circle_options);
                 };
@@ -358,6 +374,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( this.m_map_search_results_map_div )
             {
             var myOptions = {
+                            'scrollwheel' : false,
                             'center': new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
                             'zoom': this.m_current_zoom,
                             'mapTypeId': google.maps.MapTypeId.ROADMAP,
@@ -387,6 +404,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             if ( this.m_map_search_results_map )
                 {
                 this.m_map_search_results_map.meeting_marker_array = null;
+                this.m_map_search_results_map.main_marker = null;
                 
                 var id = this.m_uid;
                 
@@ -1071,7 +1089,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         return container_element;
         };
-        
+    
     /************************************************************************************//**
     *	\brief This gets the county name as a div.                                          *
     *   \returns a new DOM div, with the name in it.                                        *
@@ -1137,7 +1155,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 
             span_element.appendChild ( document.createTextNode ( in_meeting_object['location_city_subsection'] ) );
             container_element.appendChild ( span_element );
-            }
+            };
         
         if ( in_meeting_object['location_neighborhood'] )
             {
@@ -1145,7 +1163,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             span_element.className = 'bmlt_nouveau_search_results_list_town_name_neighborhood_span';
             span_element.appendChild ( document.createTextNode ( in_meeting_object['location_neighborhood'] ) );
             container_element.appendChild ( span_element );
-            }
+            };
 
         return container_element;
         };
@@ -1163,7 +1181,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( in_meeting_object['meeting_name'] )
             {
             container_element.appendChild ( document.createTextNode ( in_meeting_object['meeting_name'] ) );
-            }
+            };
                     
         return container_element;
         };
@@ -1230,10 +1248,24 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             time[0] = parseInt ( time[0], 10 );
             time[1] = parseInt ( time[1], 10 );
             
-            var title_string = sprintf ( g_Nouveau_location_sprintf_format_duration_title, time[0], time[1] );
-// g_Nouveau_location_sprintf_format_duration_hour_only_title
-// g_Nouveau_location_sprintf_format_duration_hour_only_and_minutes_title
-// g_Nouveau_location_sprintf_format_duration_hours_only_title
+            var title_string = '';
+            
+            if ( (time[0] > 1) && (time[1] > 1) )
+                {
+                title_string = sprintf ( g_Nouveau_location_sprintf_format_duration_title, time[0], time[1] );
+                }
+            else if ( (time[0] > 1) && (time[1] == 0) )
+                {
+                title_string = sprintf ( g_Nouveau_location_sprintf_format_duration_hours_only_title, time[0] );
+                }
+            else if ( (time[0] == 1) && (time[1] == 0) )
+                {
+                title_string = sprintf ( g_Nouveau_location_sprintf_format_duration_hour_only_title, time[0] );
+                }
+            else if ( (time[0] == 1) && (time[1] > 0) )
+                {
+                title_string = sprintf ( g_Nouveau_location_sprintf_format_duration_hour_only_and_minutes_title, time[1] );
+                };
 
             var clock_element = null;
             
@@ -1247,64 +1279,67 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 duration_element.appendChild ( clock_element );
                 };
             
-            clock_element = document.createElement ( 'div' );
-            clock_element.className = 'bmlt_nouvea_duration_div';
-            clock_element.setAttribute ( 'title', title_string );
+            if ( time[1] > 0 )
+                {
+                clock_element = document.createElement ( 'div' );
+                clock_element.className = 'bmlt_nouvea_duration_div';
+                clock_element.setAttribute ( 'title', title_string );
 
-            if ( (time[1] > 0) && (time[1] < 6) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_05_div';
-                }
-            else if ( (time[1] > 5) && (time[1] < 11) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_10_div';
-                }
-            else if ( (time[1] > 10) && (time[1] < 16) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_15_div';
-                }
-            else if ( (time[1] > 15) && (time[1] < 21) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_20_div';
-                }
-            else if ( (time[1] > 20) && (time[1] < 26) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_25_div';
-                }
-            else if ( (time[1] > 25) && (time[1] < 31) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_30_div';
-                }
-            else if ( (time[1] > 30) && (time[1] < 36) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_35_div';
-                }
-            else if ( (time[1] > 35) && (time[1] < 41) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_40_div';
-                }
-            else if ( (time[1] > 40) && (time[1] < 46) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_45_div';
-                }
-            else if ( (time[1] > 45) && (time[1] < 51) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_50_div';
-                }
-            else if ( (time[1] > 50) && (time[1] < 56) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_56_div';
-                }
-            else if ( (time[1] > 55) && (time[1] <= 60) )
-                {
-                clock_element.className += ' bmlt_nouvea_duration_60_div';
-                }
-            else
-                {
-                clock_element.className += ' bmlt_nouvea_duration_00_div';
-                }
+                if ( (time[1] > 0) && (time[1] < 6) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_05_div';
+                    }
+                else if ( (time[1] > 5) && (time[1] < 11) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_10_div';
+                    }
+                else if ( (time[1] > 10) && (time[1] < 16) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_15_div';
+                    }
+                else if ( (time[1] > 15) && (time[1] < 21) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_20_div';
+                    }
+                else if ( (time[1] > 20) && (time[1] < 26) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_25_div';
+                    }
+                else if ( (time[1] > 25) && (time[1] < 31) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_30_div';
+                    }
+                else if ( (time[1] > 30) && (time[1] < 36) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_35_div';
+                    }
+                else if ( (time[1] > 35) && (time[1] < 41) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_40_div';
+                    }
+                else if ( (time[1] > 40) && (time[1] < 46) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_45_div';
+                    }
+                else if ( (time[1] > 45) && (time[1] < 51) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_50_div';
+                    }
+                else if ( (time[1] > 50) && (time[1] < 56) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_56_div';
+                    }
+                else if ( (time[1] > 55) && (time[1] <= 60) )
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_60_div';
+                    }
+                else
+                    {
+                    clock_element.className += ' bmlt_nouvea_duration_00_div';
+                    };
            
-            duration_element.appendChild ( clock_element );
+                duration_element.appendChild ( clock_element );
+                };
             
             container_element.appendChild ( duration_element );
             };
@@ -1368,12 +1403,46 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         var container_element = document.createElement ( 'div' );
         container_element.className = 'bmlt_nouveau_search_results_list_format_div';
         
-        var loc_text = 'FORMAT';
+        var loc_array = in_meeting_object.formats.split ( ',');
         
-        container_element.appendChild ( document.createTextNode( loc_text ) );
+        if ( loc_array && loc_array.length )
+            {
+            for ( var c = 0; c < loc_array.length; c++ )
+                {
+                var loc_text = loc_array[c];
+        
+                var format_element = document.createElement ( 'span' );
+                format_element.className = 'bmlt_nouveau_advanced_formats_element_span';
+                format_element.appendChild ( document.createTextNode( loc_text ) );
+                format_element.setAttribute ( 'title', this.getFormatDescription ( loc_text ) );
+                container_element.appendChild ( format_element );
+                };
+            };
+                
         return container_element;
         };
-                
+    
+    /************************************************************************************//**
+    *	\brief This returns the format description for the given format code.               *
+    *   \returns A string, containing the description.                                      *
+    ****************************************************************************************/
+    this.getFormatDescription = function( in_code_string    ///< This is the code string, and will be used to look up the description
+                                        )
+        {
+        var ret = '';
+        
+        for ( var c = 0; c < this.m_format_descriptions.length;  c++ )
+            {
+            if ( this.m_format_descriptions[c].key_string == in_code_string )
+                {
+                ret = this.m_format_descriptions[c].description_string;
+                break;
+                };
+            };
+        
+        return ret;
+        };
+    
     /************************************************************************************//**
     *	\brief This sets the state of the "MAP/TEXT" tab switch div. It actually changes    *
     *          the state of the anchors, so it is more than just a CSS class change.        *
@@ -1410,7 +1479,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 
         var inner_img = document.createElement ( 'img' );
         inner_img.className = 'bmlt_nouveau_throbber_img';
-        inner_img.src = g_Nouveau_throbber_image_src;
+        inner_img.src = g_Nouveau_theme_image_dir + 'Throbber.gif';
         inner_img.setAttribute ( 'alt', 'Busy Throbber' );
         
         inner_div.appendChild ( inner_img );
@@ -1445,7 +1514,64 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.displayMarkerInAdvancedMap = function ()
         {
         };
+    
+    /************************************************************************************//**
+    *	\brief Redraws the meeting result map markers.                                      *
+    ****************************************************************************************/
+    this.redrawResultMapMarkers = function()
+        {
+        // First, get rid of the old ones.
+        if ( this.m_map_search_results_map.main_marker )
+            {
+            this.m_map_search_results_map.main_marker.setMap(null);
+            this.m_map_search_results_map.main_marker = null;
+            };
 
+        // Next, get rid of all the meeting markers.
+        for ( var c = 0; this.m_map_search_results_map.meeting_marker_array && (c < this.m_map_search_results_map.meeting_marker_array.length); c++ )
+            {
+            if ( this.m_map_search_results_map.meeting_marker_array[c] )
+                {
+                this.m_map_search_results_map.meeting_marker_array[c] = null;
+                };
+            };
+        
+        this.displayMainMarkerInResults();
+ 
+        // Recalculate the new batch.
+//         this.m_map_search_results_map.meeting_marker_array = NouveauMapSearch.prototype.sMapOverlappingMarkers ( this.m_search_results, this.m_map_search_results_map );
+// 
+//         for ( var c = 0; this.m_map_search_results_map.meeting_marker_array && (c < this.m_map_search_results_map.meeting_marker_array.length); c++ )
+//             {
+//             this.displayMeetingMarkerInResults ( this.m_map_search_results_map.meeting_marker_array[c] );
+//             };
+        };
+
+    /************************************************************************************//**
+    *	\brief This displays the "Your Position" marker in the results map.                 *
+    ****************************************************************************************/
+    this.displayMainMarkerInResults = function ()
+        {
+		this.m_map_search_results_map.main_marker = new google.maps.Marker ( {  'position':     new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
+                                                                                'map':		    this.m_map_search_results_map,
+                                                                                'shadow':		this.m_center_icon_shadow,
+                                                                                'icon':			this.m_center_icon_image,
+                                                                                'shape':		this.m_center_icon_shape,
+                                                                                'clickable':	false,
+                                                                                'cursor':		'default',
+                                                                                'draggable':    false,
+                                                                                'title':        'HAI'
+                                                                                } );
+        };
+
+    /************************************************************************************//**
+    *	\brief This displays the "Your Position" marker in the results map.                 *
+    ****************************************************************************************/
+    this.displayMeetingMarkerInResults = function ( in_meeting_object   ///< The meeting to be displayed.
+                                                    )
+        {
+        };
+	
     /****************************************************************************************
     *################################### PERFORM SEARCH ####################################*
     ****************************************************************************************/
@@ -1457,7 +1583,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_search_results = null;
         this.setDisplayedSearchResults();
         this.clearSearchResults();
-        this.callRootServer ( this.createSearchURI() );
+        this.callRootServer ( this.createSearchURI_Formats() );
         };
         
     /************************************************************************************//**
@@ -1484,6 +1610,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.createSearchURI = function ()
         {
         var ret = this.m_root_server_uri; // We append a question mark, so all the rest can be added without worrying about this.
+        
+        ret += escape ( 'switcher=GetSearchResults' );
         
         // These will all be appended to the URI (or not).
         var uri_elements = new Array;
@@ -1539,6 +1667,19 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         // Return the complete URI for a JSON response.
         return ret;
         };
+
+    /************************************************************************************//**
+    *	\brief This function constructs a URI to the root server that reflects the search   *
+    *          parameters, as specified by the search specification section.                *
+    *   \returns a string, containing the complete URI.                                     *
+    ****************************************************************************************/
+    this.createSearchURI_Formats = function ()
+        {
+        var ret = this.m_root_server_uri; // We append a question mark, so all the rest can be added without worrying about this.
+        
+        ret += escape ( 'switcher=GetFormats' );
+        return ret;
+        };
 	
 	/************************************************************************************//**
 	*	\brief  Does an AJAX call for a JSON response, based on the given criteria and      *
@@ -1559,7 +1700,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	        this.m_ajax_request = null;
 	        };
 	    
-        this.m_ajax_request = BMLTPlugin_AjaxRequest ( in_uri, NouveauMapSearch.prototype.sAJAXRouter, 'get', this.m_uid );
+        this.m_ajax_request = BMLTPlugin_AjaxRequest ( in_uri, NouveauMapSearch.prototype.sFormatCallback, 'get', this.m_uid );
 	};
         
     /****************************************************************************************
@@ -1580,7 +1721,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_listResultsDisplayed = true;
         this.setDisplayedSearchResults();
         this.loadResultsMap();
-        this.redrawMapMarkers();
+        this.redrawResultMapMarkers();
         };
     
     /************************************************************************************//**
@@ -1602,8 +1743,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 		    {
 		    this.m_search_results[c].uid = this.m_uid;    // This will be used to anchor context in future callbacks. This is a convenient place to set it.
 		    
+            var time_array = (this.m_search_results[c]['duration_time'].toString()).split(':');
+            
+            var time_full = parseInt ( ((time_array && (time_array.length > 1)) ? ((parseInt ( time_array[0], 10 ) * 100) + parseInt ( time_array[1], 10 )) : 0), 10 );
+
 		    // We give the meeting a duration, if none is provided.
-		    if ( !this.m_search_results[c].duration_time )
+		    if ( time_full == 0 )
 		        {
 		        this.m_search_results[c].duration_time = this.m_default_duration;
 		        };
@@ -1820,6 +1965,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.displayMapResultsDiscolsureHit = function()
         {
         this.m_mapResultsDisplayed = !this.m_mapResultsDisplayed;
+        
         this.setMapResultsDisclosure();
         };
         
@@ -1829,6 +1975,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.displayListResultsDiscolsureHit = function()
         {
         this.m_listResultsDisplayed = !this.m_listResultsDisplayed;
+        
         this.setListResultsDisclosure();
         };
         
@@ -1862,15 +2009,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             };
         };
     
-    /************************************************************************************//**
-    *	\brief Redraws the blue/red meeting markers.                                        *
-    ****************************************************************************************/
-    this.redrawMapMarkers = function()
-        {
-        // First, recalculate all the map markers.
-        this.m_map_search_results_map.meeting_marker_array = NouveauMapSearch.prototype.sMapOverlappingMarkers ( this.m_search_results, this.m_map_search_results_map );
-        };
-    
     /****************************************************************************************
     *##################################### CONSTRUCTOR #####################################*
     ****************************************************************************************/
@@ -1880,6 +2018,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_current_long = in_initial_long;
     this.m_current_lat = in_initial_lat;
     this.m_current_zoom = in_initial_zoom;
+    this.m_distance_units = in_distance_units;
     this.m_root_server_uri = in_root_server_uri;
     this.m_initial_text = in_initial_text;
     this.m_checked_location = in_checked_location;
@@ -1894,6 +2033,18 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_search_results_shown = false;         ///< If this is true, then the results div is displayed.
     this.m_search_radius = g_Nouveau_default_geo_width;
     this.m_default_duration = g_Nouveau_default_duration;
+
+	/// These describe the regular NA meeting icon
+	this.m_icon_image_single = new google.maps.MarkerImage ( g_Nouveau_theme_image_dir+"google_map_images/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_image_multi = new google.maps.MarkerImage ( g_Nouveau_theme_image_dir+"google_map_images/NAMarkerG.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_image_selected = new google.maps.MarkerImage ( g_Nouveau_theme_image_dir+"google_map_images/NAMarkerSel.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_shadow = new google.maps.MarkerImage( g_Nouveau_theme_image_dir+"google_map_images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_shape = { coord: [16,0,18,1,19,2,20,3,21,4,21,5,22,6,22,7,22,8,22,9,22,10,22,11,22,12,22,13,22,14,22,15,22,16,21,17,21,18,22,19,20,20,19,21,20,22,18,23,17,24,18,25,17,26,15,27,14,28,15,29,12,30,12,31,10,31,10,30,9,29,8,28,8,27,7,26,6,25,5,24,5,23,4,22,3,21,3,20,2,19,1,18,1,17,1,16,0,15,0,14,0,13,0,12,0,11,0,10,0,9,0,8,0,7,1,6,1,5,2,4,2,3,3,2,5,1,6,0,16,0], type: 'poly' };
+	
+	/// These describe the "You are here" icon.
+	this.m_center_icon_image = new google.maps.MarkerImage ( g_Nouveau_theme_image_dir+"google_map_images/NACenterMarker.png", new google.maps.Size(21, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
+	this.m_center_icon_shadow = new google.maps.MarkerImage( g_Nouveau_theme_image_dir+"google_map_images/NACenterMarkerS.png", new google.maps.Size(43, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
+	this.m_center_icon_shape = { coord: [16,0,18,1,19,2,19,3,20,4,20,5,20,6,20,7,20,8,20,9,20,10,20,11,19,12,17,13,16,14,16,15,15,16,15,17,14,18,14,19,13,20,13,21,13,22,13,23,12,24,12,25,12,26,12,27,11,28,11,29,11,30,11,31,11,32,11,33,11,34,11,35,10,35,10,34,9,33,9,32,9,31,9,30,9,29,9,28,8,27,8,26,8,25,8,24,8,23,7,22,7,21,7,20,6,19,6,18,5,17,5,16,4,15,4,14,3,13,1,12,0,11,0,10,0,9,0,8,0,7,0,6,0,5,0,4,1,3,1,2,3,1,4,0,16,0], type: 'poly' };
     
     this.m_search_sort_key = 'time';             ///< This can be 'time', 'town', 'name', or 'distance'.
 
@@ -2020,15 +2171,46 @@ NouveauMapSearch.prototype.sMapZoomChanged = function ( in_event,   ///< The map
     {
     eval ('var context = g_instance_' + in_id + '_js_handler');
     
-    context.redrawMapMarkers();
+    context.redrawResultMapMarkers();
     };
 	
 /****************************************************************************************//**
 *	\brief This is the AJAX callback from a search request.                                 *
 ********************************************************************************************/
-NouveauMapSearch.prototype.sAJAXRouter = function ( in_response_object, ///< The HTTPRequest response object.
-                                                    in_id               ///< The unique ID of the object (establishes context).
-                                                    )
+NouveauMapSearch.prototype.sFormatCallback = function ( in_response_object, ///< The HTTPRequest response object.
+                                                        in_id               ///< The unique ID of the object (establishes context).
+                                                        )
+    {
+    eval ('var context = g_instance_' + in_id + '_js_handler');
+    
+    if ( context )
+        {
+        context.m_ajax_request = null;
+        var uri = context.createSearchURI();
+        context.m_ajax_request = BMLTPlugin_AjaxRequest ( uri, NouveauMapSearch.prototype.sMeetingsCallback, 'get', in_id );
+        
+        if ( in_response_object.responseText )
+            {
+            var new_object = null;
+            var json_builder = "var new_object = " + in_response_object.responseText + ";";
+        
+            // This is how you create JSON objects.
+            eval ( json_builder );
+            context.m_format_descriptions = new_object;
+            };
+        }
+    else
+        {
+        alert ( g_Nouveau_no_search_results_text );
+        };
+    };
+	
+/****************************************************************************************//**
+*	\brief This is the AJAX callback from a search request.                                 *
+********************************************************************************************/
+NouveauMapSearch.prototype.sMeetingsCallback = function (   in_response_object, ///< The HTTPRequest response object.
+                                                            in_id               ///< The unique ID of the object (establishes context).
+                                                            )
     {
     eval ('var context = g_instance_' + in_id + '_js_handler');
     

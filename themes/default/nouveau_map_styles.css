@@ -262,8 +262,18 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_formats_header_div
+        bmlt_nouveau_search_results_list_format_div
 {
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        span.bmlt_nouveau_advanced_formats_element_span
+{
+    display:block;
+    float:left;
+    padding:2px;
+    cursor: help;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1164,6 +1174,7 @@ div#bmlt_page_items.bmlt_page_items
     margin-right:2px;
     background-repeat:no-repeat;
     background-position:center center;
+    cursor: help;
 }
 
 div#bmlt_page_items.bmlt_page_items

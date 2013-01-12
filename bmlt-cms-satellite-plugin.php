@@ -1786,7 +1786,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= 'var g_Nouveau_array_header_text = new Array ( "'.join ( '","', self::$local_nouveau_table_header_array ).'");';
                 $the_new_content .= 'var g_Nouveau_weekday_long_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_long_array ).'");';
                 $the_new_content .= 'var g_Nouveau_weekday_short_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_short_array ).'");';
-	            $the_new_content .= "var g_Nouveau_throbber_image_src = '".$this->get_plugin_path()."/themes/".$options['theme']."/images/Throbber.gif';";
+	            $the_new_content .= "var g_Nouveau_theme_image_dir = '".$this->get_plugin_path()."/themes/".$options['theme']."/images/';";
                 
                 $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
                 $the_new_content .= "var g_Nouveau_default_marker_aggregation_threshold_in_pixels = 8;";
@@ -1801,7 +1801,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
             // This is the overall container div.
             $the_new_content .= '<div id="'.$uid.'_container" class="bmlt_nouveau_container">';
                 // What we do here, is tell the client to create a global variable (in JS DOM), with a unique handler for this instance of the Nouveau search.
-                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \'map\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".htmlspecialchars ( $this->get_ajax_base_uri() )."?redirect_ajax_json=".urlencode ( 'switcher=GetSearchResults' )."&bmlt_settings_id=$in_options_id');</script>";
+                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \'map\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=');</script>";
             $the_new_content .= '</div>';
 
             $in_content = self::replace_shortcode ( $in_content, $theshortcode, $the_new_content );
