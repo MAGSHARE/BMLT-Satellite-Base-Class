@@ -994,8 +994,6 @@ div#bmlt_page_items.bmlt_page_items
         span.bmlt_nouveau_search_results_list_town_name_town_span
 {
     display:block;
-    float:left;
-    padding-right:4px;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1009,8 +1007,6 @@ div#bmlt_page_items.bmlt_page_items
         span.bmlt_nouveau_search_results_list_town_name_borough_span
 {
     display:block;
-    float:left;
-    padding-right:4px;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1024,7 +1020,6 @@ div#bmlt_page_items.bmlt_page_items
         span.bmlt_nouveau_search_results_list_town_name_neighborhood_span
 {
     display:block;
-    float:left;
     font-style:italic;
 }
 
@@ -1062,6 +1057,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_search_results_list_start_time_div
 {
+    white-space: nowrap;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1149,6 +1145,116 @@ div#bmlt_page_items.bmlt_page_items
 {
     display:block;
     margin:10px;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_container_div
+{
+    height:20px;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_div
+{
+    float:left;
+    height:16px;
+    width:16px;
+    margin-right:2px;
+    background-repeat:no-repeat;
+    background-position:center center;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_00_div
+{
+    background-image:url(images/Clock00.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_05_div
+{
+    background-image:url(images/Clock05.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_10_div
+{
+    background-image:url(images/Clock10.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_15_div
+{
+    background-image:url(images/Clock15.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_20_div
+{
+    background-image:url(images/Clock20.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_25_div
+{
+    background-image:url(images/Clock25.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_30_div
+{
+    background-image:url(images/Clock30.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_35_div
+{
+    background-image:url(images/Clock35.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_40_div
+{
+    background-image:url(images/Clock40.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_45_div
+{
+    background-image:url(images/Clock45.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_50_div
+{
+    background-image:url(images/Clock50.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_55_div
+{
+    background-image:url(images/Clock55.png);
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouvea_duration_60_div
+{
+    background-image:url(images/Clock60.png);
 }
 
 div#bmlt_page_items.bmlt_page_items

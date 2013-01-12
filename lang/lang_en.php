@@ -134,9 +134,14 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_location_sprintf_format_street = '%s';
     static  $local_nouveau_location_sprintf_format_loc = '%s';
     static  $local_nouveau_location_sprintf_format_wtf = 'No Location Given';
+    static  $local_nouveau_location_sprintf_format_duration_title = 'This meeting is %s hours and %s minutes long.';
+    static  $local_nouveau_location_sprintf_format_duration_hour_only_title = 'This meeting is 1 hour long.';
+    static  $local_nouveau_location_sprintf_format_duration_hour_only_and_minutes_title = 'This meeting is 1 hour and %s minutes long.';
+    static  $local_nouveau_location_sprintf_format_duration_hours_only_title = 'This meeting is %s hours long.';
     static  $local_nouveau_time_sprintf_format = '%d:%02d %s';
     static  $local_nouveau_am = 'AM';
     static  $local_nouveau_pm = 'PM';
+    static  $local_nouveau_default_duration = '1:30';
     static  $local_nouveau_noon = 'Noon';
     static  $local_nouveau_midnight = 'Midnight';
     static  $local_nouveau_prompt_array = array (

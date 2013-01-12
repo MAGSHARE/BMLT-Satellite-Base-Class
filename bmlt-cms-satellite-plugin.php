@@ -1760,6 +1760,10 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_loc = '".self::$local_nouveau_location_sprintf_format_loc."';";
                 $the_new_content .= "var g_Nouveau_time_sprintf_format = '".self::$local_nouveau_time_sprintf_format."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_wtf ='".$this->process_text ( self::$local_nouveau_location_sprintf_format_wtf )."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_duration_title = '".self::$local_nouveau_location_sprintf_format_duration_title."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_duration_hour_only_title = '".self::$local_nouveau_location_sprintf_format_duration_hour_only_title."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_duration_hour_only_and_minutes_title = '".self::$local_nouveau_location_sprintf_format_duration_hour_only_and_minutes_title."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_duration_hours_only_title = '".self::$local_nouveau_location_sprintf_format_duration_hours_only_title."';";
                 $the_new_content .= "var g_Nouveau_am ='".$this->process_text ( self::$local_nouveau_am )."';";
                 $the_new_content .= "var g_Nouveau_pm ='".$this->process_text ( self::$local_nouveau_pm )."';";
                 $the_new_content .= "var g_Nouveau_noon ='".$this->process_text ( self::$local_nouveau_noon )."';";
@@ -1786,6 +1790,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 
                 $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
                 $the_new_content .= "var g_Nouveau_default_marker_aggregation_threshold_in_pixels = 8;";
+                $the_new_content .= "var g_Nouveau_default_duration = '".self::$local_nouveau_default_duration."';";
 
                 $the_new_content .= '</script>';
                 $first = false;

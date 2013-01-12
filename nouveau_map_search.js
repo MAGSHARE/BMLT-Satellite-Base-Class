@@ -56,8 +56,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_current_zoom = null;              ///< The current map zoom. It will change as the map state changes.
     var m_root_server_uri = null;           ///< A string, containing the URI of the root server. It will not change after construction.
     var m_initial_text = null;              ///< This will contain any initial text for the search text box.
-    var m_checked_location = null;         ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
+    var m_checked_location = null;          ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
     var m_single_meeting_id = null;         ///< This will contain the ID of any single meeting being displayed.
+    
+    var m_default_duration = null;          ///< The default meeting length.
     
     /// These variables hold quick references to the various elements of the screen.
     var m_container_div = null;             ///< This is the main outer container. It also contains the script.
@@ -156,106 +158,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /****************************************************************************************
     *								  INTERNAL CLASS FUNCTIONS							    *
     ****************************************************************************************/
-    /****************************************************************************************
-    *#################################### THIRD-PARTY CODE #################################*
-    ****************************************************************************************/
-    /**
-    sprintf() for JavaScript 0.6
-
-    Copyright (c) Alexandru Marasteanu <alexaholic [at) gmail (dot] com>
-    All rights reserved.
-
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-        * Redistributions of source code must retain the above copyright
-          notice, this list of conditions and the following disclaimer.
-        * Redistributions in binary form must reproduce the above copyright
-          notice, this list of conditions and the following disclaimer in the
-          documentation and/or other materials provided with the distribution.
-        * Neither the name of sprintf() for JavaScript nor the
-          names of its contributors may be used to endorse or promote products
-          derived from this software without specific prior written permission.
-
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-    ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-    DISCLAIMED. IN NO EVENT SHALL Alexandru Marasteanu BE LIABLE FOR ANY
-    DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-    (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-    LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-    ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-    (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-
-    Changelog:
-    2007.04.03 - 0.1:
-     - initial release
-    2007.09.11 - 0.2:
-     - feature: added argument swapping
-    2007.09.17 - 0.3:
-     - bug fix: no longer throws exception on empty paramenters (Hans Pufal)
-    2007.10.21 - 0.4:
-     - unit test and patch (David Baird)
-    2010.05.09 - 0.5:
-     - bug fix: 0 is now preceeded with a + sign
-     - bug fix: the sign was not at the right position on padded results (Kamal Abdali)
-     - switched from GPL to BSD license
-    2010.05.22 - 0.6:
-     - reverted to 0.4 and fixed the bug regarding the sign of the number 0
-     Note:
-     Thanks to Raphael Pigulla <raph (at] n3rd [dot) org> (http://www.n3rd.org/)
-     who warned me about a bug in 0.5, I discovered that the last update was
-     a regress. I appologize for that.
-    **/
-
-    function str_repeat(i, m) {
-        for (var o = []; m > 0; o[--m] = i);
-        return o.join('');
-    }
-
-    function sprintf() {
-        var i = 0, a, f = arguments[i++], o = [], m, p, c, x, s = '';
-        while (f) {
-            if (m = /^[^\x25]+/.exec(f)) {
-                o.push(m[0]);
-            }
-            else if (m = /^\x25{2}/.exec(f)) {
-                o.push('%');
-            }
-            else if (m = /^\x25(?:(\d+)\$)?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-fosuxX])/.exec(f)) {
-                if (((a = arguments[m[1] || i++]) == null) || (a == undefined)) {
-                    throw('Too few arguments.');
-                }
-                if (/[^s]/.test(m[7]) && (typeof(a) != 'number')) {
-                    throw('Expecting number but found ' + typeof(a));
-                }
-                switch (m[7]) {
-                    case 'b': a = a.toString(2); break;
-                    case 'c': a = String.fromCharCode(a); break;
-                    case 'd': a = parseInt(a,10); break;
-                    case 'e': a = m[6] ? a.toExponential(m[6]) : a.toExponential(); break;
-                    case 'f': a = m[6] ? parseFloat(a).toFixed(m[6]) : parseFloat(a); break;
-                    case 'o': a = a.toString(8); break;
-                    case 's': a = ((a = String(a)) && m[6] ? a.substring(0, m[6]) : a); break;
-                    case 'u': a = Math.abs(a); break;
-                    case 'x': a = a.toString(16); break;
-                    case 'X': a = a.toString(16).toUpperCase(); break;
-                }
-                a = (/[def]/.test(m[7]) && m[2] && a >= 0 ? '+'+ a : a);
-                c = m[3] ? m[3] == '0' ? '0' : m[3].charAt(1) : ' ';
-                x = m[5] - String(a).length - s.length;
-                p = m[5] ? str_repeat(c, x) : '';
-                o.push(s + (m[4] ? a + p : p + a));
-            }
-            else {
-                throw('Huh ?!');
-            }
-            f = f.substring(m[0].length);
-        }
-        return o.join('');
-    }
-    
     /****************************************************************************************
     *################################# INITIAL SETUP ROUTINES ##############################*
     ****************************************************************************************/
@@ -1290,10 +1192,14 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         var container_element = document.createElement ( 'div' );
         container_element.className = 'bmlt_nouveau_search_results_list_start_time_div';
         
+        var text_element = document.createElement ( 'div' );
+        text_element.className = 'bmlt_nouveau_search_results_list_start_time_text_div';
+
         var time = (in_meeting_object['start_time'].toString()).split(':');
 
         time[0] = parseInt ( time[0], 10 );
         time[1] = parseInt ( time[1], 10 );
+        
         var st = null;
         
         if ( (time[0] == 12) && (time[1] == 0) )
@@ -1312,8 +1218,97 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             st = sprintf ( g_Nouveau_time_sprintf_format, hours, time[1], a );
             };
         
+        text_element.appendChild ( document.createTextNode( st ) );
         container_element.appendChild ( document.createTextNode( st ) );
-                    
+        
+        if ( in_meeting_object['duration_time'] )
+            {
+            var duration_element = document.createElement ( 'div' );
+            duration_element.className = 'bmlt_nouvea_duration_container_div';
+            time = (in_meeting_object['duration_time'].toString()).split(':');
+
+            time[0] = parseInt ( time[0], 10 );
+            time[1] = parseInt ( time[1], 10 );
+            
+            var title_string = sprintf ( g_Nouveau_location_sprintf_format_duration_title, time[0], time[1] );
+// g_Nouveau_location_sprintf_format_duration_hour_only_title
+// g_Nouveau_location_sprintf_format_duration_hour_only_and_minutes_title
+// g_Nouveau_location_sprintf_format_duration_hours_only_title
+
+            var clock_element = null;
+            
+            var t = time[0];
+            
+            for ( var c = 0; c  < t; c++ )
+                {
+                clock_element = document.createElement ( 'div' );
+                clock_element.className = 'bmlt_nouvea_duration_div bmlt_nouvea_duration_60_div';
+                clock_element.setAttribute ( 'title', title_string );
+                duration_element.appendChild ( clock_element );
+                };
+            
+            clock_element = document.createElement ( 'div' );
+            clock_element.className = 'bmlt_nouvea_duration_div';
+            clock_element.setAttribute ( 'title', title_string );
+
+            if ( (time[1] > 0) && (time[1] < 6) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_05_div';
+                }
+            else if ( (time[1] > 5) && (time[1] < 11) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_10_div';
+                }
+            else if ( (time[1] > 10) && (time[1] < 16) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_15_div';
+                }
+            else if ( (time[1] > 15) && (time[1] < 21) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_20_div';
+                }
+            else if ( (time[1] > 20) && (time[1] < 26) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_25_div';
+                }
+            else if ( (time[1] > 25) && (time[1] < 31) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_30_div';
+                }
+            else if ( (time[1] > 30) && (time[1] < 36) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_35_div';
+                }
+            else if ( (time[1] > 35) && (time[1] < 41) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_40_div';
+                }
+            else if ( (time[1] > 40) && (time[1] < 46) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_45_div';
+                }
+            else if ( (time[1] > 45) && (time[1] < 51) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_50_div';
+                }
+            else if ( (time[1] > 50) && (time[1] < 56) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_56_div';
+                }
+            else if ( (time[1] > 55) && (time[1] <= 60) )
+                {
+                clock_element.className += ' bmlt_nouvea_duration_60_div';
+                }
+            else
+                {
+                clock_element.className += ' bmlt_nouvea_duration_00_div';
+                }
+           
+            duration_element.appendChild ( clock_element );
+            
+            container_element.appendChild ( duration_element );
+            };
+        
         return container_element;
         };
         
@@ -1607,6 +1602,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 		    {
 		    this.m_search_results[c].uid = this.m_uid;    // This will be used to anchor context in future callbacks. This is a convenient place to set it.
 		    
+		    // We give the meeting a duration, if none is provided.
+		    if ( !this.m_search_results[c].duration_time )
+		        {
+		        this.m_search_results[c].duration_time = this.m_default_duration;
+		        };
+		    
 		    if ( this.m_search_results[c].longitude > this.m_long_lat_northeast.lng() )
 		        {
                 this.m_long_lat_northeast = new google.maps.LatLng ( this.m_long_lat_northeast.lat(), this.m_search_results[c].longitude );
@@ -1892,6 +1893,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_listResultsDisplayed = false;
     this.m_search_results_shown = false;         ///< If this is true, then the results div is displayed.
     this.m_search_radius = g_Nouveau_default_geo_width;
+    this.m_default_duration = g_Nouveau_default_duration;
     
     this.m_search_sort_key = 'time';             ///< This can be 'time', 'town', 'name', or 'distance'.
 
