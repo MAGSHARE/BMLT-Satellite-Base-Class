@@ -171,6 +171,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_search_sort_key = null;               ///< This can be 'time', 'town', 'name', or 'distance'.
     
     var m_format_descriptions = null;           ///< This will contain our formats.
+    var m_geocoder = null;                      ///< This will hold any active address lookup.
         
     /****************************************************************************************
     *								  INTERNAL CLASS FUNCTIONS							    *
@@ -322,7 +323,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                             'zoomControl': true,
                             'mapTypeControl': true,
                             'disableDoubleClickZoom' : true,
-                            'draggableCursor': "pointer",
+                            'draggableCursor': "crosshair",
                             'scaleControl' : true
                             };
 
@@ -344,26 +345,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             if ( this.m_main_map )
                 {
                 this.m_main_map.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
-                this.m_main_map.center_marker = null;
+                this.m_main_map.map_marker = null;
                 this.m_main_map.geo_width = null;
+                this.m_main_map._circle_overlay = null;
                 
                 var id = this.m_uid;
                 
                 google.maps.event.addListener ( this.m_main_map, 'click', function(in_event) { NouveauMapSearch.prototype.sMapClicked( in_event, id ); } );
-                    
-                // Options for circle overlay object
-
-                var circle_options = {
-                                    'center': this.m_main_map.getCenter(),
-                                    'fillColor': "#999",
-                                    'radius':1000,
-                                    'fillOpacity': 0.25,
-                                    'strokeOpacity': 0.0,
-                                    'map': null,
-                                    'clickable': false
-                                    };
-
-                this.m_main_map._circle_overlay = new google.maps.Circle(circle_options);
                 };
             };
 	    };
@@ -383,7 +371,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                             'zoomControl': true,
                             'mapTypeControl': true,
                             'disableDoubleClickZoom' : true,
-                            'draggableCursor': "pointer",
                             'scaleControl' : true
                             };
 
@@ -548,6 +535,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div advanced_div_hidden';
             this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div';
             };
+        
+        this.displayMarkerInAdvancedMap();
         };
     
     /************************************************************************************//**
@@ -1537,6 +1526,63 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_display_div.appendChild ( this.m_throbber_div );
         };
     
+    /************************************************************************************//**
+    *	\brief  Look up an address in the text
+    ****************************************************************************************/
+    this.lookupLocation = function ()
+        {
+        if ( this.m_text_input.value && (this.m_text_input.value != this.m_text_input.defaultValue) )
+            {
+            this.m_geocoder = new google.maps.Geocoder;
+            
+            if ( this.m_geocoder )
+                {
+                var id = this.m_uid;
+                var	status = this.m_geocoder.geocode ( { 'address' : this.m_text_input.value }, function ( in_geocode_response ) { NouveauMapSearch.prototype.sGeoCallback ( in_geocode_response, id ); } );
+                
+                this.m_text_input.select();
+                
+                if ( google.maps.OK != status )
+                    {
+                    if ( google.maps.INVALID_REQUEST != status )
+                        {
+                        alert ( g_Nouveau_lookup_location_failed );
+                        }
+                    else
+                        {
+                        if ( google.maps.ZERO_RESULTS != status )
+                            {
+                            alert ( g_Nouveau_lookup_location_failed );
+                            }
+                        else
+                            {
+                            alert ( g_Nouveau_lookup_location_server_error );
+                            };
+                        };
+                    };
+                }
+            else	// None of that stuff is defined if we couldn't create the geocoder.
+                {
+                alert ( g_Nouveau_lookup_location_server_error );
+                };
+            }
+        else
+            {
+			alert ( g_Nouveau_lookup_location_failed );
+            };
+        };
+	
+    /****************************************************************************************//**
+    *	\brief This catches the AJAX response, and fills in the response form.				    *
+    ********************************************************************************************/
+    this.lookupCompleteHandler = function ( in_geocode_response ///< The JSON object.
+                                            )
+        {
+        this.m_current_long = in_geocode_response[0].geometry.location.lng();
+        this.m_current_lat = in_geocode_response[0].geometry.location.lat();
+        this.beginSearch();
+        };
+    
     /****************************************************************************************
     *#################################### MAP HANDLERS #####################################*
     ****************************************************************************************/
@@ -1561,6 +1607,51 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.displayMarkerInAdvancedMap = function ()
         {
+        if ( this.m_current_view == 'advanced map' )
+            {
+            if ( !this.m_main_map.map_marker )
+                {
+                this.m_main_map.map_marker = new google.maps.Marker (
+                                                                    {
+                                                                    'position':     new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
+                                                                    'map':		    this.m_main_map,
+                                                                    'shadow':		this.m_center_icon_shadow,
+                                                                    'icon':			this.m_center_icon_image,
+                                                                    'shape':		this.m_center_icon_shape,
+                                                                    'clickable':	false,
+                                                                    'cursor':		'default',
+                                                                    'draggable':    false
+                                                                    } );
+                }
+            else
+                {
+                this.m_main_map.map_marker.setPosition ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
+                };
+                    
+            // Options for circle overlay object
+//             if ( !this.m_main_map._circle_overlay )
+//                 {
+//                 var circle_options = {
+//                                     'center': this.m_main_map.getCenter(),
+//                                     'fillColor': "#999",
+//                                     'radius':1000,
+//                                     'fillOpacity': 0.25,
+//                                     'strokeOpacity': 0.0,
+//                                     'map': null,
+//                                     'clickable': false
+//                                     };
+// 
+//                 this.m_main_map._circle_overlay = new google.maps.Circle(circle_options);
+//                 }
+//             else
+//                 {
+//                 };
+            }
+        else if ( this.m_main_map.map_marker )
+            {
+            this.m_main_map.map_marker.setMap(null);
+            this.m_main_map.map_marker = null;
+            };
         };
     
     /************************************************************************************//**
@@ -1634,7 +1725,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                                     'icon':			displayed_image,
                                                     'shape':		this.m_icon_shape,
                                                     'clickable':	true,
-                                                    'cursor':		'default',
+                                                    'cursor':		'pointer',
                                                     'draggable':    false
                                                     } );
         
@@ -1690,6 +1781,14 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         var tr_element = document.getElementById ( tr_element_id );
         
         tr_element.className = tr_element.classNameNormal + '_single';
+        
+        if ( !this.m_listResultsDisplayed )
+            {
+            this.m_listResultsDisplayed = true;
+            this.setListResultsDisclosure();
+            };
+        
+        location.hash = "#" + tr_element.id;
         };
 
     /************************************************************************************//**
@@ -1702,15 +1801,30 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.clearMarkerHighlight();
 
         in_marker.setIcon ( this.m_icon_image_selected );
-
+        
+        var top_element = null;
+        
         for ( var c = 0; c < in_mtg_obj_array.length; c++ )
             {
             tr_element_id = this.m_uid + '_meeting_list_item_' + in_mtg_obj_array[c]['id_bigint'] + '_tr';
-        
+            
             var tr_element = document.getElementById ( tr_element_id );
         
             tr_element.className = tr_element.classNameNormal + '_multi';
+            
+            if ( !top_element || (tr_element.offsetTop < top_element.offsetTop) )
+                {
+                top_element = tr_element;
+                };
             };
+        
+        if ( !this.m_listResultsDisplayed )
+            {
+            this.m_listResultsDisplayed = true;
+            this.setListResultsDisclosure();
+            };
+            
+        location.hash = "#" + top_element.id;
         };
 
     /****************************************************************************************
@@ -1765,10 +1879,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         uri_elements[index] = new Array;
         uri_elements[index][0] = 'lat_val';
         uri_elements[index++][1] = this.m_current_lat;
-            
         // First, if we have a map up, we use the specified width. (not done if the search is specified using text).
         // This restricts the search area.
-        if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced map') )
+        if ( this.m_location_checkbox.checked || (this.m_current_view == 'map') || (this.m_current_view == 'advanced map') )
             {
             uri_elements[index] = new Array;
             uri_elements[index][0] = 'geo_width';
@@ -1780,7 +1893,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             var search_text = this.m_text_input.value;
             
-            if ( search_text )
+            if ( search_text && this.m_location_checkbox.checked )
                 {
                 uri_elements[index] = new Array;
                 uri_elements[index][0] = 'SearchString';
@@ -1789,13 +1902,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 // Make sure that all the text is used.
                 uri_elements[index] = new Array;
                 uri_elements[index][0] = 'SearchStringAll';
-                uri_elements[index++][1] = 1;
-                };
-                
-            if ( this.m_location_checkbox.checked )
-                {
-                uri_elements[index] = new Array;
-                uri_elements[index][0] = 'StringSearchIsAnAddress';
                 uri_elements[index++][1] = 1;
                 };
             };
@@ -1996,7 +2102,14 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.goButtonHit = function()
         {
-        this.beginSearch();
+        if ( this.m_location_checkbox.checked )
+            {
+            this.lookupLocation();
+            }
+        else
+            {
+            this.beginSearch();
+            };
         };
 
     /************************************************************************************//**
@@ -2246,6 +2359,20 @@ NouveauMapSearch.prototype.sCheckTextInputBlur = function ( in_text_element  ///
         in_text_element.value = in_text_element.defaultValue;
         };
     };
+	
+/****************************************************************************************//**
+*	\brief This catches the AJAX response, and fills in the response form.				    *
+********************************************************************************************/
+	
+NouveauMapSearch.prototype.sGeoCallback = function ( in_geocode_response,	///< The JSON object.
+                                                     in_uid                 ///< The id (to establish context).
+							                        )
+	{
+    eval ('var context = g_instance_' + in_uid + '_js_handler');
+	context.lookupCompleteHandler ( in_geocode_response );
+    google.maps.event.removeListener ( context.m_geocoder );
+    context.m_geocoder = null;
+	};
 
 /****************************************************************************************//**
 *	\brief Will test a text element upon keyUp, and may change its appearance.              *

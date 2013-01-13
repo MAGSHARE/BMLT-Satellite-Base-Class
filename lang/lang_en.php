@@ -138,6 +138,8 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_location_sprintf_format_duration_hour_only_title = 'This meeting is 1 hour long.';
     static  $local_nouveau_location_sprintf_format_duration_hour_only_and_minutes_title = 'This meeting is 1 hour and %s minutes long.';
     static  $local_nouveau_location_sprintf_format_duration_hours_only_title = 'This meeting is %s hours long.';
+    static  $local_nouveau_lookup_location_failed = "The address lookup was not completed successfully.";
+    static  $local_nouveau_lookup_location_server_error = "The address lookup was not completed successfully, due to a server error.";
     static  $local_nouveau_time_sprintf_format = '%d:%02d %s';
     static  $local_nouveau_am = 'AM';
     static  $local_nouveau_pm = 'PM';
