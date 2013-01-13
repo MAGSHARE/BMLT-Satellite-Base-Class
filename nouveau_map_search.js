@@ -39,6 +39,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                             in_initial_long,        ///< The initial longitude for the map.
                             in_initial_zoom,        ///< The initial zoom level for the map.
                             in_distance_units,      ///< The distance units (km or mi).
+                            in_theme_dir,           ///< The selected theme directory (HTTP path).
                             in_root_server_uri,     ///< The base root server URI,
                             in_initial_text,        ///< If there is any initial text to be displayed, it should be here.
                             in_checked_location,    ///< If the "Location" checkbox should be checked, this should be TRUE.
@@ -56,6 +57,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_current_lat = null;               ///< The current map latitude. It will change as the map state changes.
     var m_current_zoom = null;              ///< The current map zoom. It will change as the map state changes.
     var m_distance_units = null;            ///< The distance units for this instance (km or mi)
+    var m_theme_dir = null;                 ///< An HTTP path to the selected theme for this instance. Used to get images.
     var m_root_server_uri = null;           ///< A string, containing the URI of the root server. It will not change after construction.
     var m_initial_text = null;              ///< This will contain any initial text for the search text box.
     var m_checked_location = null;          ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
@@ -403,7 +405,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             
             if ( this.m_map_search_results_map )
                 {
-                this.m_map_search_results_map.meeting_marker_array = null;
+                this.m_map_search_results_map.meeting_marker_array = new Array;;
+                this.m_map_search_results_map.meeting_marker_object_array = null;
                 this.m_map_search_results_map.main_marker = null;
                 
                 var id = this.m_uid;
@@ -974,16 +977,22 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree_SearchResults_List_Table_Contents = function ()
         {
-        // The header has one row.
+        // Each meeting gets a row.
         for ( var i = 0; i < this.m_search_results.length; i++ )
             {
             var tr_element = document.createElement ( 'tr' );
             tr_element.className = 'bmlt_nouveau_search_results_list_body_tr ' + 'bmlt_nouveau_search_results_list_body_tr_' + (((i % 2) == 0) ? 'even' : 'odd');
+            
+            // These are used to allow a "highlight" of meetings represented by map markers.
+            tr_element.classNameNormal = tr_element.className;
+            tr_element.classNameHighlight = tr_element.className + 'bmlt_nouveau_search_results_list_body_highlight_tr';
+            tr_element.id = this.m_uid + '_meeting_list_item_' + this.m_search_results[i]['id_bigint'] + '_tr';
         
             for ( var c = 0; c < g_Nouveau_array_header_text.length; c++ )
                 {
                 this.buildDOMTree_SearchResults_List_Table_Contents_Node_TD(this.m_search_results[i], c, tr_element);
                 };
+            
             this.m_list_search_results_table_body.appendChild ( tr_element );
             };
         };
@@ -1267,78 +1276,115 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 title_string = sprintf ( g_Nouveau_location_sprintf_format_duration_hour_only_and_minutes_title, time[1] );
                 };
 
-            var clock_element = null;
+            var container_img_div = null;
+            var inner_img = null;
             
             var t = time[0];
             
             for ( var c = 0; c  < t; c++ )
                 {
-                clock_element = document.createElement ( 'div' );
-                clock_element.className = 'bmlt_nouvea_duration_div bmlt_nouvea_duration_60_div';
-                clock_element.setAttribute ( 'title', title_string );
-                duration_element.appendChild ( clock_element );
+                container_img_div = document.createElement ( 'div' );
+                container_img_div.className = 'bmlt_nouveau_clock_div bmlt_nouvea_duration_60_div';
+                container_img_div.setAttribute ( 'title', title_string );
+                inner_img = document.createElement ( 'img' );
+                inner_img.className = 'bmlt_nouveau_clock_img bmlt_nouvea_duration_60_img';
+                inner_img.src = this.m_theme_dir + '/images/Clock60.png';
+                container_img_div.appendChild ( inner_img );
+                duration_element.appendChild ( container_img_div );
                 };
             
             if ( time[1] > 0 )
                 {
-                clock_element = document.createElement ( 'div' );
-                clock_element.className = 'bmlt_nouvea_duration_div';
-                clock_element.setAttribute ( 'title', title_string );
+                container_img_div = document.createElement ( 'div' );
+                container_img_div.className = 'bmlt_nouveau_clock_div';
+                container_img_div.setAttribute ( 'title', title_string );
+                
+                inner_img = document.createElement ( 'img' );
+                inner_img.className = 'bmlt_nouveau_clock_img';
 
                 if ( (time[1] > 0) && (time[1] < 6) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_05_div';
+                    inner_img.className += ' bmlt_nouvea_duration_05_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_05_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock05.png';
                     }
                 else if ( (time[1] > 5) && (time[1] < 11) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_10_div';
+                    inner_img.className += ' bmlt_nouvea_duration_10_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_10_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock10.png';
                     }
                 else if ( (time[1] > 10) && (time[1] < 16) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_15_div';
+                    inner_img.className += ' bmlt_nouvea_duration_15_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_15_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock15.png';
                     }
                 else if ( (time[1] > 15) && (time[1] < 21) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_20_div';
+                    inner_img.className += ' bmlt_nouvea_duration_20_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_20_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock20.png';
                     }
                 else if ( (time[1] > 20) && (time[1] < 26) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_25_div';
+                    inner_img.className += ' bmlt_nouvea_duration_25_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_25_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock25.png';
                     }
                 else if ( (time[1] > 25) && (time[1] < 31) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_30_div';
+                    inner_img.className += ' bmlt_nouvea_duration_30_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_30_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock30.png';
                     }
                 else if ( (time[1] > 30) && (time[1] < 36) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_35_div';
+                    inner_img.className += ' bmlt_nouvea_duration_35_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_35_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock35.png';
                     }
                 else if ( (time[1] > 35) && (time[1] < 41) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_40_div';
+                    inner_img.className += ' bmlt_nouvea_duration_40_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_40_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock40.png';
                     }
                 else if ( (time[1] > 40) && (time[1] < 46) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_45_div';
+                    inner_img.className += ' bmlt_nouvea_duration_45_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_45_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock45.png';
                     }
                 else if ( (time[1] > 45) && (time[1] < 51) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_50_div';
+                    inner_img.className += ' bmlt_nouvea_duration_50_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_50_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock50.png';
                     }
                 else if ( (time[1] > 50) && (time[1] < 56) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_56_div';
+                    inner_img.className += ' bmlt_nouvea_duration_55_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_55_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock55.png';
                     }
                 else if ( (time[1] > 55) && (time[1] <= 60) )
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_60_div';
+                    inner_img.className += ' bmlt_nouvea_duration_60_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_60_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock60.png';
                     }
                 else
                     {
-                    clock_element.className += ' bmlt_nouvea_duration_00_div';
+                    inner_img.className += ' bmlt_nouvea_duration_00_img';
+                    container_img_div.className += ' bmlt_nouvea_duration_00_div';
+                    inner_img.src = this.m_theme_dir + '/images/Clock00.png';
                     };
+                    
+                inner_img.setAttribute ( 'alt', '' );
            
-                duration_element.appendChild ( clock_element );
+                container_img_div.appendChild ( inner_img );
+                duration_element.appendChild ( container_img_div );
                 };
             
             container_element.appendChild ( duration_element );
@@ -1479,7 +1525,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 
         var inner_img = document.createElement ( 'img' );
         inner_img.className = 'bmlt_nouveau_throbber_img';
-        inner_img.src = g_Nouveau_theme_image_dir + 'Throbber.gif';
+        inner_img.src = this.m_theme_dir + '/images/Throbber.gif';
         inner_img.setAttribute ( 'alt', 'Busy Throbber' );
         
         inner_div.appendChild ( inner_img );
@@ -1532,19 +1578,22 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             if ( this.m_map_search_results_map.meeting_marker_array[c] )
                 {
+                this.m_map_search_results_map.meeting_marker_array[c].setMap(null);
                 this.m_map_search_results_map.meeting_marker_array[c] = null;
                 };
             };
         
+        this.m_map_search_results_map.meeting_marker_array = new Array;
+        
         this.displayMainMarkerInResults();
  
         // Recalculate the new batch.
-//         this.m_map_search_results_map.meeting_marker_array = NouveauMapSearch.prototype.sMapOverlappingMarkers ( this.m_search_results, this.m_map_search_results_map );
-// 
-//         for ( var c = 0; this.m_map_search_results_map.meeting_marker_array && (c < this.m_map_search_results_map.meeting_marker_array.length); c++ )
-//             {
-//             this.displayMeetingMarkerInResults ( this.m_map_search_results_map.meeting_marker_array[c] );
-//             };
+        this.m_map_search_results_map.meeting_marker_object_array = NouveauMapSearch.prototype.sMapOverlappingMarkers ( this.m_search_results, this.m_map_search_results_map );
+
+        for ( var c = 0; this.m_map_search_results_map.meeting_marker_object_array && (c < this.m_map_search_results_map.meeting_marker_object_array.length); c++ )
+            {
+            this.displayMeetingMarkerInResults ( this.m_map_search_results_map.meeting_marker_object_array[c] );
+            };
         };
 
     /************************************************************************************//**
@@ -1552,24 +1601,42 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.displayMainMarkerInResults = function ()
         {
-		this.m_map_search_results_map.main_marker = new google.maps.Marker ( {  'position':     new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
-                                                                                'map':		    this.m_map_search_results_map,
-                                                                                'shadow':		this.m_center_icon_shadow,
-                                                                                'icon':			this.m_center_icon_image,
-                                                                                'shape':		this.m_center_icon_shape,
-                                                                                'clickable':	false,
-                                                                                'cursor':		'default',
-                                                                                'draggable':    false,
-                                                                                'title':        'HAI'
-                                                                                } );
+		this.m_map_search_results_map.main_marker = new google.maps.Marker (
+		                                                                    {
+                                                                            'position':     new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
+                                                                            'map':		    this.m_map_search_results_map,
+                                                                            'shadow':		this.m_center_icon_shadow,
+                                                                            'icon':			this.m_center_icon_image,
+                                                                            'shape':		this.m_center_icon_shape,
+                                                                            'clickable':	false,
+                                                                            'cursor':		'default',
+                                                                            'draggable':    false
+                                                                            } );
         };
 
     /************************************************************************************//**
     *	\brief This displays the "Your Position" marker in the results map.                 *
     ****************************************************************************************/
-    this.displayMeetingMarkerInResults = function ( in_meeting_object   ///< The meeting to be displayed.
+    this.displayMeetingMarkerInResults = function ( in_mtg_obj_array   ///< The meeting to be displayed.
                                                     )
         {
+        var displayed_image = (in_mtg_obj_array.length > 1) ? this.m_icon_image_single : this.m_icon_image_multi;
+        
+		var main_point = new google.maps.LatLng ( in_mtg_obj_array[0].latitude, in_mtg_obj_array[0].longitude );
+        
+		var new_marker = new google.maps.Marker (
+                                                    {
+                                                    'position':     main_point,
+                                                    'map':		    this.m_map_search_results_map,
+                                                    'shadow':		this.m_icon_shadow,
+                                                    'icon':			displayed_image,
+                                                    'shape':		this.m_icon_shape,
+                                                    'clickable':	false,
+                                                    'cursor':		'default',
+                                                    'draggable':    false
+                                                    } );
+                                                    
+        this.m_map_search_results_map.meeting_marker_array[this.m_map_search_results_map.meeting_marker_array.length] = new_marker;
         };
 	
     /****************************************************************************************
@@ -2019,6 +2086,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_current_lat = in_initial_lat;
     this.m_current_zoom = in_initial_zoom;
     this.m_distance_units = in_distance_units;
+    this.m_theme_dir = in_theme_dir;
     this.m_root_server_uri = in_root_server_uri;
     this.m_initial_text = in_initial_text;
     this.m_checked_location = in_checked_location;
@@ -2035,15 +2103,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_default_duration = g_Nouveau_default_duration;
 
 	/// These describe the regular NA meeting icon
-	this.m_icon_image_single = new google.maps.MarkerImage ( g_Nouveau_theme_image_dir+"google_map_images/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
-	this.m_icon_image_multi = new google.maps.MarkerImage ( g_Nouveau_theme_image_dir+"google_map_images/NAMarkerG.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
-	this.m_icon_image_selected = new google.maps.MarkerImage ( g_Nouveau_theme_image_dir+"google_map_images/NAMarkerSel.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
-	this.m_icon_shadow = new google.maps.MarkerImage( g_Nouveau_theme_image_dir+"google_map_images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_image_single = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_image_multi = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarkerG.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_image_selected = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarkerSel.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_shadow = new google.maps.MarkerImage( this.m_theme_dir + "/images/google_map_images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	this.m_icon_shape = { coord: [16,0,18,1,19,2,20,3,21,4,21,5,22,6,22,7,22,8,22,9,22,10,22,11,22,12,22,13,22,14,22,15,22,16,21,17,21,18,22,19,20,20,19,21,20,22,18,23,17,24,18,25,17,26,15,27,14,28,15,29,12,30,12,31,10,31,10,30,9,29,8,28,8,27,7,26,6,25,5,24,5,23,4,22,3,21,3,20,2,19,1,18,1,17,1,16,0,15,0,14,0,13,0,12,0,11,0,10,0,9,0,8,0,7,1,6,1,5,2,4,2,3,3,2,5,1,6,0,16,0], type: 'poly' };
 	
 	/// These describe the "You are here" icon.
-	this.m_center_icon_image = new google.maps.MarkerImage ( g_Nouveau_theme_image_dir+"google_map_images/NACenterMarker.png", new google.maps.Size(21, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
-	this.m_center_icon_shadow = new google.maps.MarkerImage( g_Nouveau_theme_image_dir+"google_map_images/NACenterMarkerS.png", new google.maps.Size(43, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
+	this.m_center_icon_image = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NACenterMarker.png", new google.maps.Size(21, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
+	this.m_center_icon_shadow = new google.maps.MarkerImage( this.m_theme_dir + "/images/google_map_images/NACenterMarkerS.png", new google.maps.Size(43, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
 	this.m_center_icon_shape = { coord: [16,0,18,1,19,2,19,3,20,4,20,5,20,6,20,7,20,8,20,9,20,10,20,11,19,12,17,13,16,14,16,15,15,16,15,17,14,18,14,19,13,20,13,21,13,22,13,23,12,24,12,25,12,26,12,27,11,28,11,29,11,30,11,31,11,32,11,33,11,34,11,35,10,35,10,34,9,33,9,32,9,31,9,30,9,29,9,28,8,27,8,26,8,25,8,24,8,23,7,22,7,21,7,20,6,19,6,18,5,17,5,16,4,15,4,14,3,13,1,12,0,11,0,10,0,9,0,8,0,7,0,6,0,5,0,4,1,3,1,2,3,1,4,0,16,0], type: 'poly' };
     
     this.m_search_sort_key = 'time';             ///< This can be 'time', 'town', 'name', or 'distance'.

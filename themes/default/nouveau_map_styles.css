@@ -1166,106 +1166,91 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_div
+        div.bmlt_nouveau_clock_div
 {
     float:left;
-    height:16px;
-    width:16px;
-    margin-right:2px;
-    background-repeat:no-repeat;
-    background-position:center center;
+    height:18px;
+    width:18px;
+    padding:1px;
     cursor: help;
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_00_div
+        img.bmlt_nouvea_duration_00_img
 {
-    background-image:url(images/Clock00.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_05_div
+        img.bmlt_nouvea_duration_05_img
 {
-    background-image:url(images/Clock05.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_10_div
+        img.bmlt_nouvea_duration_10_img
 {
-    background-image:url(images/Clock10.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_15_div
+        img.bmlt_nouvea_duration_15_img
 {
-    background-image:url(images/Clock15.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_20_div
+        img.bmlt_nouvea_duration_20_img
 {
-    background-image:url(images/Clock20.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_25_div
+        img.bmlt_nouvea_duration_25_img
 {
-    background-image:url(images/Clock25.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_30_div
+        img.bmlt_nouvea_duration_30_img
 {
-    background-image:url(images/Clock30.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_35_div
+        img.bmlt_nouvea_duration_35_img
 {
-    background-image:url(images/Clock35.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_40_div
+        img.bmlt_nouvea_duration_40_img
 {
-    background-image:url(images/Clock40.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_45_div
+        img.bmlt_nouvea_duration_45_img
 {
-    background-image:url(images/Clock45.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_50_div
+        img.bmlt_nouvea_duration_50_img
 {
-    background-image:url(images/Clock50.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_55_div
+        img.bmlt_nouvea_duration_55_img
 {
-    background-image:url(images/Clock55.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouvea_duration_60_div
+        img.bmlt_nouvea_duration_60_img
 {
-    background-image:url(images/Clock60.png);
 }
 
 div#bmlt_page_items.bmlt_page_items
