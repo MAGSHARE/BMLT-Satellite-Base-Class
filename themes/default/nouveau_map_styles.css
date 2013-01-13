@@ -930,6 +930,15 @@ div#bmlt_page_items.bmlt_page_items
         tr.bmlt_nouveau_search_results_list_body_tr_even td
 {
     background-color:#eee;
+    color: black;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        tr.bmlt_nouveau_search_results_list_body_tr_odd td
+{
+    background-color:none;
+    color: black;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1084,14 +1093,34 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_body_td_GPS
+        tr.bmlt_nouveau_search_results_list_body_tr_even_multi td
 {
+    background-color:#933;
+    color: white;
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_gps_div
+        tr.bmlt_nouveau_search_results_list_body_tr_odd_multi td
 {
+    background-color:#c66;
+    color: white;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        tr.bmlt_nouveau_search_results_list_body_tr_even_single td
+{
+    background-color:#339;
+    color: white;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        tr.bmlt_nouveau_search_results_list_body_tr_odd_single td
+{
+    background-color:#66c;
+    color: white;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1142,11 +1171,11 @@ div#bmlt_page_items.bmlt_page_items
     left:50%;
     background-color:#555;
     border:2px solid green;
-    -moz-border-radius: 8px;
-    -webkit-border-radius: 8px;
-    border-radius: 8px;
     text-align:center;
     vertical-align:middle;
+    -moz-border-radius: 50px;
+    -webkit-border-radius: 50px;
+    border-radius: 50px;
 }
 
 div#bmlt_page_items.bmlt_page_items

@@ -315,7 +315,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( this.m_map_div )
             {
             var myOptions = {
-                            'scrollwheel' : false,
                             'center': new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
                             'zoom': this.m_current_zoom,
                             'mapTypeId': google.maps.MapTypeId.ROADMAP,
@@ -344,6 +343,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             
             if ( this.m_main_map )
                 {
+                this.m_main_map.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
                 this.m_main_map.center_marker = null;
                 this.m_main_map.geo_width = null;
                 
@@ -376,7 +376,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( this.m_map_search_results_map_div )
             {
             var myOptions = {
-                            'scrollwheel' : false,
                             'center': new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
                             'zoom': this.m_current_zoom,
                             'mapTypeId': google.maps.MapTypeId.ROADMAP,
@@ -405,6 +404,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             
             if ( this.m_map_search_results_map )
                 {
+                google.maps.event.addListener ( this.m_map_search_results_map, 'click', function(in_event) { NouveauMapSearch.prototype.sResultMapClicked( in_event, id ); } );
+
+                this.m_map_search_results_map.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
                 this.m_map_search_results_map.meeting_marker_array = new Array;;
                 this.m_map_search_results_map.meeting_marker_object_array = null;
                 this.m_map_search_results_map.main_marker = null;
@@ -1617,13 +1619,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /************************************************************************************//**
     *	\brief This displays the "Your Position" marker in the results map.                 *
     ****************************************************************************************/
-    this.displayMeetingMarkerInResults = function ( in_mtg_obj_array   ///< The meeting to be displayed.
+    this.displayMeetingMarkerInResults = function ( in_mtg_obj_array   ///< The array of meeting objects meeting to be marked.
                                                     )
         {
-        var displayed_image = (in_mtg_obj_array.length > 1) ? this.m_icon_image_single : this.m_icon_image_multi;
+        var displayed_image = (in_mtg_obj_array.length == 1) ? this.m_icon_image_single : this.m_icon_image_multi;
         
 		var main_point = new google.maps.LatLng ( in_mtg_obj_array[0].latitude, in_mtg_obj_array[0].longitude );
-        
+
 		var new_marker = new google.maps.Marker (
                                                     {
                                                     'position':     main_point,
@@ -1631,14 +1633,86 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                                     'shadow':		this.m_icon_shadow,
                                                     'icon':			displayed_image,
                                                     'shape':		this.m_icon_shape,
-                                                    'clickable':	false,
+                                                    'clickable':	true,
                                                     'cursor':		'default',
                                                     'draggable':    false
                                                     } );
+        
+        var id = this.m_uid;
+        new_marker.oldImage = displayed_image;
+        
+        if ( in_mtg_obj_array.length == 1 )
+            {
+            google.maps.event.addListener ( new_marker, 'click', function(in_event) { NouveauMapSearch.prototype.sSingleClicked( new_marker, in_mtg_obj_array, id ); } );
+            }
+        else
+            {
+            google.maps.event.addListener ( new_marker, 'click', function(in_event) { NouveauMapSearch.prototype.sMultiClicked( new_marker, in_mtg_obj_array, id ); } );
+            };
                                                     
         this.m_map_search_results_map.meeting_marker_array[this.m_map_search_results_map.meeting_marker_array.length] = new_marker;
         };
-	
+        
+    /************************************************************************************//**
+    *	\brief This function resets all the highlighting for a selected marker.             *
+    ****************************************************************************************/
+    this.clearMarkerHighlight = function()
+        {
+        for ( var i = 0; i < this.m_search_results.length; i++ )
+            {
+            var id = this.m_uid + '_meeting_list_item_' + this.m_search_results[i]['id_bigint'] + '_tr';
+            var tr_element = document.getElementById ( id );
+            tr_element.className = tr_element.classNameNormal
+            };
+            
+        for ( var c = 0; this.m_map_search_results_map.meeting_marker_array && (c < this.m_map_search_results_map.meeting_marker_array.length); c++ )
+            {
+            if ( this.m_map_search_results_map.meeting_marker_array[c] )
+                {
+                this.m_map_search_results_map.meeting_marker_array[c].setIcon(this.m_map_search_results_map.meeting_marker_array[c].oldImage);
+                };
+            };
+        };
+        
+    /************************************************************************************//**
+    *	\brief This is called to handle a blue marker being clicked.                        *
+    ****************************************************************************************/
+    this.respondToSingleClick = function (  in_marker,  ///< The marker object that was clicked.
+                                            in_mtg_obj  ///< The meeting to be displayed
+                                            )
+        {
+        this.clearMarkerHighlight();
+
+        in_marker.setIcon ( this.m_icon_image_selected );
+        
+        tr_element_id = this.m_uid + '_meeting_list_item_' + in_mtg_obj['id_bigint'] + '_tr';
+        
+        var tr_element = document.getElementById ( tr_element_id );
+        
+        tr_element.className = tr_element.classNameNormal + '_single';
+        };
+
+    /************************************************************************************//**
+    *	\brief This is called to handle a red marker being clicked.                         *
+    ****************************************************************************************/
+    this.respondToMultiClick = function (   in_marker,          ///< The marker object that was clicked.
+                                            in_mtg_obj_array    ///< The array of meetings to be displayed.
+                                            )
+        {
+        this.clearMarkerHighlight();
+
+        in_marker.setIcon ( this.m_icon_image_selected );
+
+        for ( var c = 0; c < in_mtg_obj_array.length; c++ )
+            {
+            tr_element_id = this.m_uid + '_meeting_list_item_' + in_mtg_obj_array[c]['id_bigint'] + '_tr';
+        
+            var tr_element = document.getElementById ( tr_element_id );
+        
+            tr_element.className = tr_element.classNameNormal + '_multi';
+            };
+        };
+
     /****************************************************************************************
     *################################### PERFORM SEARCH ####################################*
     ****************************************************************************************/
@@ -2107,12 +2181,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	this.m_icon_image_multi = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarkerG.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	this.m_icon_image_selected = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarkerSel.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
 	this.m_icon_shadow = new google.maps.MarkerImage( this.m_theme_dir + "/images/google_map_images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
-	this.m_icon_shape = { coord: [16,0,18,1,19,2,20,3,21,4,21,5,22,6,22,7,22,8,22,9,22,10,22,11,22,12,22,13,22,14,22,15,22,16,21,17,21,18,22,19,20,20,19,21,20,22,18,23,17,24,18,25,17,26,15,27,14,28,15,29,12,30,12,31,10,31,10,30,9,29,8,28,8,27,7,26,6,25,5,24,5,23,4,22,3,21,3,20,2,19,1,18,1,17,1,16,0,15,0,14,0,13,0,12,0,11,0,10,0,9,0,8,0,7,1,6,1,5,2,4,2,3,3,2,5,1,6,0,16,0], type: 'poly' };
+	this.m_icon_shape = { coord: [16,0,18,1,19,2,20,3,21,4,21,5,22,6,22,7,22,8,22,9,22,10,22,11,22,12,22,13,22,14,22,15,22,16,21,17,21,18,22,19,20,20,19,21,20,22,18,23,17,24,18,25,17,26,15,27,14,28,15,29,12,30,12,31,
+	                                10,31,10,30,9,29,8,28,8,27,7,26,6,25,5,24,5,23,4,22,3,21,3,20,2,19,1,18,1,17,1,16,0,15,0,14,0,13,0,12,0,11,0,10,0,9,0,8,0,7,1,6,1,5,2,4,2,3,3,2,5,1,6,0,16,0], type: 'poly' };
 	
 	/// These describe the "You are here" icon.
 	this.m_center_icon_image = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NACenterMarker.png", new google.maps.Size(21, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
 	this.m_center_icon_shadow = new google.maps.MarkerImage( this.m_theme_dir + "/images/google_map_images/NACenterMarkerS.png", new google.maps.Size(43, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
-	this.m_center_icon_shape = { coord: [16,0,18,1,19,2,19,3,20,4,20,5,20,6,20,7,20,8,20,9,20,10,20,11,19,12,17,13,16,14,16,15,15,16,15,17,14,18,14,19,13,20,13,21,13,22,13,23,12,24,12,25,12,26,12,27,11,28,11,29,11,30,11,31,11,32,11,33,11,34,11,35,10,35,10,34,9,33,9,32,9,31,9,30,9,29,9,28,8,27,8,26,8,25,8,24,8,23,7,22,7,21,7,20,6,19,6,18,5,17,5,16,4,15,4,14,3,13,1,12,0,11,0,10,0,9,0,8,0,7,0,6,0,5,0,4,1,3,1,2,3,1,4,0,16,0], type: 'poly' };
+	this.m_center_icon_shape = { coord: [16,0,18,1,19,2,19,3,20,4,20,5,20,6,20,7,20,8,20,9,20,10,20,11,19,12,17,13,16,14,16,15,15,16,15,17,14,18,14,19,13,20,13,21,13,22,13,23,12,24,12,25,12,26,12,27,11,28,11,29,11,30,
+	                                        11,31,11,32,11,33,11,34,11,35,10,35,10,34,9,33,9,32,9,31,9,30,9,29,9,28,8,27,8,26,8,25,8,24,8,23,7,22,7,21,7,20,6,19,6,18,5,17,5,16,4,15,4,14,3,13,1,12,0,11,0,10,0,9,0,8,0,7,
+	                                        0,6,0,5,0,4,1,3,1,2,3,1,4,0,16,0], type: 'poly' };
     
     this.m_search_sort_key = 'time';             ///< This can be 'time', 'town', 'name', or 'distance'.
 
@@ -2228,6 +2305,42 @@ NouveauMapSearch.prototype.sMapClicked = function ( in_event,   ///< The map eve
         {
         context.advancedMapClicked();
         };
+    };
+
+/****************************************************************************************//**
+*	\brief Responds to a click in the result map (Clears any selected markers).             *
+********************************************************************************************/
+NouveauMapSearch.prototype.sResultMapClicked = function (   in_event,   ///< The map event
+                                                            in_id       ///< The unique ID of the object (establishes context).
+                                                            )
+    {
+    eval ('var context = g_instance_' + in_id + '_js_handler');
+    
+    context.clearMarkerHighlight();
+    };
+
+/****************************************************************************************//**
+*	\brief Responds to a click on a blue marker.                                             *
+********************************************************************************************/
+NouveauMapSearch.prototype.sSingleClicked = function (  in_marker,          ///< The map marker object
+                                                        in_mtg_obj_array,   ///< The array of meeting objects meeting to be marked.
+                                                        in_id               ///< The unique ID of the object (establishes context).
+                                                        )
+    {
+    eval ('var context = g_instance_' + in_id + '_js_handler');
+    context.respondToSingleClick ( in_marker, in_mtg_obj_array[0] );
+    };
+
+/****************************************************************************************//**
+*	\brief Responds to a click on a red marker.                                             *
+********************************************************************************************/
+NouveauMapSearch.prototype.sMultiClicked = function (   in_marker,          ///< The map marker object
+                                                        in_mtg_obj_array,   ///< The array of meeting objects meeting to be marked.
+                                                        in_id               ///< The unique ID of the object (establishes context).
+                                                    )
+    {
+    eval ('var context = g_instance_' + in_id + '_js_handler');
+    context.respondToMultiClick ( in_marker, in_mtg_obj_array );
     };
 
 /****************************************************************************************//**
