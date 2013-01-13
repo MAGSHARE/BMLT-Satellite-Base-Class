@@ -1969,6 +1969,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.setDisplayedSearchResults();
         this.loadResultsMap();
         this.redrawResultMapMarkers();
+        this.validateGoButtons();
         };
     
     /************************************************************************************//**
@@ -2238,7 +2239,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.validateGoButtons = function()
         {
-        if ( this.m_text_input.value && (this.m_text_input.value != this.m_text_input.defaultValue) )
+        if ( !this.m_geocoder && (this.m_text_input.value && (this.m_text_input.value != this.m_text_input.defaultValue)) )
             {
             this.m_advanced_go_a.className = 'bmlt_nouveau_text_go_button_a';
             this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
@@ -2337,6 +2338,24 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 * These functions are called statically, but establish context from an ID passed in.        *
 ********************************************************************************************/
 /****************************************************************************************//**
+*	\brief This catches the AJAX response, and fills in the response form.				    *
+********************************************************************************************/
+	
+NouveauMapSearch.prototype.sGeoCallback = function ( in_geocode_response,	///< The JSON object.
+                                                     in_uid                 ///< The id (to establish context).
+							                        )
+	{
+    eval ('var context = g_instance_' + in_uid + '_js_handler');
+	context.lookupCompleteHandler ( in_geocode_response );
+	
+	var old_geocoder = context.m_geocoder;
+
+    context.m_geocoder = null;
+    
+    google.maps.event.removeListener ( old_geocoder );
+	};
+
+/****************************************************************************************//**
 *	\brief Will check a text element upon blur, and will fill it with the default string.   *
 ********************************************************************************************/
 NouveauMapSearch.prototype.sCheckTextInputBlur = function ( in_text_element  ///< The text element being evaluated.
@@ -2346,8 +2365,6 @@ NouveauMapSearch.prototype.sCheckTextInputBlur = function ( in_text_element  ///
     // Each object is represented by a dynamically-created global variable, defined by ID, so we access that.
     // 'context' becomes a placeholder for 'this'.
     eval ('var context = g_instance_' + in_text_element.uid + '_js_handler');
-
-    context.validateGoButtons();
         
     if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
         {
@@ -2358,22 +2375,10 @@ NouveauMapSearch.prototype.sCheckTextInputBlur = function ( in_text_element  ///
         in_text_element.className = 'bmlt_nouveau_text_input_empty';
         in_text_element.value = in_text_element.defaultValue;
         };
+
+    context.validateGoButtons();
     };
 	
-/****************************************************************************************//**
-*	\brief This catches the AJAX response, and fills in the response form.				    *
-********************************************************************************************/
-	
-NouveauMapSearch.prototype.sGeoCallback = function ( in_geocode_response,	///< The JSON object.
-                                                     in_uid                 ///< The id (to establish context).
-							                        )
-	{
-    eval ('var context = g_instance_' + in_uid + '_js_handler');
-	context.lookupCompleteHandler ( in_geocode_response );
-    google.maps.event.removeListener ( context.m_geocoder );
-    context.m_geocoder = null;
-	};
-
 /****************************************************************************************//**
 *	\brief Will test a text element upon keyUp, and may change its appearance.              *
 ********************************************************************************************/
@@ -2381,8 +2386,6 @@ NouveauMapSearch.prototype.sCheckTextInputKeyUp = function ( in_text_element ///
                                                             )
     {
     eval ('var context = g_instance_' + in_text_element.uid + '_js_handler');
-
-    context.validateGoButtons();
 
     if ( in_text_element && in_text_element.value && (in_text_element.value != in_text_element.defaultValue) )
         {
@@ -2393,6 +2396,8 @@ NouveauMapSearch.prototype.sCheckTextInputKeyUp = function ( in_text_element ///
         in_text_element.className = 'bmlt_nouveau_text_input_empty';
         in_text_element.value = (in_text_element.hasFocus()) ? '' : in_text_element.defaultValue;
         };
+
+    context.validateGoButtons();
     };
 
 /****************************************************************************************//**
@@ -2403,12 +2408,12 @@ NouveauMapSearch.prototype.sCheckTextInputFocus = function ( in_text_element ///
     {
     eval ('var context = g_instance_' + in_text_element.uid + '_js_handler');
 
-    context.validateGoButtons();
-    
     if ( in_text_element.value && (in_text_element.value == in_text_element.defaultValue) )
         {
         in_text_element.value = '';
         };
+
+    context.validateGoButtons();
     };
 
 /****************************************************************************************//**
