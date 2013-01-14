@@ -1768,21 +1768,27 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_pm ='".$this->process_text ( self::$local_nouveau_pm )."';";
                 $the_new_content .= "var g_Nouveau_noon ='".$this->process_text ( self::$local_nouveau_noon )."';";
                 $the_new_content .= "var g_Nouveau_midnight ='".$this->process_text ( self::$local_nouveau_midnight )."';";
+                $the_new_content .= "var g_Nouveau_advanced_map_radius_label_1 ='".$this->process_text ( self::$local_nouveau_advanced_map_radius_label_1 )."';";
+                $the_new_content .= "var g_Nouveau_advanced_map_radius_label_2 ='".$this->process_text ( self::$local_nouveau_advanced_map_radius_label_2 )."';";
+                $the_new_content .= "var g_Nouveau_advanced_map_radius_value_2_km ='".$this->process_text ( self::$local_nouveau_advanced_map_radius_value_km )."';";
+                $the_new_content .= "var g_Nouveau_advanced_map_radius_value_2_mi ='".$this->process_text ( self::$local_nouveau_advanced_map_radius_value_mi )."';";
+                $the_new_content .= "var g_Nouveau_advanced_map_radius_value_auto ='".$this->process_text ( self::$local_nouveau_advanced_map_radius_value_auto )."';";
+                $the_new_content .= "var g_Nouveau_advanced_map_radius_value_array = [ ".self::$local_nouveau_advanced_map_radius_value_array." ];";
+                
                 $the_new_content .= "var g_Nouveau_array_keys = {";
-                
-                $first = true;
-                foreach ( self::$local_nouveau_prompt_array as $key => $value )
-                    {
-                    if ( !$first )
+                    $first = true;
+                    foreach ( self::$local_nouveau_prompt_array as $key => $value )
                         {
-                        $the_new_content .= ',';
+                        if ( !$first )
+                            {
+                            $the_new_content .= ',';
+                            }
+                        $first = false;
+                        $the_new_content .= '"'.$key.'":';
+                        $the_new_content .= '"'.$this->process_text ( $value ).'"';
                         }
-                    $first = false;
-                    $the_new_content .= '"'.$key.'":';
-                    $the_new_content .= '"'.$this->process_text ( $value ).'"';
-                    }
-                
                 $the_new_content .= "};";
+                
                 $the_new_content .= 'var g_Nouveau_array_header_text = new Array ( "'.join ( '","', self::$local_nouveau_table_header_array ).'");';
                 $the_new_content .= 'var g_Nouveau_weekday_long_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_long_array ).'");';
                 $the_new_content .= 'var g_Nouveau_weekday_short_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_short_array ).'");';

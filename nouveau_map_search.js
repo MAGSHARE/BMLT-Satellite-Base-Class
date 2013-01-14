@@ -95,6 +95,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_advanced_section_div = null;      ///< This is the advanced display section
     
     var m_advanced_go_a = null;             ///< This will be a "GO" button in the advanced search section.
+    var m_advanced_map_distance_popup = null;   ///< This is the popup menu that selects the search radius.
+    var m_advanced_map_distance_popup_label_1 = null;   ///< The left of the popup menu label.
+    var m_advanced_map_distance_popup_label_2 = null;   ///< The left of the popup menu label.
     
     var m_map_div = null;                   ///< This will contain the map.
     var m_main_map = null;                  ///< This is the actual Google Maps instance.
@@ -545,8 +548,51 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.buildDOMTree_Advanced_MapOptions = function ()
         {
         this.m_advanced_map_options_div = document.createElement ( 'div' );
-
+        this.buildDOMTree_Advanced_DistancePopup();
         this.m_advanced_section_div.appendChild ( this.m_advanced_map_options_div );
+        };
+    
+    /************************************************************************************//**
+    *	\brief Build the Advanced Weekdays section.                                         *
+    ****************************************************************************************/
+    this.buildDOMTree_Advanced_DistancePopup = function ()
+        {
+        this.m_advanced_map_distance_popup_label_1 = document.createElement ( 'label' );
+        this.m_advanced_map_distance_popup_label_1.className = 'bmlt_nouveau_advanced_map_popup_label_left';
+        this.m_advanced_map_distance_popup_label_1.appendChild ( document.createTextNode(g_Nouveau_advanced_map_radius_label_1) );
+        
+        this.m_advanced_map_distance_popup = document.createElement ( 'select' );
+        this.m_advanced_map_distance_popup.className = 'bmlt_nouveau_advanced_map_popup_select';
+        
+        var option = document.createElement ( 'option' );
+        option.className = 'bmlt_nouveau_advanced_map_popup_select_option_auto';
+        option.value = g_Nouveau_default_geo_width;
+        option.appendChild ( document.createTextNode(g_Nouveau_advanced_map_radius_value_auto) );
+        this.m_advanced_map_distance_popup.appendChild ( option );
+        
+        option = document.createElement ( 'option' );
+        option.disabled = true;
+        option.className = 'bmlt_nouveau_advanced_map_popup_select_option_null';
+        this.m_advanced_map_distance_popup.appendChild ( option );
+
+        for ( var c = 0; c < g_Nouveau_advanced_map_radius_value_array.length; c++ )
+            {
+            var distance = parseFloat(g_Nouveau_advanced_map_radius_value_array[c]);
+            option = document.createElement ( 'option' );
+            option.value = distance;
+            option.className = 'bmlt_nouveau_advanced_map_popup_select_option_' + distance;
+            this.m_advanced_map_distance_popup.appendChild ( option );
+            var text = distance + ' ' + ((this.m_distance_units == 'mi') ? g_Nouveau_advanced_map_radius_value_2_mi : g_Nouveau_advanced_map_radius_value_2_km);
+            option.appendChild ( document.createTextNode(text) );
+            };
+
+        this.m_advanced_map_distance_popup_label_2 = document.createElement ( 'label' );
+        this.m_advanced_map_distance_popup_label_2.className = 'bmlt_nouveau_advanced_map_popup_label_right';
+        this.m_advanced_map_distance_popup_label_2.appendChild ( document.createTextNode(g_Nouveau_advanced_map_radius_label_2) );
+        
+        this.m_advanced_map_options_div.appendChild ( this.m_advanced_map_distance_popup_label_1 );
+        this.m_advanced_map_options_div.appendChild ( this.m_advanced_map_distance_popup );
+        this.m_advanced_map_options_div.appendChild ( this.m_advanced_map_distance_popup_label_2 );
         };
     
     /************************************************************************************//**

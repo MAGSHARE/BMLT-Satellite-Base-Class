@@ -116,6 +116,11 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_text_go_button = 'GO';                           ///< The button name for the "GO" button in the text search in the nouveau search.
     static  $local_nouveau_text_item_default_text = 'Enter Search Text';    ///< The text that fills an empty text item.
     static  $local_nouveau_text_location_label_text = 'This is a location or postcode';         ///< The label text for the location checkbox.
+    static  $local_nouveau_advanced_map_radius_label_1 = 'Find Meetings Within';                       ///< The label text for the radius popup.
+    static  $local_nouveau_advanced_map_radius_label_2 = 'of the Marker Location.';             ///< The second part of the label.
+    static  $local_nouveau_advanced_map_radius_value_auto = 'An Automatically Chosen Radius';   ///< The second part of the label, if Miles
+    static  $local_nouveau_advanced_map_radius_value_km = 'Km';                                 ///< The second part of the popup value, if Kilometers
+    static  $local_nouveau_advanced_map_radius_value_mi = 'Miles';                              ///< The second part of the popup value, if Miles
     static  $local_nouveau_advanced_weekdays_disclosure_text = 'Selected Weekdays';             ///< The text that is used for the weekdays disclosure link.
     static  $local_nouveau_advanced_formats_disclosure_text = 'Selected Formats';               ///< The text that is used for the formats disclosure link.
     static  $local_nouveau_advanced_service_bodies_disclosure_text = 'Selected Service Bodies'; ///< The text that is used for the service bodies disclosure link.
@@ -146,6 +151,8 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_default_duration = '1:30';
     static  $local_nouveau_noon = 'Noon';
     static  $local_nouveau_midnight = 'Midnight';
+    static  $local_nouveau_advanced_map_radius_value_array = "0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 50.0, 100.0";
+
     static  $local_nouveau_prompt_array = array (
                                                 'weekday_tinyint' => 'Weekday',
                                                 'start_time' => 'Start Time',

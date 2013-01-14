@@ -244,6 +244,24 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_section_div
+{
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_map_options_div
+{
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        select.bmlt_nouveau_advanced_map_popup_select
+{
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
         div.bmlt_nouveau_advanced_weekdays_div
 {
 }
