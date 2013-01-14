@@ -996,11 +996,14 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree_SearchResults_List_Table_Contents = function ()
         {
+        var uid = this.m_uid;
         // Each meeting gets a row.
         for ( var i = 0; i < this.m_search_results.length; i++ )
             {
+            var meeting_id = this.m_search_results[i].id_bigint;
             var tr_element = document.createElement ( 'tr' );
             tr_element.className = 'bmlt_nouveau_search_results_list_body_tr ' + 'bmlt_nouveau_search_results_list_body_tr_' + (((i % 2) == 0) ? 'even' : 'odd');
+            tr_element.onmouseover = function () { NouveauMapSearch.prototype.sRowRollover (uid, meeting_id)};
             
             // These are used to allow a "highlight" of meetings represented by map markers.
             tr_element.classNameNormal = tr_element.className;
@@ -1759,6 +1762,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         var id = this.m_uid;
         new_marker.oldImage = displayed_image;
+        new_marker.meeting_id_array = new Array;
+        
+        // We save all the meetings represented by this marker.
+        for ( var c = 0; c < in_mtg_obj_array[0].length; )
+            {
+            new_marker.meeting_id_array[c] = in_mtg_obj_array[c]['id_bigint'];
+            };
         
         if ( in_mtg_obj_array.length == 1 )
             {
@@ -2263,6 +2273,46 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
+    *	\brief This is called to handle a row being rolled over.                            *
+    ****************************************************************************************/
+    this.handleRowRollover = function( in_meeting_id
+                                    )
+        {
+        var marker = this.getMarkerForMeetingId ( in_meeting_id );
+        
+        if ( marker )
+            {
+            };
+        };
+        
+    /************************************************************************************//**
+    *	\brief This returns the marker (on the result map) for the given meeting ID.        *
+    *   \returns a marker object.                                                           *
+    ****************************************************************************************/
+    this.getMarkerForMeetingId = function(  in_meeting_id
+                                        )
+        {
+        if ( m_map_search_results_map && m_map_search_results_map.meeting_marker_array && m_map_search_results_map.meeting_marker_array.length )
+            {
+            for ( var c = 0; c < m_map_search_results_map.meeting_marker_array.length; c++ )
+                {
+                var meeting_array = m_map_search_results_map.meeting_marker_array[c].meeting_id_array;
+                
+                for ( i = 0; i < meeting_array.length; i++ )
+                    {
+                    if ( in_meeting_id == meeting_array[i] )
+                        {
+                        return m_map_search_results_map.meeting_marker_array[c];
+                        };
+                    };
+                };
+            };
+        
+alert ( 'ERROR' );
+        return null;
+        };
+        
+    /************************************************************************************//**
     *	\brief Sets the state of the two GO buttons, as necessary.                          *
     ****************************************************************************************/
     this.validateGoButtons = function()
@@ -2588,6 +2638,18 @@ NouveauMapSearch.prototype.sMeetingsCallback = function (   in_response_object, 
         {
         alert ( g_Nouveau_no_search_results_text );
         };
+    };
+    
+/********************************************************************************************
+*	\brief 
+********************************************************************************************/
+NouveauMapSearch.prototype.sRowRollover = function (    in_uid,
+                                                        in_meeting_id
+                                                    )
+    {
+    eval ('var context = g_instance_' + in_uid + '_js_handler;' );
+    
+    context.handleRowRollover ( in_meeting_id );
     };
     
 /********************************************************************************************
