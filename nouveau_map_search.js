@@ -330,18 +330,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                             'scaleControl' : true
                             };
 
-            var	pixel_width = this.m_map_div.offsetWidth;
-            var	pixel_height = this.m_map_div.offsetHeight;
-            
-            if ( (pixel_width < 640) || (pixel_height < 640) )
-                {
-                myOptions.scrollwheel = true;
-                myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.SMALL };
-                }
-            else
-                {
-                myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
-                };
+            myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
 
             this.m_main_map = new google.maps.Map ( this.m_map_div, myOptions );
             
@@ -380,23 +369,16 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             var	pixel_width = this.m_map_search_results_map_div.offsetWidth;
             var	pixel_height = this.m_map_search_results_map_div.offsetHeight;
             
-            if ( (pixel_width < 640) || (pixel_height < 640) )
-                {
-                myOptions.scrollwheel = true;
-                myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.SMALL };
-                }
-            else
-                {
-                myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
-                };
+            myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
 
             this.m_map_search_results_map = new google.maps.Map ( this.m_map_search_results_map_div, myOptions );
             
             if ( this.m_map_search_results_map )
                 {
+                this.m_map_search_results_map.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
+                
                 google.maps.event.addListener ( this.m_map_search_results_map, 'click', function(in_event) { NouveauMapSearch.prototype.sResultMapClicked( in_event, id ); } );
 
-                this.m_map_search_results_map.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
                 this.m_map_search_results_map.meeting_marker_array = new Array;;
                 this.m_map_search_results_map.meeting_marker_object_array = null;
                 this.m_map_search_results_map.main_marker = null;
