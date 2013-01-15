@@ -163,6 +163,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     
     var m_single_meeting_display_div = null;    ///< This is the div that will be used to display the details of a single meeting.
     var m_throbber_div = null;                  ///< This will show the throbber.
+    var m_details_div = null;                   ///< This will hold the meeting details.
+    var m_details_inner_div = null;             ///< This will show the meeting details.
     
     var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
     var m_long_lat_northeast = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
@@ -220,6 +222,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         this.buildDOMTree_CreateThrobberDiv();
         this.hideThrobber();
+        
+        this.buildDOMTree_CreateDetailsDiv();
+        this.hideDetails();
         
         // Finally, set everything into the container.
         this.m_container_div.appendChild ( this.m_display_div );
@@ -539,6 +544,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree_Advanced_DistancePopup = function ()
         {
+        var container_div = document.createElement ( 'div' );
+        container_div.className = 'bmlt_nouveau_advanced_map_options_container_div';
+        
         this.m_advanced_map_distance_popup_label_1 = document.createElement ( 'label' );
         this.m_advanced_map_distance_popup_label_1.className = 'bmlt_nouveau_advanced_map_popup_label_left';
         this.m_advanced_map_distance_popup_label_1.appendChild ( document.createTextNode(g_Nouveau_advanced_map_radius_label_1) );
@@ -546,17 +554,20 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_map_distance_popup = document.createElement ( 'select' );
         this.m_advanced_map_distance_popup.className = 'bmlt_nouveau_advanced_map_popup_select';
         
-        var option = document.createElement ( 'option' );
-        option.className = 'bmlt_nouveau_advanced_map_popup_select_option_auto';
-        option.value = g_Nouveau_default_geo_width;
-        option.appendChild ( document.createTextNode(g_Nouveau_advanced_map_radius_value_auto) );
-        this.m_advanced_map_distance_popup.appendChild ( option );
+        var option_1 = document.createElement ( 'option' );
+        option_1.className = 'bmlt_nouveau_advanced_map_popup_select_option_auto';
+        option_1.value = g_Nouveau_default_geo_width;
+        option_1.appendChild ( document.createTextNode(g_Nouveau_advanced_map_radius_value_auto) );
+        this.m_advanced_map_distance_popup.appendChild ( option_1 );
         
         option = document.createElement ( 'option' );
         option.disabled = true;
         option.className = 'bmlt_nouveau_advanced_map_popup_select_option_null';
         this.m_advanced_map_distance_popup.appendChild ( option );
-
+        
+        var selected = false;
+        var option = null;
+        
         for ( var c = 0; c < g_Nouveau_advanced_map_radius_value_array.length; c++ )
             {
             var distance = parseFloat(g_Nouveau_advanced_map_radius_value_array[c]);
@@ -565,16 +576,30 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             option.className = 'bmlt_nouveau_advanced_map_popup_select_option_' + distance;
             this.m_advanced_map_distance_popup.appendChild ( option );
             var text = distance + ' ' + ((this.m_distance_units == 'mi') ? g_Nouveau_advanced_map_radius_value_2_mi : g_Nouveau_advanced_map_radius_value_2_km);
+            if ( this.m_search_radius == distance )
+                {
+                option.selected = true;
+                selected = true;
+                };
             option.appendChild ( document.createTextNode(text) );
             };
+        
+        if ( !selected )
+            {
+            option_1.selected = true;
+            };
+        
+        var id = this.m_uid;
+        this.m_advanced_map_distance_popup.onchange = function(in_event) { NouveauMapSearch.prototype.sRadiusChanged( id ); };
 
         this.m_advanced_map_distance_popup_label_2 = document.createElement ( 'label' );
         this.m_advanced_map_distance_popup_label_2.className = 'bmlt_nouveau_advanced_map_popup_label_right';
         this.m_advanced_map_distance_popup_label_2.appendChild ( document.createTextNode(g_Nouveau_advanced_map_radius_label_2) );
         
-        this.m_advanced_map_options_div.appendChild ( this.m_advanced_map_distance_popup_label_1 );
-        this.m_advanced_map_options_div.appendChild ( this.m_advanced_map_distance_popup );
-        this.m_advanced_map_options_div.appendChild ( this.m_advanced_map_distance_popup_label_2 );
+        container_div.appendChild ( this.m_advanced_map_distance_popup_label_1 );
+        container_div.appendChild ( this.m_advanced_map_distance_popup );
+        container_div.appendChild ( this.m_advanced_map_distance_popup_label_2 );
+        this.m_advanced_map_options_div.appendChild ( container_div );
         };
     
     /************************************************************************************//**
@@ -832,6 +857,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         this.m_map_search_results_disclosure_div = document.createElement ( 'div' );
         this.m_map_search_results_disclosure_div.className = 'bmlt_nouveau_search_results_map_disclosure_div';
+        this.m_map_search_results_disclosure_div.id = 'bmlt_nouveau_search_results_map_disclosure_div_' + this.m_uid;
         
         this.m_map_search_results_disclosure_a = document.createElement ( 'a' );
         this.m_map_search_results_disclosure_a.appendChild ( document.createTextNode(g_Nouveau_display_map_results_text) );
@@ -978,6 +1004,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 case    8:
                     td_element.className += ' bmlt_nouveau_search_results_list_header_td_format';
                 break;
+            
+                case    9:
+                    td_element.className += ' bmlt_nouveau_search_results_list_header_td_more';
+                break;
 
                 default:
                     td_element.className += ' bmlt_nouveau_hidden';
@@ -996,25 +1026,42 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree_SearchResults_List_Table_Contents = function ()
         {
-        var uid = this.m_uid;
         // Each meeting gets a row.
+        var uid = this.m_uid;
         for ( var i = 0; i < this.m_search_results.length; i++ )
             {
-            var meeting_id = this.m_search_results[i].id_bigint;
             var tr_element = document.createElement ( 'tr' );
             tr_element.className = 'bmlt_nouveau_search_results_list_body_tr ' + 'bmlt_nouveau_search_results_list_body_tr_' + (((i % 2) == 0) ? 'even' : 'odd');
-            tr_element.onmouseover = function () { NouveauMapSearch.prototype.sRowRollover (uid, meeting_id)};
             
             // These are used to allow a "highlight" of meetings represented by map markers.
             tr_element.classNameNormal = tr_element.className;
             tr_element.classNameHighlight = tr_element.className + 'bmlt_nouveau_search_results_list_body_highlight_tr';
             tr_element.id = this.m_uid + '_meeting_list_item_' + this.m_search_results[i]['id_bigint'] + '_tr';
+            tr_element.meeting_id = this.m_search_results[i].id_bigint;
+
+            tr_element.onmouseup = function () { NouveauMapSearch.prototype.sRowClick (this.meeting_id, uid) };
         
             for ( var c = 0; c < g_Nouveau_array_header_text.length; c++ )
                 {
                 this.buildDOMTree_SearchResults_List_Table_Contents_Node_TD(this.m_search_results[i], c, tr_element);
                 };
             
+            var td_element = document.createElement ( 'td' );
+            td_element.className = 'bmlt_nouveau_search_results_list_body_td bmlt_nouveau_search_results_list_body_td_more';
+            
+            var more_details_a = document.createElement ( 'a' );      // Create the basic switch anchor element.
+            more_details_a.className = 'bmlt_nouveau_search_results_list_body_td_more_a';
+            more_details_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.detailsButtonHit(' + tr_element.meeting_id + ')' );
+            more_details_a.setAttribute ( 'title', g_Nouveau_meeting_details_link_title );
+            
+            var more_details_a_span = document.createElement ( 'span' );      // Create the basic switch anchor element.
+            more_details_a_span.appendChild ( document.createTextNode('MORE') );
+            more_details_a_span.className = 'bmlt_nouveau_search_results_list_body_td_more_a_span';
+
+            more_details_a.appendChild ( more_details_a_span );
+            td_element.appendChild ( more_details_a );            
+            tr_element.appendChild ( td_element );
+        
             this.m_list_search_results_table_body.appendChild ( tr_element );
             };
         };
@@ -1556,6 +1603,32 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         this.m_display_div.appendChild ( this.m_throbber_div );
         };
+        
+    /************************************************************************************//**
+    *	\brief This establishes the (usually invisible) throbber display.                   *
+    ****************************************************************************************/
+    this.buildDOMTree_CreateDetailsDiv = function ()
+        {
+        this.m_details_div = document.createElement ( 'div' );
+        this.m_details_div.className = 'bmlt_nouveau_details_div bmlt_nouveau_details_div_hidden';
+        
+        var mask_div = document.createElement ( 'div' );
+        mask_div.className = 'bmlt_nouveau_details_mask_div';
+        this.m_details_div.appendChild ( mask_div );
+
+        this.m_details_inner_div = document.createElement ( 'div' );
+        this.m_details_inner_div.className = 'bmlt_nouveau_details_inner_container_div';
+                
+        this.m_details_div.appendChild ( this.m_details_inner_div );
+        
+        var closer_a = document.createElement ( 'a' );
+        closer_a.className = 'bmlt_nouveau_details_closer_a';
+        closer_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.hideDetails()' );
+        
+        this.m_details_div.appendChild ( closer_a );
+        
+        this.m_display_div.appendChild ( this.m_details_div );
+        };
     
     /************************************************************************************//**
     *	\brief  Look up an address in the text
@@ -1658,30 +1731,51 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 {
                 this.m_main_map.map_marker.setPosition ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
                 };
-                    
-            // Options for circle overlay object
-//             if ( !this.m_main_map._circle_overlay )
-//                 {
-//                 var circle_options = {
-//                                     'center': this.m_main_map.getCenter(),
-//                                     'fillColor': "#999",
-//                                     'radius':1000,
-//                                     'fillOpacity': 0.25,
-//                                     'strokeOpacity': 0.0,
-//                                     'map': null,
-//                                     'clickable': false
-//                                     };
-// 
-//                 this.m_main_map._circle_overlay = new google.maps.Circle(circle_options);
-//                 }
-//             else
-//                 {
-//                 };
+            
+            if ( this.m_search_radius > 0 )
+                {
+                var circle_radius = this.m_search_radius * ( (this.m_distance_units == 'mi') ? 1694.4 : 1000 );
+            
+                // Options for circle overlay object
+                if ( !this.m_main_map._circle_overlay )
+                    {
+                    var circle_options = {
+                                        'center': this.m_main_map.map_marker.getPosition(),
+                                        'fillColor': "#999",
+                                        'radius':circle_radius,
+                                        'fillOpacity': 0.25,
+                                        'strokeOpacity': 0.0,
+                                        'map': this.m_main_map,
+                                        'clickable': false
+                                        };
+
+                    this.m_main_map._circle_overlay = new google.maps.Circle(circle_options);
+                    }
+                else
+                    {
+                    this.m_main_map._circle_overlay.setRadius(circle_radius);
+                    this.m_main_map._circle_overlay.setCenter(this.m_main_map.map_marker.getPosition());
+                    };
+                }
+            else if ( this.m_main_map._circle_overlay )
+                {
+                this.m_main_map._circle_overlay.setMap(null);
+                this.m_main_map._circle_overlay = null;
+                };
             }
-        else if ( this.m_main_map.map_marker )
+        else
             {
-            this.m_main_map.map_marker.setMap(null);
-            this.m_main_map.map_marker = null;
+            if ( this.m_main_map.map_marker )
+                {
+                this.m_main_map.map_marker.setMap(null);
+                this.m_main_map.map_marker = null;
+                };
+                
+            if ( this.m_main_map._circle_overlay )
+                {
+                this.m_main_map._circle_overlay.setMap(null);
+                this.m_main_map._circle_overlay = null;
+                };
             };
         };
     
@@ -1763,22 +1857,16 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         var id = this.m_uid;
         new_marker.oldImage = displayed_image;
         new_marker.meeting_id_array = new Array;
+        new_marker.meeting_obj_array = in_mtg_obj_array;
         
         // We save all the meetings represented by this marker.
-        for ( var c = 0; c < in_mtg_obj_array[0].length; )
+        for ( var c = 0; c < in_mtg_obj_array.length; c++ )
             {
             new_marker.meeting_id_array[c] = in_mtg_obj_array[c]['id_bigint'];
             };
         
-        if ( in_mtg_obj_array.length == 1 )
-            {
-            google.maps.event.addListener ( new_marker, 'click', function(in_event) { NouveauMapSearch.prototype.sSingleClicked( new_marker, in_mtg_obj_array, id ); } );
-            }
-        else
-            {
-            google.maps.event.addListener ( new_marker, 'click', function(in_event) { NouveauMapSearch.prototype.sMultiClicked( new_marker, in_mtg_obj_array, id ); } );
-            };
-                                                    
+        google.maps.event.addListener ( new_marker, 'click', function(in_event) { NouveauMapSearch.prototype.sResultsMarkerClicked( new_marker, id ); } );
+
         this.m_map_search_results_map.meeting_marker_array[this.m_map_search_results_map.meeting_marker_array.length] = new_marker;
         };
         
@@ -1804,14 +1892,65 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
+    *	\brief This returns the marker (on the result map) for the given meeting ID.        *
+    *   \returns a marker object.                                                           *
+    ****************************************************************************************/
+    this.getMarkerForMeetingId = function(  in_meeting_id
+                                        )
+        {
+        if ( this.m_map_search_results_map && this.m_map_search_results_map.meeting_marker_array && this.m_map_search_results_map.meeting_marker_array.length )
+            {
+            for ( var c = 0; c < this.m_map_search_results_map.meeting_marker_array.length; c++ )
+                {
+                var marker = this.m_map_search_results_map.meeting_marker_array[c];
+                var id_array = marker.meeting_id_array;
+                for ( i = 0; i < id_array.length; i++ )
+                    {
+                    if ( in_meeting_id == id_array[i] )
+                        {
+                        return marker;
+                        };
+                    };
+                };
+            };
+        return null;
+        };
+                
+    /************************************************************************************//**
+    *	\brief Returns a meeting object from a given meeting ID.                            *
+    *   \returns the instance of the meeting object corresponding to the given ID.          *
+    ****************************************************************************************/
+    this.getMeetingObjectFromId = function ( in_meeting_id    ///< The ID of the meeting.
+                                            )
+        {
+        var ret = null;
+        
+        if ( this.m_search_results && this.m_search_results.length )
+            {
+            for ( var c = 0; c < this.m_search_results.length; c++ )
+                {
+                if ( this.m_search_results[c].id_bigint == in_meeting_id )
+                    {
+                    ret = this.m_search_results[c];
+                    break;
+                    };
+                };
+            };
+        
+        return ret;
+        };
+        
+    /************************************************************************************//**
     *	\brief This is called to handle a blue marker being clicked.                        *
     ****************************************************************************************/
     this.respondToSingleClick = function (  in_marker,  ///< The marker object that was clicked.
-                                            in_mtg_obj  ///< The meeting to be displayed
+                                            in_no_hash  ///< If true, the hash will be skipped.
                                             )
         {
         this.clearMarkerHighlight();
-
+        
+        var in_mtg_obj = in_marker.meeting_obj_array[0];
+        
         in_marker.setIcon ( this.m_icon_image_selected );
         
         tr_element_id = this.m_uid + '_meeting_list_item_' + in_mtg_obj['id_bigint'] + '_tr';
@@ -1826,17 +1965,22 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.setListResultsDisclosure();
             };
         
-        location.hash = "#" + tr_element.id;
+        if ( !in_no_hash )
+            {
+            location.hash = "#" + tr_element.id;
+            };
         };
 
     /************************************************************************************//**
     *	\brief This is called to handle a red marker being clicked.                         *
     ****************************************************************************************/
-    this.respondToMultiClick = function (   in_marker,          ///< The marker object that was clicked.
-                                            in_mtg_obj_array    ///< The array of meetings to be displayed.
+    this.respondToMultiClick = function (   in_marker,  ///< The marker object that was clicked.
+                                            in_no_hash  ///< If true, the hash will be skipped.
                                             )
         {
         this.clearMarkerHighlight();
+        
+        var in_mtg_obj_array = in_marker.meeting_obj_array;
 
         in_marker.setIcon ( this.m_icon_image_selected );
         
@@ -1862,7 +2006,20 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.setListResultsDisclosure();
             };
             
-        location.hash = "#" + top_element.id;
+        if ( !in_no_hash )
+            {
+            location.hash = "#" + tr_element.id;
+            };
+        };
+        
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.handleRadiusChange = function()
+        {
+        this.m_search_radius = this.m_advanced_map_distance_popup.value;
+
+        this.displayMarkerInAdvancedMap();
         };
 
     /****************************************************************************************
@@ -1884,6 +2041,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.displayThrobber = function ()
         {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
         this.m_throbber_div.className = 'bmlt_nouveau_throbber_div';
         };
 
@@ -1893,6 +2051,23 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.hideThrobber = function ()
         {
         this.m_throbber_div.className = 'bmlt_nouveau_throbber_div bmlt_nouveau_throbber_div_hidden';
+        };
+        
+    /************************************************************************************//**
+    *	\brief This shows our "busy throbber."                                              *
+    ****************************************************************************************/
+    this.displayDetails = function ()
+        {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+        this.m_details_div.className = 'bmlt_nouveau_details_div';
+        };
+
+    /************************************************************************************//**
+    *	\brief This hides our "busy throbber."                                              *
+    ****************************************************************************************/
+    this.hideDetails = function ()
+        {
+        this.m_details_div.className = 'bmlt_nouveau_details_div bmlt_nouveau_details_div_hidden';
         };
 
     /************************************************************************************//**
@@ -1923,7 +2098,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             uri_elements[index] = new Array;
             uri_elements[index][0] = 'geo_width';
-
+            
             // In the case of the advanced map, we will also have a radius value. Otherwise, we use the default auto.
             uri_elements[index++][1] = (this.m_current_view == 'advanced map') ? this.m_search_radius : g_Nouveau_default_geo_width;
             }
@@ -1990,8 +2165,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
     /****************************************************************************************
     *################################# SET UP SEARCH RESULTS ###############################*
-    ****************************************************************************************/
-    
+    ****************************************************************************************/    
     /************************************************************************************//**
     *	\brief This either hides or shows the search results.                               *
     ****************************************************************************************/
@@ -2111,6 +2285,14 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.setMapResultsDisclosure();
             this.setListResultsDisclosure();
             };
+        };
+        
+    /************************************************************************************//**
+    *	\brief This fills out the details div for the given meeting.                        *
+    ****************************************************************************************/
+    this.populateDetailsDiv = function (    in_meeting_object   ///< The object for the meeting to display
+                                        )
+        {
         };
 
     /***************************************************************************************
@@ -2273,46 +2455,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
         
     /************************************************************************************//**
-    *	\brief This is called to handle a row being rolled over.                            *
-    ****************************************************************************************/
-    this.handleRowRollover = function( in_meeting_id
-                                    )
-        {
-        var marker = this.getMarkerForMeetingId ( in_meeting_id );
-        
-        if ( marker )
-            {
-            };
-        };
-        
-    /************************************************************************************//**
-    *	\brief This returns the marker (on the result map) for the given meeting ID.        *
-    *   \returns a marker object.                                                           *
-    ****************************************************************************************/
-    this.getMarkerForMeetingId = function(  in_meeting_id
-                                        )
-        {
-        if ( m_map_search_results_map && m_map_search_results_map.meeting_marker_array && m_map_search_results_map.meeting_marker_array.length )
-            {
-            for ( var c = 0; c < m_map_search_results_map.meeting_marker_array.length; c++ )
-                {
-                var meeting_array = m_map_search_results_map.meeting_marker_array[c].meeting_id_array;
-                
-                for ( i = 0; i < meeting_array.length; i++ )
-                    {
-                    if ( in_meeting_id == meeting_array[i] )
-                        {
-                        return m_map_search_results_map.meeting_marker_array[c];
-                        };
-                    };
-                };
-            };
-        
-alert ( 'ERROR' );
-        return null;
-        };
-        
-    /************************************************************************************//**
     *	\brief Sets the state of the two GO buttons, as necessary.                          *
     ****************************************************************************************/
     this.validateGoButtons = function()
@@ -2341,7 +2483,39 @@ alert ( 'ERROR' );
             this.m_text_go_a.removeAttribute ( 'href' );
             };
         };
-    
+      
+    /************************************************************************************//**
+    *	\brief This handles the "MORE DETAILS" link for each table row.                     *
+    ****************************************************************************************/
+    this.detailsButtonHit = function ( in_meeting_id    ///< The ID of the meeting that needs details displayed
+                                    )
+        {
+        var meeting = this.getMeetingObjectFromId ( in_meeting_id );
+        this.populateDetailsDiv ( meeting );
+        this.displayDetails();
+        };
+      
+    /************************************************************************************//**
+    *	\brief This is called to handle a row being rolled over.                            *
+    ****************************************************************************************/
+    this.handleRowClick = function( in_meeting_id
+                                    )
+        {
+        var marker = this.getMarkerForMeetingId ( in_meeting_id );
+        
+        if ( marker )
+            {
+            if ( marker.meeting_obj_array.length > 1 )
+                {
+                this.respondToMultiClick ( marker, true );
+                }
+            else
+                {
+                this.respondToSingleClick ( marker, true );
+                };
+            };
+        };
+  
     /****************************************************************************************
     *##################################### CONSTRUCTOR #####################################*
     ****************************************************************************************/
@@ -2369,19 +2543,14 @@ alert ( 'ERROR' );
     this.m_default_duration = g_Nouveau_default_duration;
 
 	/// These describe the regular NA meeting icon
-	this.m_icon_image_single = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarker.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
-	this.m_icon_image_multi = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarkerG.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
-	this.m_icon_image_selected = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarkerSel.png", new google.maps.Size(23, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_image_single = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarker.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_image_multi = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarkerG.png", new google.maps.Size(22, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
+	this.m_icon_image_selected = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NAMarkerSel.png", new google.maps.Size(34, 38), new google.maps.Point(0,0), new google.maps.Point(18, 38) );
 	this.m_icon_shadow = new google.maps.MarkerImage( this.m_theme_dir + "/images/google_map_images/NAMarkerS.png", new google.maps.Size(43, 32), new google.maps.Point(0,0), new google.maps.Point(12, 32) );
-	this.m_icon_shape = { coord: [16,0,18,1,19,2,20,3,21,4,21,5,22,6,22,7,22,8,22,9,22,10,22,11,22,12,22,13,22,14,22,15,22,16,21,17,21,18,22,19,20,20,19,21,20,22,18,23,17,24,18,25,17,26,15,27,14,28,15,29,12,30,12,31,
-	                                10,31,10,30,9,29,8,28,8,27,7,26,6,25,5,24,5,23,4,22,3,21,3,20,2,19,1,18,1,17,1,16,0,15,0,14,0,13,0,12,0,11,0,10,0,9,0,8,0,7,1,6,1,5,2,4,2,3,3,2,5,1,6,0,16,0], type: 'poly' };
 	
 	/// These describe the "You are here" icon.
 	this.m_center_icon_image = new google.maps.MarkerImage ( this.m_theme_dir + "/images/google_map_images/NACenterMarker.png", new google.maps.Size(21, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
 	this.m_center_icon_shadow = new google.maps.MarkerImage( this.m_theme_dir + "/images/google_map_images/NACenterMarkerS.png", new google.maps.Size(43, 36), new google.maps.Point(0,0), new google.maps.Point(11, 36) );
-	this.m_center_icon_shape = { coord: [16,0,18,1,19,2,19,3,20,4,20,5,20,6,20,7,20,8,20,9,20,10,20,11,19,12,17,13,16,14,16,15,15,16,15,17,14,18,14,19,13,20,13,21,13,22,13,23,12,24,12,25,12,26,12,27,11,28,11,29,11,30,
-	                                        11,31,11,32,11,33,11,34,11,35,10,35,10,34,9,33,9,32,9,31,9,30,9,29,9,28,8,27,8,26,8,25,8,24,8,23,7,22,7,21,7,20,6,19,6,18,5,17,5,16,4,15,4,14,3,13,1,12,0,11,0,10,0,9,0,8,0,7,
-	                                        0,6,0,5,0,4,1,3,1,2,3,1,4,0,16,0], type: 'poly' };
     
     this.m_search_sort_key = 'time';             ///< This can be 'time', 'town', 'name', or 'distance'.
 
@@ -2532,25 +2701,20 @@ NouveauMapSearch.prototype.sResultMapClicked = function (   in_event,   ///< The
 /****************************************************************************************//**
 *	\brief Responds to a click on a blue marker.                                             *
 ********************************************************************************************/
-NouveauMapSearch.prototype.sSingleClicked = function (  in_marker,          ///< The map marker object
-                                                        in_mtg_obj_array,   ///< The array of meeting objects meeting to be marked.
-                                                        in_id               ///< The unique ID of the object (establishes context).
-                                                        )
+NouveauMapSearch.prototype.sResultsMarkerClicked = function (   in_marker,          ///< The map marker object
+                                                                in_id               ///< The unique ID of the object (establishes context).
+                                                                )
     {
     eval ('var context = g_instance_' + in_id + '_js_handler');
-    context.respondToSingleClick ( in_marker, in_mtg_obj_array[0] );
-    };
-
-/****************************************************************************************//**
-*	\brief Responds to a click on a red marker.                                             *
-********************************************************************************************/
-NouveauMapSearch.prototype.sMultiClicked = function (   in_marker,          ///< The map marker object
-                                                        in_mtg_obj_array,   ///< The array of meeting objects meeting to be marked.
-                                                        in_id               ///< The unique ID of the object (establishes context).
-                                                    )
-    {
-    eval ('var context = g_instance_' + in_id + '_js_handler');
-    context.respondToMultiClick ( in_marker, in_mtg_obj_array );
+    
+    if ( in_marker.meeting_obj_array.length > 1 )
+        {
+        context.respondToMultiClick ( in_marker, false );
+        }
+    else
+        {
+        context.respondToSingleClick ( in_marker, false );
+        };
     };
 
 /****************************************************************************************//**
@@ -2641,15 +2805,24 @@ NouveauMapSearch.prototype.sMeetingsCallback = function (   in_response_object, 
     };
     
 /********************************************************************************************
-*	\brief 
+*	\brief This responds to a row of the table results being clicked.                       *
 ********************************************************************************************/
-NouveauMapSearch.prototype.sRowRollover = function (    in_uid,
-                                                        in_meeting_id
+NouveauMapSearch.prototype.sRowClick = function (   in_meeting_id,  ///< The meeting ID for the table row.
+                                                    in_uid          ///< The UID of the object calling this (establishes context).
                                                     )
     {
     eval ('var context = g_instance_' + in_uid + '_js_handler;' );
+    context.handleRowClick ( in_meeting_id );
+    };
     
-    context.handleRowRollover ( in_meeting_id );
+/********************************************************************************************
+*	\brief This responds to a row of the table results being clicked.                       *
+********************************************************************************************/
+NouveauMapSearch.prototype.sRadiusChanged = function (  in_uid          ///< The UID of the object calling this (establishes context).
+                                                    )
+    {
+    eval ('var context = g_instance_' + in_uid + '_js_handler;' );
+    context.handleRadiusChange();
     };
     
 /********************************************************************************************
