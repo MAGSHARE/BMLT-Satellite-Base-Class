@@ -132,13 +132,72 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_table_header_array = array ( 'Nation', 'State', 'County', 'Town', 'Meeting Name', 'Weekday', 'Start Time', 'Location', 'Format', ' ' );
     static  $local_nouveau_weekday_long_array = array ( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
     static  $local_nouveau_weekday_short_array = array ( 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' );
+    
+    static  $local_nouveau_single_time_sprintf_format = 'Meeting gathers every %s, at %s, and lasts for %s.';
+    static  $local_nouveau_single_duration_sprintf_format_1_hr = '1 hour';
+    static  $local_nouveau_single_duration_sprintf_format_mins = '%s minutes';
+    static  $local_nouveau_single_duration_sprintf_format_hrs = '%s hours';
+    static  $local_nouveau_single_duration_sprintf_format_hr_mins = '1 hour and %s minutes';
+    static  $local_nouveau_single_duration_sprintf_format_hrs_mins = '%s hours and %s minutes';
+
     static  $local_nouveau_location_sprintf_format_loc_street_info = '%s, %s (%s)';
     static  $local_nouveau_location_sprintf_format_loc_street = '%s, %s';
     static  $local_nouveau_location_sprintf_format_street_info = '%s (%s)';
     static  $local_nouveau_location_sprintf_format_loc_info = '%s (%s)';
     static  $local_nouveau_location_sprintf_format_street = '%s';
     static  $local_nouveau_location_sprintf_format_loc = '%s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_town_province_zip = '%s, %s (%s), %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_town_province_zip = '%s, %s, %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_town_province_zip = '%s (%s), %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_town_province_zip = '%s (%s), %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_town_province_zip = '%s, %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_town_province_zip = '%s, %s, %s %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_town_province = '%s, %s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_town_province = '%s, %s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_town_province = '%s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_town_province = '%s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_town_province = '%s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_town_province = '%s, %s %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_town_zip = '%s, %s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_town_zip = '%s, %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_town_zip = '%s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_town_zip = '%s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_town_zip = '%s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_town_zip = '%s, %s %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_province_zip = '%s, %s (%s), %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_province_zip = '%s, %s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_province_zip = '%s (%s), %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_province_zip = '%s (%s), %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_province_zip = '%s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_province_zip = '%s, %s, %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_province = '%s, %s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_province = '%s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_province = '%s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_province = '%s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_street_province = '%s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_province = '%s, %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_zip = '%s, %s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_zip = '%s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_zip = '%s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_zip = '%s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_street_zip = '%s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_zip = '%s, %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info = '%s, %s (%s)';
+    static  $local_nouveau_location_sprintf_format_single_loc_street = '%s, %s,';
+    static  $local_nouveau_location_sprintf_format_single_street_info = '%s (%s)';
+    static  $local_nouveau_location_sprintf_format_single_loc_info = '%s (%s)';
+    static  $local_nouveau_location_sprintf_format_single_street = '%s';
+    static  $local_nouveau_location_sprintf_format_single_loc = '%s';
+    
     static  $local_nouveau_location_sprintf_format_wtf = 'No Location Given';
+    
     static  $local_nouveau_location_sprintf_format_duration_title = 'This meeting is %s hours and %s minutes long.';
     static  $local_nouveau_location_sprintf_format_duration_hour_only_title = 'This meeting is 1 hour long.';
     static  $local_nouveau_location_sprintf_format_duration_hour_only_and_minutes_title = 'This meeting is 1 hour and %s minutes long.';

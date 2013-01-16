@@ -191,6 +191,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
     static  $default_map_center_latitude = 29.764377375163125;              ///< This is the default basic search map center latitude
     static  $default_map_center_longitude = -95.4931640625;                 ///< This is the default basic search map center longitude
     static  $default_map_zoom = 8;                                          ///< This is the default basic search map zoom level
+    static  $default_details_map_zoom = 11;                                 ///< This is the default basic search map zoom level
     static  $default_new_search = '';                                       ///< If this is set to something, then a new search uses the exact URI.
     static  $default_gkey = '';                                             ///< This is only necessary for older versions.
     static  $default_push_down_more_details = '1';                          ///< If this is set to 1, then "More Details" and "Contact" windows will "push down" the content, instead of floating over it.
@@ -1752,14 +1753,73 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_select_search_results_text ='".$this->process_text ( self::$local_nouveau_select_search_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_map_results_text ='".$this->process_text ( self::$local_nouveau_display_map_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_list_results_text ='".$this->process_text ( self::$local_nouveau_display_list_results_text )."';";
+                
+                $the_new_content .= "var g_Nouveau_single_time_sprintf_format ='".self:: $local_nouveau_single_time_sprintf_format."';";
+                $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_1_hr ='".self:: $local_nouveau_single_duration_sprintf_format_1_hr."';";
+                $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_mins ='".self:: $local_nouveau_single_duration_sprintf_format_mins."';";
+                $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_hrs ='".self:: $local_nouveau_single_duration_sprintf_format_hrs."';";
+                $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_hr_mins ='".self:: $local_nouveau_single_duration_sprintf_format_hr_mins."';";
+                $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_hrs_mins ='".self:: $local_nouveau_single_duration_sprintf_format_hrs_mins."';";
+                
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_loc_street_info = '".self::$local_nouveau_location_sprintf_format_loc_street_info."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_loc_street = '".self::$local_nouveau_location_sprintf_format_loc_street."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_street_info = '".self::$local_nouveau_location_sprintf_format_street_info."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_loc_info = '".self::$local_nouveau_location_sprintf_format_loc_info."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_street = '".self::$local_nouveau_location_sprintf_format_street."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_loc = '".self::$local_nouveau_location_sprintf_format_loc."';";
-                $the_new_content .= "var g_Nouveau_time_sprintf_format = '".self::$local_nouveau_time_sprintf_format."';";
+
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_info_town_province_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_street_info_town_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_town_province_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_street_town_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_info_town_province_zip = '".self::$local_nouveau_location_sprintf_format_single_street_info_town_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_info_town_province_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_info_town_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_town_province_zip = '".self::$local_nouveau_location_sprintf_format_single_street_town_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_town_province_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_town_province_zip."';";
+
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_info_town_province = '".self::$local_nouveau_location_sprintf_format_single_loc_street_info_town_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_town_province = '".self::$local_nouveau_location_sprintf_format_single_loc_street_town_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_info_town_province = '".self::$local_nouveau_location_sprintf_format_single_street_info_town_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_info_town_province = '".self::$local_nouveau_location_sprintf_format_single_loc_info_town_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_town_province = '".self::$local_nouveau_location_sprintf_format_single_street_town_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_town_province = '".self::$local_nouveau_location_sprintf_format_single_loc_town_province."';";
+
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_info_town_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_street_info_town_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_town_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_street_town_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_info_town_zip = '".self::$local_nouveau_location_sprintf_format_single_street_info_town_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_info_town_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_info_town_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_town_zip = '".self::$local_nouveau_location_sprintf_format_single_street_town_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_town_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_town_zip."';";
+
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_info_province_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_street_info_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_province_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_street_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_info_province_zip = '".self::$local_nouveau_location_sprintf_format_single_street_info_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_info_province_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_info_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_province_zip = '".self::$local_nouveau_location_sprintf_format_single_street_province_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_province_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_province_zip."';";
+
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_info_province = '".self::$local_nouveau_location_sprintf_format_single_loc_street_info_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_province = '".self::$local_nouveau_location_sprintf_format_single_loc_street_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_info_province = '".self::$local_nouveau_location_sprintf_format_single_street_info_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_info_province = '".self::$local_nouveau_location_sprintf_format_single_loc_info_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_province = '".self::$local_nouveau_location_sprintf_format_single_street_province."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_province = '".self::$local_nouveau_location_sprintf_format_single_loc_province."';";
+
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_info_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_street_info_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_street_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_info_zip = '".self::$local_nouveau_location_sprintf_format_single_street_info_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_info_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_info_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_zip = '".self::$local_nouveau_location_sprintf_format_single_street_zip."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_zip = '".self::$local_nouveau_location_sprintf_format_single_loc_zip."';";
+
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street_info = '".self::$local_nouveau_location_sprintf_format_single_loc_street_info."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_street = '".self::$local_nouveau_location_sprintf_format_single_loc_street."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street_info = '".self::$local_nouveau_location_sprintf_format_single_street_info."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc_info = '".self::$local_nouveau_location_sprintf_format_single_loc_info."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_street = '".self::$local_nouveau_location_sprintf_format_single_street."';";
+                $the_new_content .= "var g_Nouveau_location_sprintf_format_single_loc = '".self::$local_nouveau_location_sprintf_format_single_loc."';";
+
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_wtf ='".$this->process_text ( self::$local_nouveau_location_sprintf_format_wtf )."';";
+
+                $the_new_content .= "var g_Nouveau_time_sprintf_format = '".self::$local_nouveau_time_sprintf_format."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_duration_title = '".self::$local_nouveau_location_sprintf_format_duration_title."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_duration_hour_only_title = '".self::$local_nouveau_location_sprintf_format_duration_hour_only_title."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_duration_hour_only_and_minutes_title = '".self::$local_nouveau_location_sprintf_format_duration_hour_only_and_minutes_title."';";
@@ -1795,6 +1855,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_lookup_location_failed = '".$this->process_text ( self::$local_nouveau_lookup_location_failed )."';";              
                 $the_new_content .= "var g_Nouveau_lookup_location_server_error = '".$this->process_text ( self::$local_nouveau_lookup_location_server_error )."';";              
                 $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
+                $the_new_content .= "var g_Nouveau_default_details_map_zoom = ".self::$default_details_map_zoom.';';
                 $the_new_content .= "var g_Nouveau_default_marker_aggregation_threshold_in_pixels = 8;";
                 $the_new_content .= "var g_Nouveau_default_duration = '".self::$local_nouveau_default_duration."';";
 

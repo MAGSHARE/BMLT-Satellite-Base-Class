@@ -161,10 +161,17 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_list_search_results_table_body = null;
     var m_listResultsDisplayed = null;
     
-    var m_single_meeting_display_div = null;    ///< This is the div that will be used to display the details of a single meeting.
     var m_throbber_div = null;                  ///< This will show the throbber.
     var m_details_div = null;                   ///< This will hold the meeting details.
     var m_details_inner_div = null;             ///< This will show the meeting details.
+    var m_single_meeting_display_div = null;    ///< This is the div that will be used to display the details of a single meeting.
+    
+    var m_details_meeting_name_div = null;      ///< This will hold the meeting name in the details window.
+    var m_details_meeting_time_div = null;      ///< The day and time display for the details page.
+    var m_details_meeting_location_div = null;  ///< This will hold the meeting location in the details window.
+    var m_details_map_container_div = null;     ///< This is the outer container for the details map.
+    var m_details_map_div = null;               ///< The div that implements the details map.
+    var m_details_map = null;                   ///< This contains the map displayed in the details page.
     
     var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
     var m_long_lat_northeast = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
@@ -1051,7 +1058,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             
             var more_details_a = document.createElement ( 'a' );      // Create the basic switch anchor element.
             more_details_a.className = 'bmlt_nouveau_search_results_list_body_td_more_a';
-            more_details_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.detailsButtonHit(' + tr_element.meeting_id + ')' );
+            var id = this.m_uid;
+            more_details_a.setAttribute ( 'href', "javascript:NouveauMapSearch.prototype.sDetailsButtonHit('" + id + "','" + tr_element.meeting_id + "')" );
             more_details_a.setAttribute ( 'title', g_Nouveau_meeting_details_link_title );
             
             var more_details_a_span = document.createElement ( 'span' );      // Create the basic switch anchor element.
@@ -1618,15 +1626,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 
         this.m_details_inner_div = document.createElement ( 'div' );
         this.m_details_inner_div.className = 'bmlt_nouveau_details_inner_container_div';
-                
-        this.m_details_div.appendChild ( this.m_details_inner_div );
         
         var closer_a = document.createElement ( 'a' );
         closer_a.className = 'bmlt_nouveau_details_closer_a';
         closer_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.hideDetails()' );
         
         this.m_details_div.appendChild ( closer_a );
-        
+        this.m_details_div.appendChild ( this.m_details_inner_div );
         this.m_display_div.appendChild ( this.m_details_div );
         };
     
@@ -1784,6 +1790,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.redrawResultMapMarkers = function()
         {
+        this.clearMarkerHighlight();    // Get rid of selected meetings.
+        
         // First, get rid of the old ones.
         if ( this.m_map_search_results_map.main_marker )
             {
@@ -2059,6 +2067,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.displayDetails = function ()
         {
         document.body.scrollTop = document.documentElement.scrollTop = 0;
+        this.m_display_div.className = 'bmlt_nouveau_div bmlt_nouveau_div_details_displayed';   // Used for pretty printing.
         this.m_details_div.className = 'bmlt_nouveau_details_div';
         };
 
@@ -2067,6 +2076,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.hideDetails = function ()
         {
+        this.m_display_div.className = 'bmlt_nouveau_div';
         this.m_details_div.className = 'bmlt_nouveau_details_div bmlt_nouveau_details_div_hidden';
         };
 
@@ -2293,6 +2303,415 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.populateDetailsDiv = function (    in_meeting_object   ///< The object for the meeting to display
                                         )
         {
+        if ( this.m_details_inner_div )
+            {
+            this.m_single_meeting_display_div = document.createElement ( 'div' );
+            this.m_single_meeting_display_div.className = 'bmlt_nouveau_single_meeting_wrapper_div';
+        
+            if ( !this.m_details_meeting_name_div )
+                {
+                this.m_details_meeting_name_div = document.createElement ( 'div' );
+                this.m_single_meeting_display_div.appendChild ( this.m_details_meeting_name_div );
+                }
+            else
+                {
+                this.m_details_meeting_name_div.innerHTML = '';
+                };
+            
+            this.m_details_meeting_name_div.className = 'bmlt_nouveau_single_meeting_name_div' + (in_meeting_object.meeting_name ? '' : ' bmlt_nouveau_empty_name');
+            
+            this.m_details_meeting_name_div.appendChild ( document.createTextNode(in_meeting_object.meeting_name ? in_meeting_object.meeting_name : g_Nouveau_default_meeting_name) );
+            
+            if ( !this.m_details_meeting_time_div )
+                {
+                this.m_details_meeting_time_div = document.createElement ( 'div' );
+                this.m_details_meeting_time_div.className = 'bmlt_nouveau_single_meeting_time_div';
+                this.m_single_meeting_display_div.appendChild ( this.m_details_meeting_time_div );
+                }
+            else
+                {
+                this.m_details_meeting_time_div.innerHTML = '';
+                };
+            var time_text = this.constructTimeString ( in_meeting_object );
+
+            this.m_details_meeting_time_div.appendChild ( document.createTextNode( time_text ) );
+
+            if ( !this.m_details_meeting_location_div )
+                {
+                this.m_details_meeting_location_div = document.createElement ( 'div' );
+                this.m_details_meeting_location_div.className = 'bmlt_nouveau_single_meeting_location_div';
+                this.m_single_meeting_display_div.appendChild ( this.m_details_meeting_location_div );
+                }
+            else
+                {
+                this.m_details_meeting_location_div.innerHTML = '';
+                };
+        
+            var loc_text = this.constructAddressString ( in_meeting_object );
+
+            this.m_details_meeting_location_div.appendChild ( document.createTextNode( loc_text ) );
+            
+            if ( !this.m_details_map_container_div )
+                {
+                this.m_details_map_container_div = document.createElement ( 'div' );
+                this.m_details_map_container_div.className = 'bmlt_nouveau_details_map_container_div';
+                this.m_single_meeting_display_div.appendChild ( this.m_details_map_container_div );
+                };
+            
+            if ( !this.m_details_map_div )
+                {
+                this.m_details_map_div = document.createElement ( 'div' );
+                this.m_details_map_div.className = 'bmlt_nouveau_details_map_div';
+                this.m_details_map_container_div.appendChild ( this.m_details_map_div );
+                };
+            
+            this.m_details_inner_div.appendChild ( this.m_single_meeting_display_div );
+            };
+        };
+        
+    /************************************************************************************//**
+    *	\brief Constructs the address string for a single details page.                     *
+    *   \returns a string with the complete address.                                        *
+    ****************************************************************************************/
+    this.loadDetailsMap = function( in_meeting_object  ///< The object for the meeting to display
+                                    )
+        {
+        var center = new google.maps.LatLng ( in_meeting_object.latitude, in_meeting_object.longitude );
+        var zoom = g_Nouveau_default_details_map_zoom;
+        
+        if ( !this.m_details_map )
+            {
+            var myOptions = {
+                            'center': center,
+                            'zoom': zoom,
+                            'mapTypeId': google.maps.MapTypeId.ROADMAP,
+                            'mapTypeControlOptions': { 'style': google.maps.MapTypeControlStyle.DROPDOWN_MENU },
+                            'zoomControl': true,
+                            'mapTypeControl': true,
+                            'disableDoubleClickZoom' : true,
+                            'scaleControl' : true
+                            };
+
+            myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
+
+            this.m_details_map = new google.maps.Map ( this.m_details_map_div, myOptions );
+            this.m_details_map.main_marker = new google.maps.Marker (
+                                                                    {
+                                                                    'position':     center,
+                                                                    'map':		    this.m_details_map,
+                                                                    'shadow':		this.m_icon_shadow,
+                                                                    'icon':			this.m_icon_image_selected,
+                                                                    'shape':		this.m_icon_shape,
+                                                                    'clickable':	false,
+                                                                    'cursor':		'default',
+                                                                    'draggable':    false
+                                                                    } );
+            this.m_details_map.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
+            }
+        else
+            {
+            this.m_details_map.setCenter ( center );
+            this.m_details_map.setZoom ( zoom );
+            this.m_details_map.setMapTypeId ( google.maps.MapTypeId.ROADMAP );
+            this.m_details_map.getStreetView().setVisible ( false );
+            this.m_details_map.main_marker.setPosition ( center );
+            };
+        };
+        
+    /************************************************************************************//**
+    *	\brief Constructs the address string for a single details page.                     *
+    *          Yes, it's a big, long, awkward function. I'll fix it in my copious free time *
+    *          If it bothers you so damn much, feel free to pitch in, as opposed to just    *
+    *          just bitching in. mmmm...kay?                                                *
+    *   \returns a string with the complete address.                                        *
+    ****************************************************************************************/
+    this.constructAddressString = function( in_meeting_object   ///< The object for the meeting to display
+                                            )
+        {
+        var ret = '';
+        
+        if ( in_meeting_object['location_municipality'] && in_meeting_object['location_province'] && in_meeting_object['location_postal_code_1'] )
+            {
+            if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_info_town_province_zip, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_municipality'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_town_province_zip, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_municipality'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_info_town_province_zip, in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_municipality'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_info_town_province_zip, in_meeting_object['location_text'], in_meeting_object['location_info'], in_meeting_object['location_municipality'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_town_province_zip, in_meeting_object['location_street'], in_meeting_object['location_municipality'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_town_province_zip, in_meeting_object['location_text'], in_meeting_object['location_municipality'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else
+                {
+                ret = g_Nouveau_location_sprintf_format_wtf;
+                };
+            }
+        else if ( in_meeting_object['location_municipality'] && in_meeting_object['location_province'] )
+            {
+            if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_info_town_province, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_municipality'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_town_province, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_municipality'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_info_town_province, in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_municipality'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_info_town_province, in_meeting_object['location_text'], in_meeting_object['location_info'], in_meeting_object['location_municipality'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_town_province, in_meeting_object['location_street'], in_meeting_object['location_municipality'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_text'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_town_province, in_meeting_object['location_text'], in_meeting_object['location_municipality'], in_meeting_object['location_province'] );
+                }
+            else
+                {
+                ret = g_Nouveau_location_sprintf_format_wtf;
+                };
+            }
+        else if ( in_meeting_object['location_municipality'] && in_meeting_object['location_postal_code_1'] )
+            {
+            if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_info_town_zip, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_municipality'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_town_zip, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_municipality'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_info_town_zip, in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_municipality'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_info_town_zip, in_meeting_object['location_text'], in_meeting_object['location_info'], in_meeting_object['location_municipality'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_town_zip, in_meeting_object['location_street'], in_meeting_object['location_municipality'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_town_zip, in_meeting_object['location_text'], in_meeting_object['location_municipality'], in_meeting_object['location_postal_code_1'] );
+                }
+            else
+                {
+                ret = g_Nouveau_location_sprintf_format_wtf;
+                };
+            }
+        else if ( in_meeting_object['location_province'] && in_meeting_object['location_postal_code_1'] )
+            {
+            if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_info_province_zip, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_province_zip, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_info_province_zip, in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_info_province_zip, in_meeting_object['location_text'], in_meeting_object['location_info'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_province_zip, in_meeting_object['location_street'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_province_zip, in_meeting_object['location_text'], in_meeting_object['location_province'], in_meeting_object['location_postal_code_1'] );
+                }
+            else
+                {
+                ret = g_Nouveau_location_sprintf_format_wtf;
+                };
+            }
+        else if ( in_meeting_object['location_province'] )
+            {
+            if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_info_province, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_province, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_info_province, in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_info_province, in_meeting_object['location_text'], in_meeting_object['location_info'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_province, in_meeting_object['location_street'], in_meeting_object['location_province'] );
+                }
+            else if ( in_meeting_object['location_text'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_province, in_meeting_object['location_text'], in_meeting_object['location_province'] );
+                }
+            else
+                {
+                ret = g_Nouveau_location_sprintf_format_wtf;
+                };
+            }
+        else if ( in_meeting_object['location_postal_code_1'] )
+            {
+            if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_info_zip, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_zip, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_info_zip, in_meeting_object['location_street'], in_meeting_object['location_info'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_info_zip, in_meeting_object['location_text'], in_meeting_object['location_info'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_zip, in_meeting_object['location_street'], in_meeting_object['location_postal_code_1'] );
+                }
+            else if ( in_meeting_object['location_text'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_zip, in_meeting_object['location_text'], in_meeting_object['location_postal_code_1'] );
+                }
+            else
+                {
+                ret = g_Nouveau_location_sprintf_format_wtf;
+                };
+            }
+        else
+            {
+            if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street_info, in_meeting_object['location_text'], in_meeting_object['location_street'], in_meeting_object['location_info'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_street, in_meeting_object['location_text'], in_meeting_object['location_street'] );
+                }
+            else if ( in_meeting_object['location_street'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street_info, in_meeting_object['location_street'], in_meeting_object['location_info'] );
+                }
+            else if ( in_meeting_object['location_text'] && in_meeting_object['location_info'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc_info, in_meeting_object['location_text'], in_meeting_object['location_info'] );
+                }
+            else if ( in_meeting_object['location_street'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_street, in_meeting_object['location_street'] );
+                }
+            else if ( in_meeting_object['location_text'] )
+                {
+                ret = sprintf ( g_Nouveau_location_sprintf_format_single_loc, in_meeting_object['location_text'] );
+                }
+            else
+                {
+                ret = g_Nouveau_location_sprintf_format_wtf;
+                };
+            };
+        
+        return ret;
+        };
+        
+    /************************************************************************************//**
+    *	\brief Constructs the time and duration string for a single details page.           *
+    *   \returns a string with the complete display string..                                *
+    ****************************************************************************************/
+    this.constructTimeString = function ( in_meeting_object ///< The meeting that needs the string.
+                                        )
+        {
+        var ret = '';
+        
+        var weekday_string = g_Nouveau_weekday_long_array[in_meeting_object['weekday_tinyint'] - 1];
+        
+        var time = (in_meeting_object['start_time'].toString()).split(':');
+
+        time[0] = parseInt ( time[0], 10 );
+        time[1] = parseInt ( time[1], 10 );
+        
+        var time_string = null;
+        
+        if ( (time[0] == 12) && (time[1] == 0) )
+            {
+            time_string = g_Nouveau_noon;
+            }
+        else if ( (time[0] == 23) && (time[1] > 45) )
+            {
+            time_string = g_Nouveau_midnight;
+            }
+        else
+            {
+            var hours = (time[0] > 12) ? time[0] - 12 : time[0];
+            var minutes = time[1];
+            var a = ((time[0] > 12) || ((time[0] == 12) && (time[1] > 0))) ? g_Nouveau_pm : g_Nouveau_am;
+            time_string = sprintf ( g_Nouveau_time_sprintf_format, hours, time[1], a );
+            };
+        
+        var duration_array = (in_meeting_object['duration_time'].toString()).split(':');
+
+        duration_array[0] = parseInt ( duration_array, 10 );
+        duration_array[1] = parseInt ( duration_array[1], 10 );
+        
+        var duration_string = '';
+        
+        if ( (duration_array[0] > 1) && (duration_array[1] > 1) )
+            {
+            duration_string = sprintf ( g_Nouveau_single_duration_sprintf_format_hrs_mins, duration_array[0], duration_array[1] );
+            }
+        else if ( (duration_array[0] > 1) && (duration_array[1] == 0) )
+            {
+            duration_string = sprintf ( g_Nouveau_single_duration_sprintf_format_hrs, duration_array[0] );
+            }
+        else if ( (duration_array[0] == 1) && (duration_array[1] == 0) )
+            {
+            duration_string = g_Nouveau_single_duration_sprintf_format_1_hr;
+            }
+        else if ( (duration_array[0] == 1) && (duration_array[1] > 0) )
+            {
+            duration_string = sprintf ( g_Nouveau_single_duration_sprintf_format_hr_mins, duration_array[1] );
+            };
+
+        ret = sprintf ( g_Nouveau_single_time_sprintf_format, weekday_string, time_string, duration_string );
+        
+        return ret;
         };
 
     /***************************************************************************************
@@ -2493,6 +2912,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         var meeting = this.getMeetingObjectFromId ( in_meeting_id );
         this.populateDetailsDiv ( meeting );
         this.displayDetails();
+        this.loadDetailsMap ( meeting );
         };
       
     /************************************************************************************//**
@@ -2823,6 +3243,17 @@ NouveauMapSearch.prototype.sRadiusChanged = function (  in_uid          ///< The
     {
     eval ('var context = g_instance_' + in_uid + '_js_handler;' );
     context.handleRadiusChange();
+    };
+    
+/********************************************************************************************
+*	\brief This responds to a details button in a row of the table results being clicked.   *
+********************************************************************************************/
+NouveauMapSearch.prototype.sDetailsButtonHit = function (   in_uid,         ///< The UID of the object calling this (establishes context).
+                                                            in_meeting_id   ///< The meeting ID for the details.
+                                                            )
+    {
+    eval ('var context = g_instance_' + in_uid + '_js_handler;' );
+    context.detailsButtonHit(in_meeting_id);
     };
     
 /********************************************************************************************
