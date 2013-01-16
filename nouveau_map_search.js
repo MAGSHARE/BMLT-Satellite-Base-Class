@@ -52,9 +52,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     
     /// These are the state variables.
     var m_uid = null;                       ///< The unique identifier. This won't be changed after the construction.
-    var m_current_view = null;              ///< One of 'map', 'text', 'advanced', 'advanced map', 'advanced text'. It will change as the object state changes.
+    var m_current_view = null;              ///< One of 'map', 'text', 'advanced', 'advanced_map', 'advanced_text'. It will change as the object state changes.
     var m_current_long = null;              ///< The current map longitude. It will change as the map state changes.
     var m_current_lat = null;               ///< The current map latitude. It will change as the map state changes.
+    var m_initial_zoom = null;              ///< This saves the original zoom, passed in.
     var m_current_zoom = null;              ///< The current map zoom. It will change as the map state changes.
     var m_distance_units = null;            ///< The distance units for this instance (km or mi)
     var m_theme_dir = null;                 ///< An HTTP path to the selected theme for this instance. Used to get images.
@@ -172,6 +173,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_details_map_container_div = null;     ///< This is the outer container for the details map.
     var m_details_map_div = null;               ///< The div that implements the details map.
     var m_details_map = null;                   ///< This contains the map displayed in the details page.
+    var m_details_service_body_div = null;      ///< The div that will show the meeting Service body.
+    var m_details_service_body_span = null;     ///< This holds the actual text for the Service body.
+    var m_details_comments_div = null;          ///< The div that will show the meeting comments.
+    var m_details_formats_div = null;           ///< The div that will list the meeting formats.
+    var m_details_formats_contents_div = null;  ///< The div that will list the meeting formats.
+
     
     var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
     var m_long_lat_northeast = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
@@ -200,6 +207,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_display_div = document.createElement ( 'div' );
         this.m_display_div.className = 'bmlt_nouveau_div';
         this.m_display_div.id = this.m_uid;
+        var id = this.m_uid;
+        this.m_display_div.onkeypress = function () { NouveauMapSearch.prototype.sKeyDown ( id ); };
         
         // Next, create the spec/results switch.
         this.buildDOMTree_ResultsSpec_Switch();
@@ -293,7 +302,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.setMapTextSwitch = function()
         {
-        if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced map') )
+        if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
             {
             this.m_map_switch_a.className = 'bmlt_nouveau_switch_a_selected';
             this.m_text_switch_a.className = 'bmlt_nouveau_switch_a';
@@ -319,7 +328,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         this.m_map_div = document.createElement ( 'div' );   // Create the map container.
         this.m_map_div.className = 'bmlt_nouveau_map_div';
-        this.loadSpecMap();
+        if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
+            {
+            this.loadSpecMap();
+            };
         this.m_search_spec_div.appendChild ( this.m_map_div );
         };
     
@@ -328,7 +340,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
 	this.loadSpecMap = function ( )
 	    {
-        if ( this.m_map_div )
+        if ( this.m_map_div && !this.m_main_map )
             {
             var myOptions = {
                             'center': new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
@@ -357,6 +369,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 
                 google.maps.event.addListener ( this.m_main_map, 'click', function(in_event) { NouveauMapSearch.prototype.sMapClicked( in_event, id ); } );
                 };
+            }
+        else if ( this.m_main_map )
+            {
+            this.m_main_map.setCenter ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
+            this.m_main_map.setZoom ( this.m_current_zoom );
             };
 	    };
     
@@ -365,7 +382,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
 	this.loadResultsMap = function ( )
 	    {
-        if ( this.m_map_search_results_map_div )
+        if ( this.m_map_search_results_map_div && !this.m_map_search_results_map )
             {
             var myOptions = {
                             'center': new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
@@ -400,7 +417,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 google.maps.event.addListener ( this.m_map_search_results_map, 'zoom_changed', function(in_event) { NouveauMapSearch.prototype.sMapZoomChanged( in_event, id ); } );
 
                 this.m_map_search_results_map.fitBounds ( new google.maps.LatLngBounds ( this.m_long_lat_southwest, this.m_long_lat_northeast ) );
+                this.m_current_zoom = this.m_map_search_results_map.getZoom();
                 };
+            }
+        else if ( this.m_map_search_results_map )
+            {
+            this.m_map_search_results_map.setCenter ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
+            this.m_map_search_results_map.setZoom ( this.m_current_zoom );
             };
 	    };
     
@@ -520,7 +543,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.setBasicAdvancedSwitch = function()
         {
-        if ( (this.m_current_view == 'advanced map') || (this.m_current_view == 'advanced text') )
+        if ( (this.m_current_view == 'advanced_map') || (this.m_current_view == 'advanced_text') )
             {
             this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switch_disclosure_open_a';
             this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div';
@@ -1699,7 +1722,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /************************************************************************************//**
     *	\brief This starts a search immediately, for a basic map click.                     *
     ****************************************************************************************/
-    this.basicdMapClicked = function ()
+    this.basicMapClicked = function ()
         {
         this.beginSearch();
         };
@@ -1717,7 +1740,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.displayMarkerInAdvancedMap = function ()
         {
-        if ( this.m_current_view == 'advanced map' )
+        if ( this.m_current_view == 'advanced_map' )
             {
             if ( !this.m_main_map.map_marker )
                 {
@@ -1769,7 +1792,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_main_map._circle_overlay = null;
                 };
             }
-        else
+        else if ( this.m_main_map )
             {
             if ( this.m_main_map.map_marker )
                 {
@@ -1835,9 +1858,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                                                             'icon':			this.m_center_icon_image,
                                                                             'shape':		this.m_center_icon_shape,
                                                                             'clickable':	false,
-                                                                            'cursor':		'default',
-                                                                            'draggable':    false
+                                                                            'cursor':		'pointer',
+                                                                            'draggable':    true
                                                                             } );
+        var id = this.m_uid;
+        google.maps.event.addListener ( this.m_map_search_results_map.main_marker, 'dragend', function(in_event) { NouveauMapSearch.prototype.sResultsMapDragend( in_event, id ); } );
         };
 
     /************************************************************************************//**
@@ -2104,13 +2129,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         uri_elements[index++][1] = this.m_current_lat;
         // First, if we have a map up, we use the specified width. (not done if the search is specified using text).
         // This restricts the search area.
-        if ( this.m_location_checkbox.checked || (this.m_current_view == 'map') || (this.m_current_view == 'advanced map') )
+        if ( this.m_location_checkbox.checked || (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
             {
             uri_elements[index] = new Array;
             uri_elements[index][0] = 'geo_width';
             
             // In the case of the advanced map, we will also have a radius value. Otherwise, we use the default auto.
-            uri_elements[index++][1] = (this.m_current_view == 'advanced map') ? this.m_search_radius : g_Nouveau_default_geo_width;
+            uri_elements[index++][1] = (this.m_current_view == 'advanced_map') ? this.m_search_radius : g_Nouveau_default_geo_width;
             }
         else    // Otherwise, we use whatever is in the text box.
             {
@@ -2364,6 +2389,64 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_details_map_div.className = 'bmlt_nouveau_details_map_div';
                 this.m_details_map_container_div.appendChild ( this.m_details_map_div );
                 };
+                
+            if ( !this.m_details_service_body_div )
+                {
+                this.m_details_service_body_div = document.createElement ( 'div' );
+                this.m_details_service_body_div.className = 'bmlt_nouveau_details_service_body_div';
+                
+                var label_span = document.createElement ( 'span' );
+                label_span.className = 'bmlt_nouveau_details_service_body_label_span';
+                label_span.appendChild ( document.createTextNode ( g_Nouveau_single_service_body_label ) );
+                this.m_details_service_body_div.appendChild ( label_span );
+                this.m_details_inner_div.appendChild ( this.m_details_service_body_div );
+                
+                if ( !this.m_details_service_body_span )
+                    {
+                    this.m_details_service_body_span = document.createElement ( 'span' );
+                    this.m_details_service_body_span.className = 'bmlt_nouveau_details_service_body_contents_span';
+                    this.m_details_service_body_div.appendChild ( this.m_details_service_body_span );
+                    };
+                
+                this.m_details_inner_div.appendChild ( this.m_details_service_body_div );
+                };
+            
+            this.m_details_service_body_span.innerHTML = '';
+            this.m_details_service_body_span.appendChild ( document.createTextNode ( 'TEST '+in_meeting_object.id_bigint ) );
+
+            if ( !this.m_details_comments_div )
+                {
+                this.m_details_comments_div = document.createElement ( 'div' );
+                this.m_details_comments_div.className = 'bmlt_nouveau_details_comments_div';
+                this.m_details_inner_div.appendChild ( this.m_details_comments_div );
+                };
+            
+            this.m_details_comments_div.innerHTML = '';
+            this.m_details_comments_div.appendChild ( document.createTextNode ( 'TEST '+in_meeting_object.id_bigint ) );
+            
+            if ( !this.m_details_formats_div )
+                {
+                this.m_details_formats_div = document.createElement ( 'div' );
+                this.m_details_formats_div.className = 'bmlt_nouveau_details_format_div';
+                
+                var formats_label_span = document.createElement ( 'span' );
+                formats_label_span.className = 'bmlt_nouveau_details_format_label_span';
+                formats_label_span.appendChild ( document.createTextNode ( g_Nouveau_single_formats_label ) );
+
+                this.m_details_formats_div.appendChild ( formats_label_span );
+                
+                this.m_details_inner_div.appendChild ( this.m_details_formats_div );
+                };
+            
+            if ( !this.m_details_formats_contents_div )
+                {
+                this.m_details_formats_contents_div = document.createElement ( 'div' );
+                this.m_details_formats_contents_div.className = 'bmlt_nouveau_details_format_contents_div';
+                this.m_details_formats_div.appendChild ( this.m_details_formats_contents_div );
+                };
+            
+            this.m_details_formats_contents_div.innerHTML = '';
+            this.m_details_formats_contents_div.appendChild ( document.createTextNode ( 'TEST '+in_meeting_object.id_bigint ) );
             
             this.m_details_inner_div.appendChild ( this.m_single_meeting_display_div );
             };
@@ -2377,7 +2460,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                     )
         {
         var center = new google.maps.LatLng ( in_meeting_object.latitude, in_meeting_object.longitude );
-        var zoom = g_Nouveau_default_details_map_zoom;
+        var zoom = this.m_map_search_results_map.getZoom() + 1; // g_Nouveau_default_details_map_zoom;
         
         if ( !this.m_details_map )
             {
@@ -2725,6 +2808,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.searchSpecButtonHit = function()
         {
         this.m_search_results_shown = false;
+        this.m_current_zoom = this.m_initial_zoom;
         this.setDisplayedSearchResults();
         };
     
@@ -2765,25 +2849,30 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         switch ( this.m_current_view )   // Vet the class state.
             {
             case 'map':
-                this.m_current_view = 'advanced map';
+                this.m_current_view = 'advanced_map';
                 this.validateGoButtons();
             break;
         
-            case 'advanced map':
+            case 'advanced_map':
                 this.m_current_view = 'map';
             break;
         
             case 'text':
-                this.m_current_view = 'advanced text';
+                this.m_current_view = 'advanced_text';
                 this.validateGoButtons();
             break;
         
-            case 'advanced text':
+            case 'advanced_text':
                 this.m_current_view = 'text';
                 this.validateGoButtons();
             break;
             };
         
+        if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
+            {
+            this.loadSpecMap();
+            };
+
         this.setBasicAdvancedSwitch();
         };
         
@@ -2798,11 +2887,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_current_view = 'map';
             break;
         
-            case 'advanced text':
-                this.m_current_view = 'advanced map';
+            case 'advanced_text':
+                this.m_current_view = 'advanced_map';
                 this.validateGoButtons();
             break;
             };
+            
+        this.loadSpecMap();
         
         this.setMapTextSwitch();
         };
@@ -2819,8 +2910,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.validateGoButtons();
             break;
         
-            case 'advanced map':
-                this.m_current_view = 'advanced text';
+            case 'advanced_map':
+                this.m_current_view = 'advanced_text';
                 this.validateGoButtons();
             break;
             };
@@ -2892,7 +2983,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             }
         else
             {
-            if ( this.m_current_view == 'advanced text' )
+            if ( this.m_current_view == 'advanced_text' )
                 {
                 this.m_advanced_go_a.className = 'bmlt_nouveau_text_go_button_a bmlt_nouveau_button_disabled';
                 this.m_advanced_go_a.removeAttribute ( 'href' );
@@ -2949,7 +3040,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_current_view = in_initial_view;
     this.m_current_long = in_initial_long;
     this.m_current_lat = in_initial_lat;
-    this.m_current_zoom = in_initial_zoom;
+    this.m_initial_zoom = in_initial_zoom;
+    this.m_current_zoom = this.m_initial_zoom;
     this.m_distance_units = in_distance_units;
     this.m_theme_dir = in_theme_dir;
     this.m_root_server_uri = in_root_server_uri;
@@ -2984,12 +3076,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     switch ( this.m_current_view )   // Vet the class state.
         {
         case 'text':            // These are OK.
-        case 'advanced text':
+        case 'advanced_text':
         break;
         
         case 'advanced':        // These are the same for this implementation
-        case 'advanced map':
-            this.m_current_view = 'advanced map';
+        case 'advanced_map':
+            this.m_current_view = 'advanced_map';
         break;
         
         default:    // The default is map. That includes a "server select."
@@ -3103,12 +3195,33 @@ NouveauMapSearch.prototype.sMapClicked = function ( in_event,   ///< The map eve
 
     if ( context.m_current_view == 'map' ) // If it is a simple map, we go straight to a search.
         {
-        context.basicdMapClicked();
+        context.basicMapClicked();
         }
     else    // Otherwise, we simply move the marker.
         {
         context.advancedMapClicked();
         };
+    };
+
+/****************************************************************************************//**
+*	\brief Responds to the end of the marker drag in the results map.                       *
+********************************************************************************************/
+NouveauMapSearch.prototype.sResultsMapDragend = function (  in_event,   ///< The map event
+                                                            in_id       ///< The unique ID of the object (establishes context).
+                                                            )
+    {
+    eval ('var context = g_instance_' + in_id + '_js_handler');
+	
+	// We set the long/lat from the event.
+	context.m_current_long = in_event.latLng.lng().toString();
+	context.m_current_lat = in_event.latLng.lat().toString();
+
+    if ( context.m_current_view == 'advanced_map' ) // If it is a simple map, we go straight to a search.
+        {
+        context.advancedMapClicked();
+        };
+    
+    context.basicMapClicked();
     };
 
 /****************************************************************************************//**
@@ -3249,7 +3362,20 @@ NouveauMapSearch.prototype.sRadiusChanged = function (  in_uid          ///< The
     eval ('var context = g_instance_' + in_uid + '_js_handler;' );
     context.handleRadiusChange();
     };
-    
+  
+/****************************************************************************************//**
+*	\brief This just traps the enter key for the text entry.                                *
+********************************************************************************************/
+NouveauMapSearch.prototype.sKeyDown = function (    in_id       ///< The unique ID of the object (establishes context).
+                                                )
+    {
+    if ( event.keyCode == 13 )
+        {
+        eval ('var context = g_instance_' + in_id + '_js_handler');
+        context.goButtonHit();
+        };
+    };
+  
 /********************************************************************************************
 *	\brief This responds to a details button in a row of the table results being clicked.   *
 ********************************************************************************************/

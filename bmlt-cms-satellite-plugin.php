@@ -194,7 +194,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
     static  $default_details_map_zoom = 11;                                 ///< This is the default basic search map zoom level
     static  $default_new_search = '';                                       ///< If this is set to something, then a new search uses the exact URI.
     static  $default_gkey = '';                                             ///< This is only necessary for older versions.
-    static  $default_push_down_more_details = '1';                          ///< If this is set to 1, then "More Details" and "Contact" windows will "push down" the content, instead of floating over it.
+//     static  $default_push_down_more_details = '1';                          ///< If this is set to 1, then "More Details" and "Contact" windows will "push down" the content, instead of floating over it.
     static  $default_additional_css = '';                                   ///< This is additional CSS that is inserted inline into the <head> section.
     static  $default_initial_view = '';                                     ///< The initial view for old-style BMLT. It can be 'map', 'text', 'advanced', 'advanced map', 'advanced text' or ''.
     static  $default_theme = 'default';                                     ///< This is the default for the "style theme" for the plugin. Different settings can have different themes.
@@ -470,7 +470,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                         'bmlt_new_search_url' => self::$default_new_search,
                         'gmaps_api_key' => self::$default_gkey,
                         'bmlt_initial_view' => self::$default_initial_view,
-                        'push_down_more_details' => self::$default_push_down_more_details,
+//                         'push_down_more_details' => self::$default_push_down_more_details,
                         'additional_css' => self::$default_additional_css,
                         'id' => strval ( time() + intval(rand(0, 999))),   // This gives the option a unique slug
                         'setting_name' => '',
@@ -1233,16 +1233,16 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                         $ret .= '<input class="BMLTPlugin_lang_button" type="button" value="'.$this->process_text ( self::$local_options_fetch_server_langs ).'" onclick="BMLTPlugin_FetchServerLangs('.$in_options_index.')" title="'.$this->process_text ( self::$local_options_fetch_server_langs_tooltip ).'" />';
                         $ret .= '<div class="BMLTPlugin_option_sheet_Server_Lang_Throbber" id="BMLTPlugin_option_sheet_Server_Lang_Throbber_'.$in_options_index.'"></div>';
                     $ret .= '</div>';
-                    $ret .= '<div class="BMLTPlugin_option_sheet_line_div BMLTPlugin_special_check_div">';
-                        $id = 'BMLTPlugin_option_sheet_push_down_'.$in_options_index;
-                        $ret .= '<input class="BMLTPlugin_special_check" type="checkbox" id="'.htmlspecialchars ( $id ).'" onclick="BMLTPlugin_DirtifyOptionSheet()"';
-                            if ( $options['push_down_more_details'] == '1' )
-                                {
-                                $ret .= ' checked="checked"';
-                                }
-                        $ret .= ' />';
-                        $ret .= '<label class="BMLTPlugin_special_check_label" for="'.htmlspecialchars ( $id ).'">'.$this->process_text ( self::$local_options_push_down_checkbox_label ).'</label>';
-                    $ret .= '</div>';
+//                     $ret .= '<div class="BMLTPlugin_option_sheet_line_div BMLTPlugin_special_check_div">';
+//                         $id = 'BMLTPlugin_option_sheet_push_down_'.$in_options_index;
+//                         $ret .= '<input class="BMLTPlugin_special_check" type="checkbox" id="'.htmlspecialchars ( $id ).'" onclick="BMLTPlugin_DirtifyOptionSheet()"';
+//                             if ( $options['push_down_more_details'] == '1' )
+//                                 {
+//                                 $ret .= ' checked="checked"';
+//                                 }
+//                         $ret .= ' />';
+//                         $ret .= '<label class="BMLTPlugin_special_check_label" for="'.htmlspecialchars ( $id ).'">'.$this->process_text ( self::$local_options_push_down_checkbox_label ).'</label>';
+//                     $ret .= '</div>';
                 $ret .= '</fieldset>';
             $ret .= '</div>';
             }
@@ -1364,10 +1364,10 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                                 }
                             }
                         
-                        if ( isset ( $this->my_http_vars['BMLTPlugin_option_sheet_push_down_'.$i] ) )
-                            {
-                            $options['push_down_more_details'] = $this->my_http_vars['BMLTPlugin_option_sheet_push_down_'.$i];
-                            }
+//                         if ( isset ( $this->my_http_vars['BMLTPlugin_option_sheet_push_down_'.$i] ) )
+//                             {
+//                             $options['push_down_more_details'] = $this->my_http_vars['BMLTPlugin_option_sheet_push_down_'.$i];
+//                             }
                         
                         if ( isset ( $this->my_http_vars['BMLTPlugin_option_latitude_'.$i] ) && floatVal ( $this->my_http_vars['BMLTPlugin_option_latitude_'.$i] ) )
                             {
@@ -1859,6 +1859,9 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_default_marker_aggregation_threshold_in_pixels = 8;";
                 $the_new_content .= "var g_Nouveau_default_duration = '".self::$local_nouveau_default_duration."';";
 
+                $the_new_content .= "var g_Nouveau_single_formats_label = '".$this->process_text ( self::$local_nouveau_single_formats_label )."';";
+                $the_new_content .= "var g_Nouveau_single_service_body_label = '".$this->process_text ( self::$local_nouveau_single_service_body_label )."';";
+                
                 $the_new_content .= '</script>';
                 $first = false;
                 }
@@ -1868,7 +1871,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
             // This is the overall container div.
             $the_new_content .= '<div id="'.$uid.'_container" class="bmlt_nouveau_container">';
                 // What we do here, is tell the client to create a global variable (in JS DOM), with a unique handler for this instance of the Nouveau search.
-                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \'map\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".$this->get_plugin_path()."/themes/".$options['theme']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=');</script>";
+                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options['bmlt_initial_view'].'\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".$this->get_plugin_path()."/themes/".$options['theme']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=');</script>";
             $the_new_content .= '</div>';
 
             $in_content = self::replace_shortcode ( $in_content, $theshortcode, $the_new_content );

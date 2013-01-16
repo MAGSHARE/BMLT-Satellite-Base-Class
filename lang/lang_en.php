@@ -108,6 +108,10 @@ class BMLT_Localized_BaseClass
     /// A simple message for most <noscript> elements. We have a different one for the older interactive search (below).
     static  $local_noscript = 'This will not work, because you do not have JavaScript active.';             ///< The string displayed in a <noscript> element.
     
+    /************************************************************************************//**
+    *                   NEW SHORTCODE STATIC DATA MEMBERS (LOCALIZABLE)                     *
+    ****************************************************************************************/
+    
     /// These are all for the [[bmlt_nouveau]] shortcode.
     static  $local_nouveau_basic_button = 'Basic Search';                   ///< The button name for the basic search in the nouveau search.
     static  $local_nouveau_advanced_button = 'Advanced Search';             ///< The button name for the advanced search in the nouveau search.
@@ -212,6 +216,9 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_midnight = 'Midnight';
     static  $local_nouveau_advanced_map_radius_value_array = "0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 50.0, 100.0";
     static  $local_nouveau_meeting_details_link_title = 'Get more details about this meeting.';
+
+    static  $local_nouveau_single_formats_label = 'Meeting Formats:';
+    static  $local_nouveau_single_service_body_label = 'Service Body:';
 
     static  $local_nouveau_prompt_array = array (
                                                 'weekday_tinyint' => 'Weekday',
