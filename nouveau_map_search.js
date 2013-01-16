@@ -2733,7 +2733,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.searchResultsButtonHit = function()
         {
+        this.m_mapResultsDisplayed = true;
+        this.m_listResultsDisplayed = true;
         this.m_search_results_shown = true;
+        this.setMapResultsDisclosure();
+        this.setListResultsDisclosure();
+        this.clearMarkerHighlight();    // Get rid of selected meetings.
         this.setDisplayedSearchResults();
         };
 
