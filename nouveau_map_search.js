@@ -1598,6 +1598,27 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
+    *	\brief This returns the format name for the given format code.                      *
+    *   \returns A string, containing the description.                                      *
+    ****************************************************************************************/
+    this.getFormatName = function( in_code_string    ///< This is the code string, and will be used to look up the description
+                                        )
+        {
+        var ret = '';
+        
+        for ( var c = 0; c < this.m_format_descriptions.length;  c++ )
+            {
+            if ( this.m_format_descriptions[c].key_string == in_code_string )
+                {
+                ret = this.m_format_descriptions[c].name_string;
+                break;
+                };
+            };
+        
+        return ret;
+        };
+    
+    /************************************************************************************//**
     *	\brief This returns the Service Body name for the given Service body ID.            *
     *   \returns A string, containing the name.                                             *
     ****************************************************************************************/
@@ -2462,6 +2483,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             this.m_single_meeting_display_div = document.createElement ( 'div' );
             this.m_single_meeting_display_div.className = 'bmlt_nouveau_single_meeting_wrapper_div';
+            this.m_single_meeting_display_div.id = 'bmlt_nouveau_single_meeting_wrapper_div_' + in_meeting_object.id_bigint;
         
             if ( !this.m_details_meeting_name_div )
                 {
@@ -2596,6 +2618,45 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 };
             
             this.m_details_formats_contents_div.innerHTML = '';
+            
+            var loc_array = in_meeting_object.formats.split ( ',');
+        
+            if ( loc_array && loc_array.length )
+                {
+                var formats_dl = document.createElement ( 'dl' );
+                formats_dl.className = 'bmlt_nouveau_details_format_contents_dl';
+                
+                for ( var c = 0; c < loc_array.length; c++ )
+                    {
+                    var loc_text = loc_array[c];
+        
+                    var format_header = document.createElement ( 'dt' );
+                    format_header.className = 'bmlt_nouveau_details_formats_contents_dt bmlt_nouveau_details_formats_contents_dt_' + loc_text;
+                    
+                    var format_code = document.createElement ( 'span' );
+                    format_code.className = 'bmlt_nouveau_details_formats_code_span bmlt_nouveau_details_formats_code_span_' + loc_text;
+                    
+                    format_code.appendChild ( document.createTextNode( loc_text ) );
+                    format_header.appendChild ( format_code );
+                    
+                    var format_name = document.createElement ( 'span' );
+                    format_name.className = 'bmlt_nouveau_details_formats_name_span bmlt_nouveau_details_formats_name_span_' + loc_text;
+                    
+                    format_name.appendChild ( document.createTextNode( this.getFormatName ( loc_text ) ) );
+                    format_header.appendChild ( format_name );
+                    
+                    var format_description = document.createElement ( 'dd' );
+                    format_description.className = 'bmlt_nouveau_details_formats_contents_dd bmlt_nouveau_details_formats_contents_dd_' + loc_text;
+                    
+                    format_description.appendChild ( document.createTextNode( this.getFormatDescription ( loc_text ) ) );
+                    
+                    formats_dl.appendChild ( format_header );
+                    formats_dl.appendChild ( format_description );
+                    };
+                
+                this.m_details_formats_contents_div.appendChild ( formats_dl );
+                this.m_single_meeting_display_div.appendChild ( this.m_details_formats_contents_div );
+                };
             
             this.m_details_inner_div.appendChild ( this.m_single_meeting_display_div );
             };
