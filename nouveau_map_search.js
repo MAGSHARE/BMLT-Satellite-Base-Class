@@ -370,17 +370,17 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 
                 google.maps.event.addListener ( this.m_main_map, 'click', function(in_event) { NouveauMapSearch.prototype.sMapClicked( in_event, id ); } );
                 };
-            }
-        else if ( this.m_main_map )
-            {
-            this.m_main_map.setCenter ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
-            this.m_main_map.setZoom ( this.m_current_zoom );
             };
         
         if ( this.m_map_search_results_map && this.m_main_map )
             {
             this.m_main_map.setCenter ( this.m_map_search_results_map.getCenter() );
             this.m_main_map.setZoom ( this.m_map_search_results_map.getZoom() );
+            }
+        else if ( this.m_main_map )
+            {
+            this.m_main_map.setCenter ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
+            this.m_main_map.setZoom ( this.m_current_zoom );
             };
 	    };
     
@@ -433,8 +433,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_map_search_results_map.setZoom ( this.m_current_zoom );
             };
         
-        this.m_main_map.setCenter ( this.m_map_search_results_map.getCenter() );
-        this.m_main_map.setZoom ( this.m_map_search_results_map.getZoom() );
+        if ( this.m_main_map )
+            {
+            this.m_main_map.setCenter ( this.m_map_search_results_map.getCenter() );
+            this.m_main_map.setZoom ( this.m_map_search_results_map.getZoom() );
+            };
 	    };
     
     /************************************************************************************//**
@@ -1895,9 +1898,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_main_map._circle_overlay.setMap(null);
                 this.m_main_map._circle_overlay = null;
                 };
-            
-            this.m_main_map.setCenter ( position );
-            this.m_main_map.setZoom ( this.m_current_zoom );
             }
         else if ( this.m_main_map )
             {
