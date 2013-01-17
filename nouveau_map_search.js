@@ -190,6 +190,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_search_sort_key = null;               ///< This can be 'time', 'town', 'name', or 'distance'.
     
     var m_format_descriptions = null;           ///< This will contain our formats.
+    var m_service_bodies = null;                ///< This will contain our Service bodies.
     var m_geocoder = null;                      ///< This will hold any active address lookup.
         
     /****************************************************************************************
@@ -794,6 +795,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_div';
         
         this.m_advanced_service_bodies_div.appendChild ( this.m_advanced_service_bodies_content_div );
+        };
+    
+    /************************************************************************************//**
+    *	\brief Build the content for the Advanced Service Bodies section.                   *
+    ****************************************************************************************/
+    this.populate_Advanced_Service_Bodies_Content = function ()
+        {
         };
     
     /************************************************************************************//**
@@ -1590,6 +1598,67 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
+    *	\brief This returns the Service Body name for the given Service body ID.            *
+    *   \returns A string, containing the name.                                             *
+    ****************************************************************************************/
+    this.getServiceBodyName = function( in_id    ///< This is the ID, and will be used to look up the description
+                                        )
+        {
+        var ret = '';
+        for ( var c = 0; c < this.m_service_bodies.length;  c++ )
+            {
+            if ( this.m_service_bodies[c].id == in_id )
+                {
+                ret = this.m_service_bodies[c].name;
+                break;
+                };
+            };
+        
+        return ret;
+        };
+    
+    /************************************************************************************//**
+    *	\brief This returns the Service Body URL for the given Service body ID.             *
+    *   \returns A string, containing the name.                                             *
+    ****************************************************************************************/
+    this.getServiceBodyURL = function( in_id    ///< This is the ID, and will be used to look up the description
+                                        )
+        {
+        var ret = '';
+        for ( var c = 0; c < this.m_service_bodies.length;  c++ )
+            {
+            if ( this.m_service_bodies[c].id == in_id )
+                {
+                ret = this.m_service_bodies[c].url;
+                break;
+                };
+            };
+        
+        return ret;
+        };
+    
+    /************************************************************************************//**
+    *	\brief This returns the Service Body description for the given Service body ID.     *
+    *   \returns A string, containing the description.                                      *
+    ****************************************************************************************/
+    this.getServiceBodyDescription = function( in_id    ///< This is the ID, and will be used to look up the description
+                                            )
+        {
+        var ret = '';
+        
+        for ( var c = 0; c < this.m_service_bodies.length;  c++ )
+            {
+            if ( this.m_service_bodies[c].id == in_id )
+                {
+                ret = this.m_service_bodies[c].description;
+                break;
+                };
+            };
+        
+        return ret;
+        };
+    
+    /************************************************************************************//**
     *	\brief This sets the state of the "MAP/TEXT" tab switch div. It actually changes    *
     *          the state of the anchors, so it is more than just a CSS class change.        *
     ****************************************************************************************/
@@ -2071,10 +2140,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.beginSearch = function ()
         {
+        this.displayThrobber();
         this.m_search_results = null;
         this.setDisplayedSearchResults();
         this.clearSearchResults();
-        this.callRootServer ( this.createSearchURI_Formats() );
+        this.m_ajax_request = BMLTPlugin_AjaxRequest ( this.createSearchURI(), NouveauMapSearch.prototype.sMeetingsCallback, 'get', this.m_uid );
         };
         
     /************************************************************************************//**
@@ -2183,6 +2253,19 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         ret += escape ( 'switcher=GetFormats' );
         return ret;
         };
+
+    /************************************************************************************//**
+    *	\brief This function constructs a URI to the root server that reflects the search   *
+    *          parameters, as specified by the search specification section.                *
+    *   \returns a string, containing the complete URI.                                     *
+    ****************************************************************************************/
+    this.createSearchURI_ServiceBodies = function ()
+        {
+        var ret = this.m_root_server_uri; // We append a question mark, so all the rest can be added without worrying about this.
+        
+        ret += escape ( 'switcher=GetServiceBodies' );
+        return ret;
+        };
 	
 	/************************************************************************************//**
 	*	\brief  Does an AJAX call for a JSON response, based on the given criteria and      *
@@ -2192,7 +2275,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	*           where "in_json_obj" is the response, converted to a JSON object.            *
 	*           it will be null if the function failed.                                     *
 	****************************************************************************************/
-	
 	this.callRootServer = function ( in_uri ///< The URI to call (with all the parameters).
 	                                )
 	{
@@ -2204,6 +2286,46 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	        };
 	    
         this.m_ajax_request = BMLTPlugin_AjaxRequest ( in_uri, NouveauMapSearch.prototype.sFormatCallback, 'get', this.m_uid );
+	};
+	
+	/************************************************************************************//**
+	*	\brief  Does an AJAX call for a JSON response, based on the given criteria and      *
+	*           callback function.                                                          *
+	*           The callback will be a function in the following format:                    *
+	*               function ajax_callback ( in_json_obj )                                  *
+	*           where "in_json_obj" is the response, converted to a JSON object.            *
+	*           it will be null if the function failed.                                     *
+	****************************************************************************************/
+	this.getFormats = function ()
+	{
+        this.displayThrobber();
+	    if ( this.m_ajax_request )   // This prevents the requests from piling up. We are single-threaded.
+	        {
+	        this.m_ajax_request.abort();
+	        this.m_ajax_request = null;
+	        };
+	    
+        this.m_ajax_request = BMLTPlugin_AjaxRequest ( this.createSearchURI_Formats(), NouveauMapSearch.prototype.sFormatCallback, 'get', this.m_uid );
+	};
+	
+	/************************************************************************************//**
+	*	\brief  Does an AJAX call for a JSON response, based on the given criteria and      *
+	*           callback function.                                                          *
+	*           The callback will be a function in the following format:                    *
+	*               function ajax_callback ( in_json_obj )                                  *
+	*           where "in_json_obj" is the response, converted to a JSON object.            *
+	*           it will be null if the function failed.                                     *
+	****************************************************************************************/
+	this.getServiceBodies = function ()
+	{
+        this.displayThrobber();
+	    if ( this.m_ajax_request )   // This prevents the requests from piling up. We are single-threaded.
+	        {
+	        this.m_ajax_request.abort();
+	        this.m_ajax_request = null;
+	        };
+	    
+        this.m_ajax_request = BMLTPlugin_AjaxRequest ( this.createSearchURI_ServiceBodies(), NouveauMapSearch.prototype.sServiceBodiesCallback, 'get', this.m_uid );
 	};
         
     /****************************************************************************************
@@ -2407,7 +2529,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 label_span.className = 'bmlt_nouveau_details_service_body_label_span';
                 label_span.appendChild ( document.createTextNode ( g_Nouveau_single_service_body_label ) );
                 this.m_details_service_body_div.appendChild ( label_span );
-                this.m_details_inner_div.appendChild ( this.m_details_service_body_div );
+                this.m_single_meeting_display_div.appendChild ( this.m_details_service_body_div );
                 
                 if ( !this.m_details_service_body_span )
                     {
@@ -2416,21 +2538,41 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                     this.m_details_service_body_div.appendChild ( this.m_details_service_body_span );
                     };
                 
-                this.m_details_inner_div.appendChild ( this.m_details_service_body_div );
+                this.m_single_meeting_display_div.appendChild ( this.m_details_service_body_div );
                 };
             
             this.m_details_service_body_span.innerHTML = '';
-            this.m_details_service_body_span.appendChild ( document.createTextNode ( 'TEST '+in_meeting_object.id_bigint ) );
+            var name = this.getServiceBodyName ( in_meeting_object.service_body_bigint );
+            var url = this.getServiceBodyURL ( in_meeting_object.service_body_bigint );
+            
+            var content_node = null;
+            
+            if ( url )
+                {
+                content_node = document.createElement ( 'a' );
+                content_node.className = 'bmlt_nouveau_details_service_body_uri_a';
+                content_node.setAttribute ( 'href', url );
+                content_node.appendChild ( document.createTextNode ( name ) );
+                }
+            else
+                {
+                content_node = document.createTextNode ( name );
+                };
+            
+            this.m_details_service_body_span.appendChild ( content_node );
 
             if ( !this.m_details_comments_div )
                 {
                 this.m_details_comments_div = document.createElement ( 'div' );
                 this.m_details_comments_div.className = 'bmlt_nouveau_details_comments_div';
-                this.m_details_inner_div.appendChild ( this.m_details_comments_div );
+                this.m_single_meeting_display_div.appendChild ( this.m_details_comments_div );
                 };
             
             this.m_details_comments_div.innerHTML = '';
-            this.m_details_comments_div.appendChild ( document.createTextNode ( 'TEST '+in_meeting_object.id_bigint ) );
+            if ( in_meeting_object.comments )
+                {
+                this.m_details_comments_div.appendChild ( document.createTextNode ( in_meeting_object.comments ) );
+                };
             
             if ( !this.m_details_formats_div )
                 {
@@ -2443,7 +2585,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 
                 this.m_details_formats_div.appendChild ( formats_label_span );
                 
-                this.m_details_inner_div.appendChild ( this.m_details_formats_div );
+                this.m_single_meeting_display_div.appendChild ( this.m_details_formats_div );
                 };
             
             if ( !this.m_details_formats_contents_div )
@@ -2454,7 +2596,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 };
             
             this.m_details_formats_contents_div.innerHTML = '';
-            this.m_details_formats_contents_div.appendChild ( document.createTextNode ( 'TEST '+in_meeting_object.id_bigint ) );
             
             this.m_details_inner_div.appendChild ( this.m_single_meeting_display_div );
             };
@@ -3100,6 +3241,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     this.buildDOMTree();
+    this.displayThrobber();
+    this.getFormats();
 };
 
 /********************************************************************************************
@@ -3317,10 +3460,6 @@ NouveauMapSearch.prototype.sFormatCallback = function ( in_response_object, ///<
     
     if ( context )
         {
-        context.m_ajax_request = null;
-        var uri = context.createSearchURI();
-        context.m_ajax_request = BMLTPlugin_AjaxRequest ( uri, NouveauMapSearch.prototype.sMeetingsCallback, 'get', in_id );
-        
         if ( in_response_object.responseText )
             {
             var new_object = null;
@@ -3329,6 +3468,36 @@ NouveauMapSearch.prototype.sFormatCallback = function ( in_response_object, ///<
             // This is how you create JSON objects.
             eval ( json_builder );
             context.m_format_descriptions = new_object;
+            context.getServiceBodies();
+            };
+        }
+    else
+        {
+        alert ( g_Nouveau_no_search_results_text );
+        };
+    };
+	
+/****************************************************************************************//**
+*	\brief This is the AJAX callback from a search request.                                 *
+********************************************************************************************/
+NouveauMapSearch.prototype.sServiceBodiesCallback = function (  in_response_object, ///< The HTTPRequest response object.
+                                                                in_id               ///< The unique ID of the object (establishes context).
+                                                            )
+    {
+    eval ('var context = g_instance_' + in_id + '_js_handler');
+    
+    if ( context )
+        {
+        if ( in_response_object.responseText )
+            {
+            var new_object = null;
+            var json_builder = "var new_object = " + in_response_object.responseText + ";";
+        
+            // This is how you create JSON objects.
+            eval ( json_builder );
+            context.m_service_bodies = new_object;
+            context.populate_Advanced_Service_Bodies_Content();
+            context.hideThrobber();
             };
         }
     else

@@ -1513,7 +1513,6 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                     $url = $options['root_server']."/client_interface/xhtml/index.php?switcher=RedirectAJAX$this->my_params";
                     
                     if ( ob_get_level () )         ob_end_clean(); // Just in case we are in an OB
-                        
                     $ret = bmlt_satellite_controller::call_curl ( $url );
                     
                     $handler = null;
