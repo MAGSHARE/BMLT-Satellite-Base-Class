@@ -376,6 +376,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_main_map.setCenter ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
             this.m_main_map.setZoom ( this.m_current_zoom );
             };
+        
+        if ( this.m_map_search_results_map && this.m_main_map )
+            {
+            this.m_main_map.setCenter ( this.m_map_search_results_map.getCenter() );
+            this.m_main_map.setZoom ( this.m_map_search_results_map.getZoom() );
+            };
 	    };
     
     /************************************************************************************//**
@@ -426,6 +432,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_map_search_results_map.setCenter ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
             this.m_map_search_results_map.setZoom ( this.m_current_zoom );
             };
+        
+        this.m_main_map.setCenter ( this.m_map_search_results_map.getCenter() );
+        this.m_main_map.setZoom ( this.m_map_search_results_map.getZoom() );
 	    };
     
     /************************************************************************************//**
@@ -2646,7 +2655,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                     format_header.appendChild ( format_name );
                     
                     var format_description = document.createElement ( 'dd' );
-                    format_description.className = 'bmlt_nouveau_details_formats_contents_dd bmlt_nouveau_details_formats_contents_dd_' + loc_text;
+                    format_description.className = 'bmlt_nouveau_details_formats_description_dd bmlt_nouveau_details_formats_description_dd_' + loc_text;
                     
                     format_description.appendChild ( document.createTextNode( this.getFormatDescription ( loc_text ) ) );
                     
@@ -3019,6 +3028,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         this.m_search_results_shown = false;
         this.m_current_zoom = this.m_initial_zoom;
+        
+        if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
+            {
+            this.loadSpecMap();
+            };
+        
         this.setDisplayedSearchResults();
         };
     
