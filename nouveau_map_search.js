@@ -1740,25 +1740,30 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.displayMarkerInAdvancedMap = function ()
         {
-        if ( this.m_current_view == 'advanced_map' )
+        if ( this.m_current_view == 'advanced_map' && this.m_main_map )
             {
+            var position = new google.maps.LatLng ( this.m_current_lat, this.m_current_long );
+            
             if ( !this.m_main_map.map_marker )
                 {
-                this.m_main_map.map_marker = new google.maps.Marker (
+		        this.m_main_map.map_marker = new google.maps.Marker (
                                                                     {
-                                                                    'position':     new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
+                                                                    'position':     position,
                                                                     'map':		    this.m_main_map,
                                                                     'shadow':		this.m_center_icon_shadow,
                                                                     'icon':			this.m_center_icon_image,
                                                                     'shape':		this.m_center_icon_shape,
                                                                     'clickable':	false,
-                                                                    'cursor':		'default',
-                                                                    'draggable':    false
+                                                                    'cursor':		'pointer',
+                                                                    'draggable':    true
                                                                     } );
+                var id = this.m_uid;
+                google.maps.event.addListener ( this.m_main_map.map_marker, 'dragstart', function() { NouveauMapSearch.prototype.sAdvancedMapDragStart( id ); } );
+                google.maps.event.addListener ( this.m_main_map.map_marker, 'dragend', function(in_event) { NouveauMapSearch.prototype.sAdvancedMapDragEnd( in_event, id ); } );
                 }
             else
                 {
-                this.m_main_map.map_marker.setPosition ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
+                this.m_main_map.map_marker.setPosition ( position );
                 };
             
             if ( this.m_search_radius > 0 )
@@ -1783,7 +1788,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 else
                     {
                     this.m_main_map._circle_overlay.setRadius(circle_radius);
-                    this.m_main_map._circle_overlay.setCenter(this.m_main_map.map_marker.getPosition());
+                    this.m_main_map._circle_overlay.setCenter(position);
                     };
                 }
             else if ( this.m_main_map._circle_overlay )
@@ -1791,6 +1796,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_main_map._circle_overlay.setMap(null);
                 this.m_main_map._circle_overlay = null;
                 };
+            
+            this.m_main_map.setCenter ( position );
+            this.m_main_map.setZoom ( this.m_current_zoom );
             }
         else if ( this.m_main_map )
             {
@@ -2896,6 +2904,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.loadSpecMap();
         
         this.setMapTextSwitch();
+
+        this.setBasicAdvancedSwitch();
         };
         
     /************************************************************************************//**
@@ -3215,6 +3225,8 @@ NouveauMapSearch.prototype.sResultsMapDragend = function (  in_event,   ///< The
 	// We set the long/lat from the event.
 	context.m_current_long = in_event.latLng.lng().toString();
 	context.m_current_lat = in_event.latLng.lat().toString();
+    context.m_main_map.setCenter ( in_event.latLng );
+    context.m_main_map.setZoom ( context.m_current_zoom );
 
     if ( context.m_current_view == 'advanced_map' ) // If it is a simple map, we go straight to a search.
         {
@@ -3222,6 +3234,33 @@ NouveauMapSearch.prototype.sResultsMapDragend = function (  in_event,   ///< The
         };
     
     context.basicMapClicked();
+    };
+
+/****************************************************************************************//**
+*	\brief Responds to the start of the marker drag in the advanced map.                    *
+********************************************************************************************/
+NouveauMapSearch.prototype.sAdvancedMapDragStart = function (   in_id       ///< The unique ID of the object (establishes context).
+                                                            )
+    {
+    eval ('var context = g_instance_' + in_id + '_js_handler');
+
+    context.m_main_map._circle_overlay.setMap(null);
+    context.m_main_map._circle_overlay = null;
+    };
+
+/****************************************************************************************//**
+*	\brief Responds to the end of the marker drag in the results map.                       *
+********************************************************************************************/
+NouveauMapSearch.prototype.sAdvancedMapDragEnd = function ( in_event,   ///< The map event
+                                                            in_id       ///< The unique ID of the object (establishes context).
+                                                            )
+    {
+    eval ('var context = g_instance_' + in_id + '_js_handler');
+	
+	// We set the long/lat from the event.
+	context.m_current_long = in_event.latLng.lng().toString();
+	context.m_current_lat = in_event.latLng.lat().toString();
+    context.advancedMapClicked();
     };
 
 /****************************************************************************************//**
