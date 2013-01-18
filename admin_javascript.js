@@ -102,27 +102,6 @@ function BMLTPlugin_SelectOptionSheet ( in_value,       ///< The current value o
 };
 
 /****************************************************************************************//**
-*   \brief Reacts to a new language being selected in the popup menu.                       *
-********************************************************************************************/
-function BMLTPlugin_ChangeLanguage( )
-{
-    var option_index = BMLTPlugin_GetSelectedOptionIndex();
-    var name_object = document.getElementById ( 'BMLTPlugin_option_sheet_language_name_'+option_index );
-    
-    if ( name_object )
-        {
-        var select_object = document.getElementById ( 'BMLTPlugin_option_sheet_language_'+option_index );
-        
-        if ( select_object )
-            {
-            name_object.value = select_object.options[select_object.selectedIndex].text;
-            };
-        };
-    
-    BMLTPlugin_DirtifyOptionSheet();
-};
-
-/****************************************************************************************//**
 *   \brief Deletes one of the options after a confirm.                                      *
 ********************************************************************************************/
 function BMLTPlugin_DeleteOptionSheet()
@@ -177,20 +156,6 @@ function BMLTPlugin_SaveOptions()
             url += encodeURIComponent ( new_search );
             };
         
-        var lang_enum = document.getElementById ( 'BMLTPlugin_option_sheet_language_'+option_index ).value.toString();
-        
-         if ( lang_enum )
-            {
-            url += '&BMLTPlugin_option_sheet_language_'+option_index+'='+encodeURIComponent ( lang_enum );
-            }
-        
-        var lang_name = document.getElementById ( 'BMLTPlugin_option_sheet_language_name_'+option_index ).value.toString();
-        
-         if ( lang_name )
-            {
-            url += '&BMLTPlugin_option_sheet_language_name_'+option_index+'='+encodeURIComponent ( lang_name );
-            }
-        
         var distance_units = document.getElementById ( 'BMLTPlugin_option_sheet_distance_units_'+option_index ).value.toString();
         
          if ( distance_units )
@@ -198,28 +163,27 @@ function BMLTPlugin_SaveOptions()
             url += '&BMLTPlugin_option_sheet_distance_units_'+option_index+'='+encodeURIComponent ( distance_units );
             }
         
-        var grace_period = document.getElementById ( 'BMLTPlugin_option_sheet_grace_period_'+option_index ).value.toString();
-        
-         if ( grace_period )
+        if ( document.getElementById ( 'BMLTPlugin_option_sheet_grace_period_'+option_index ) )
             {
-            url += '&BMLTPlugin_option_sheet_grace_period_'+option_index+'='+encodeURIComponent ( grace_period );
+            var grace_period = document.getElementById ( 'BMLTPlugin_option_sheet_grace_period_'+option_index ).value.toString();
+        
+             if ( grace_period )
+                {
+                url += '&BMLTPlugin_option_sheet_grace_period_'+option_index+'='+encodeURIComponent ( grace_period );
+                }
             }
         
-        var time_offset = document.getElementById ( 'BMLTPlugin_option_sheet_time_offset_'+option_index ).value.toString();
-        
-         if ( time_offset )
+        if ( document.getElementById ( 'BMLTPlugin_option_sheet_time_offset_'+option_index ) )
             {
-            url += '&BMLTPlugin_option_sheet_time_offset_'+option_index+'='+encodeURIComponent ( time_offset );
+            var time_offset = document.getElementById ( 'BMLTPlugin_option_sheet_time_offset_'+option_index ).value.toString();
+        
+             if ( time_offset )
+                {
+                url += '&BMLTPlugin_option_sheet_time_offset_'+option_index+'='+encodeURIComponent ( time_offset );
+                }
             }
-       
-        var gmaps_key = document.getElementById ( 'BMLTPlugin_option_sheet_gkey_'+option_index ).value.toString();
-         
-        url += '&BMLTPlugin_option_sheet_gkey_'+option_index+'=';
         
-        if ( gmaps_key && (gmaps_key != g_BMLTPlugin_no_gkey_string) )
-            {
-            url += encodeURIComponent ( gmaps_key );
-            };
+        url += '&BMLTPlugin_location_selected_checkbox_'+option_index+'='+(document.getElementById ( 'BMLTPlugin_location_selected_checkbox_'+option_index ).checked ? '1' : '0');
        
         var initial_view = document.getElementById ( 'BMLTPlugin_option_sheet_initial_view_'+option_index ).value.toString();
          
@@ -228,10 +192,6 @@ function BMLTPlugin_SaveOptions()
         var my_theme = document.getElementById ( 'BMLTPlugin_option_sheet_theme_'+option_index ).value.toString();
          
         url += '&BMLTPlugin_option_sheet_theme_'+option_index+'='+my_theme;
-       
-//         var push_down = (document.getElementById ( 'BMLTPlugin_option_sheet_push_down_'+option_index ).checked ? '1' : '0');
-//          
-//         url += '&BMLTPlugin_option_sheet_push_down_'+option_index+'='+push_down;
        
         var additional_css = document.getElementById ( 'BMLTPlugin_option_sheet_additional_css_'+option_index ).value.toString();
          
@@ -331,90 +291,6 @@ function BMLTPlugin_DirtifyOptionSheet( in_disable  ///< If this is true, then w
             {
             window.onbeforeunload = g_BMLTPlugin_oldBeforeUnload;
             };
-        };
-};
-
-/****************************************************************************************//**
-*   \brief Fetches the available and default languages from the server, and sets up the     *
-*   language dropdown accordingly.                                                          *
-*                                                                                           *
-********************************************************************************************/
-function BMLTPlugin_FetchServerLangs ( in_id    ///< The index of the option to test.
-                                        )
-{
-    var url = document.getElementById ( 'BMLTPlugin_sheet_form' ).action;
-    var option_index = BMLTPlugin_GetSelectedOptionIndex();
-    var throbber_item = document.getElementById('BMLTPlugin_option_sheet_Server_Lang_Throbber_'+option_index);
-   
-    url += '&BMLTPlugin_Fetch_Langs_AJAX_Call=1';
-    
-    var root_server = document.getElementById ( 'BMLTPlugin_option_sheet_root_server_'+option_index ).value.toString();
-    
-    if ( root_server && (root_server != c_g_BMLTPlugin_no_root) )
-        {
-        url += '&BMLTPlugin_AJAX_Call_Check_Root_URI='+encodeURIComponent ( root_server );
-        };
-
-    throbber_item.innerHTML = '<img src="'+c_g_BMLTPlugin_admin_google_map_images+'/small_throbber.gif" alt="AJAX Throbber" />';
-    BMLTPlugin_AjaxRequest ( url, BMLTPlugin_FetchServerLangsCallback, 'get' );
-};
-
-/****************************************************************************************//**
-*   \brief This is the AJAX callback for setting up the server languages.                   *
-*                                                                                           *
-********************************************************************************************/
-function BMLTPlugin_FetchServerLangsCallback ( in_object  ///< The processing result. Should be an HTTPRequest with a JSON object in the text.
-                                                )
-{
-    var option_index = BMLTPlugin_GetSelectedOptionIndex();
-    var throbber_item = document.getElementById('BMLTPlugin_option_sheet_Server_Lang_Throbber_'+option_index);
-    
-    if ( in_object.responseText )
-        {
-        var select_item = document.getElementById('BMLTPlugin_option_sheet_language_'+option_index);
-        
-        if ( select_item )
-            {
-            var name_item = document.getElementById('BMLTPlugin_option_sheet_language_name_'+option_index);
-            
-            var old_enum = select_item.options[select_item.selectedIndex].value;
-            
-            if ( name_item )
-                {
-                eval ( 'var json_obj = '+in_object.responseText+';' );
-
-                select_item.options.length = 0;
-                
-                for ( var c = 0; c < json_obj.length; c++ )
-                    {
-                    var lang_enum = json_obj[c][0];
-                    var lang_name = json_obj[c][1];
-                    var lang_default = json_obj[c][2];
-
-                    select_item.options[c] = new Option ( lang_name.toString(), lang_enum.toString());
-
-                    if ( lang_default )
-                        {
-                        select_item.selectedIndex = c;
-                        };
-                    };
-                
-                select_item.disabled = false;
-                
-                throbber_item.innerHTML = '';
-                
-                var new_enum = select_item.options[select_item.selectedIndex].value;
-                
-                if ( old_enum != new_enum )
-                    {
-                    BMLTPlugin_DirtifyOptionSheet();
-                    };
-               };
-            };
-        }
-    else
-        {
-        throbber_item.innerHTML = c_g_BMLTPlugin_root_canal;
         };
 };
 

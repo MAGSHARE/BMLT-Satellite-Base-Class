@@ -218,6 +218,22 @@
     color: #36c;
 }
 
+#BMLTPlugin_options_container .BMLTPlugin_location_checkbox_line label
+{
+    float:left;
+    display:block;
+    margin-left:8px;
+    text-align: left;
+    width: 500px;
+}
+
+#BMLTPlugin_options_container .BMLTPlugin_option_sheet_checkbox_div
+{
+    width: 200px;
+    text-align: right;
+    float:left;
+}
+
 #BMLTPlugin_options_container .BMLTPlugin_option_sheet_text_div,
 #BMLTPlugin_options_container .BMLTPlugin_option_sheet_Version,
 #BMLTPlugin_options_container .BMLTPlugin_option_sheet_Server_Lang_Throbber

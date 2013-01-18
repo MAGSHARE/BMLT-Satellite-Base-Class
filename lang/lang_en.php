@@ -50,6 +50,7 @@ class BMLT_Localized_BaseClass
     static  $local_options_access_failure = 'You are not allowed to perform this operation.';               ///< This is displayed if a user attempts a no-no.
     static  $local_options_unsaved_message = 'You have unsaved changes. Are you sure you want to leave without saving them?';   ///< This is displayed if a user attempts to leave a page without saving the options.
     static  $local_options_settings_id_prompt = 'The ID for this Setting is ';                              ///< This is so that users can see the ID for the setting.
+    static  $local_options_settings_location_checkbox_label = 'Text Searches Start Off with the "Location" Checkbox On.';                              ///< This is so that users can see the ID for the setting.
     
     /// These are all for the admin page option sheets.
     static  $local_options_name_label = 'Setting Name:';                    ///< The Label for the setting name item.
@@ -61,14 +62,11 @@ class BMLT_Localized_BaseClass
     static  $local_options_no_new_search_string = 'Enter a New Search URL'; ///< The Value to use for a new search with no URL.
     static  $local_options_no_gkey_string = 'Enter a New API Key';          ///< The Value to use for a new search with no URL.
     static  $local_options_test_server = 'Test';                            ///< This is the title for the "test server" button.
-    static  $local_options_fetch_server_langs = 'Fetch Server Languages';   ///< This is the title for the "Fetch Server Languages" button.
-    static  $local_options_fetch_server_langs_tooltip = 'If you press this button, the server will be queried for its available and default languages.';    ///< This is the tooltip for the "Fetch Server Languages" button.
     static  $local_options_test_server_success = 'Version ';                ///< This is a prefix for the version, on success.
     static  $local_options_test_server_failure = 'This Root Server URL is not Valid';                       ///< This is a prefix for the version, on failure.
     static  $local_options_test_server_tooltip = 'This tests the root server, to see if it is OK.';         ///< This is the tooltip text for the "test server" button.
     static  $local_options_map_label = 'Select a Center Point and Zoom Level for Map Displays';             ///< The Label for the map.
-    static  $local_options_gkey_caveat = 'These are only necessary for old-style BMLT implementations';     ///< This lets people know that this is not necessary for newer installs.
-    static  $local_options_mobile_legend = 'These are for the fast mobile lookup';                          ///< This indicates that the enclosed settings are for the fast mobile lookup.
+    static  $local_options_mobile_legend = 'These affect the Various Interactive Searches (such as Map, Mobile and Advanced)';  ///< This indicates that the enclosed settings are for the fast mobile lookup.
     static  $local_options_mobile_grace_period_label = 'Grace Period:';     ///< When you do a "later today" search, you get a "Grace Period."
     static  $local_options_mobile_time_offset_label = 'Time Offset:';       ///< This may have an offset (time zone difference) from the main server.
     static  $local_options_initial_view = array (                           ///< The list of choices for presentation in the popup.
@@ -76,16 +74,11 @@ class BMLT_Localized_BaseClass
                                                 );
     static  $local_options_initial_view_prompt = 'Initial Search Type:';    ///< The label for the initial view popup.
     static  $local_options_theme_prompt = 'Select a Color Theme:';          ///< The label for the theme selection popup.
-    static  $local_options_push_down_checkbox_label = '"More Details" Windows "push down" the main list or map, as opposed to popping up over them.';       ///< The label for the "more details" checkbox.
     static  $local_options_more_styles_label = 'Add CSS Styles to the Plugin:';                             ///< The label for the Additional CSS textarea.
-    static  $local_single_meeting_tooltip = 'Follow This Link for Details About This Meeting.'; ///< The tooltip shown for a single meeting.
-    static  $local_gm_link_tooltip = 'Follow This Link to be Taken to A Google Maps Location for This Meeting.';    ///< The tooltip shown for the Google Maps link.
-    static  $local_not_enough_for_old_style = 'In order to display the "classic" BMLT window, you need to have both a root server and a Google Maps API key in the corresponding setting.'; ///< Displayed if there is no GMAP API key.
-    static  $local_options_language_prompt = 'Language:';                   ///< This is for the language select.
     static  $local_options_distance_prompt = 'Distance Units:';             ///< This is for the distance units select.
     static  $local_options_distance_disclaimer = 'This will not affect all of the displays.';               ///< This tells the admin that only some stuff will be affected.
-    static  $local_options_grace_period_disclaimer = 'Minutes Elapsed Before A Meeting is Considered "Past."';      ///< This explains what the grace period means.
-    static  $local_options_time_offset_disclaimer = 'Hours of Difference From the Main Server.';            ///< This explains what the time offset means.
+    static  $local_options_grace_period_disclaimer = 'Minutes Elapsed Before A Meeting is Considered "Past" (For the fast Lookup Searches).';      ///< This explains what the grace period means.
+    static  $local_options_time_offset_disclaimer = 'Hours of Difference From the Main Server (This is usually not necessary).';            ///< This explains what the time offset means.
     static  $local_options_miles = 'Miles';                                 ///< The string for miles.
     static  $local_options_kilometers = 'Kilometers';                       ///< The string for kilometers.
     
@@ -96,6 +89,8 @@ class BMLT_Localized_BaseClass
     static  $local_clear_search = 'Clear Search Results';                   ///< Used for the "Clear" item in the quick search popup.
     static  $local_menu_new_search_text = 'New Search';                     ///< For the new search menu in the old-style BMLT search.
     static  $local_cant_find_meetings_display = 'No Meetings Found In This Search'; ///< When the new map search cannot find any meetings.
+    static  $local_single_meeting_tooltip = 'Follow This Link for Details About This Meeting.'; ///< The tooltip shown for a single meeting.
+    static  $local_gm_link_tooltip = 'Follow This Link to be Taken to A Google Maps Location for This Meeting.';    ///< The tooltip shown for the Google Maps link.
     
     /// These are for the change display
     static  $local_change_label_date =  'Change Date:';                     ///< The date when the change was made.

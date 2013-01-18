@@ -68,14 +68,15 @@ function u_test()
         $ret .= '.mobile_list_div { text-align:center }';
         $ret .= '.mobile_list_div_line { width: 250px;margin-top:4px;margin-bottom:4px;text-align:left;margin-left:auto;margin-right:auto }';
         $ret .= '.mobile_list_div_line label { margin-left: 8px }';
+        $ret .= '@media print { div#head_stuff { display:none; } }';
         $ret .= '</style>';
         $ret .= '<script type="text/javascript">';
         $ret .= "function utest_onsubmit(){var elem=document.getElementById('wml_d');if(document.getElementById('mobile_simulation_smartphone').checked){elem.value='1';elem.name='simulate_smartphone'}else{if(document.getElementById('mobile_simulation_wml_1').checked){elem.value='1';elem.name='WML'}else{if(document.getElementById('mobile_simulation_wml_2').checked){elem.value='2';elem.name='WML'}}};return true}";
         $ret .= "function utest_preset_text(in_value){document.getElementById('utest_string').innerHTML=in_value;if(/.*?bmlt_mobile/.exec(in_value)){document.getElementById('mobile_simulation_smartphone').checked=true}}";
         $ret .= '</script>';
         $ret .= '</head><body>';    // Open the page
-        $ret .= '<div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'">Return to Start</a></div>';
-        $ret .= '<div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'?utest_string=clear_session">Clear Session And Create Second Default Settings</a></div>';
+        $ret .= '<div id="head_stuff"><div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'">Return to Start</a></div>';
+        $ret .= '<div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'?utest_string=clear_session">Clear Session And Create Second Default Settings</a></div></div>';
         $ret .= u_test_body();
         $ret .= '</body></html>';	// Wrap up the page.
 	    }

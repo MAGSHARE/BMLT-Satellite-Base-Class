@@ -22,17 +22,6 @@
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_container
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
         div.bmlt_nouveau_search_spec_div
 {
     background-color:#555;
@@ -45,18 +34,6 @@ div#bmlt_page_items.bmlt_page_items
 {
     background-color:#555;
     padding:8px;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_map_results_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_list_results_div
-{
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -232,33 +209,9 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_spec_switch_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_section_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_section_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
         div.bmlt_nouveau_advanced_map_options_div
 {
     text-align:center;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_map_options_container_div
-{
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -271,60 +224,12 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        select.bmlt_nouveau_advanced_map_popup_select
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_weekdays_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_weekdays_header_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_formats_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        bmlt_nouveau_search_results_list_format_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
         span.bmlt_nouveau_advanced_formats_element_span
 {
     display:block;
     float:left;
     padding:2px;
     cursor: help;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_service_bodies_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_service_bodies_header_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_go_button_div
-{
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -859,27 +764,9 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_container_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
         table.bmlt_nouveau_search_results_list_table
 {
     width:100%;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        thead.bmlt_nouveau_search_results_list_thead
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        tr.bmlt_nouveau_search_results_list_header_tr
-{
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -893,69 +780,9 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_header_td_nation
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_header_td_state
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_header_td_county
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_header_td_town
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_header_td_name
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_header_td_weekday
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_header_td_start
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_header_td_location
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_header_td_GPS
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
         tbody.bmlt_nouveau_search_results_list_tbody
 {
     vertical-align:top;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        tr.bmlt_nouveau_search_results_list_body_tr
-{
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -983,66 +810,6 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_body_td_nation
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_nation_name_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_body_td_state
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_state_name_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_body_td_county
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_county_name_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_town_name_county_has_borough_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_body_td_town
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_town_name_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_town_name_has_county_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
         span.bmlt_nouveau_search_results_list_town_name_town_span
 {
     display:block;
@@ -1050,21 +817,9 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        span.bmlt_nouveau_search_results_list_town_name_town_has_borough_span
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
         span.bmlt_nouveau_search_results_list_town_name_borough_span
 {
     display:block;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        span.bmlt_nouveau_search_results_list_town_name_borough_has_town_span
-{
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1077,51 +832,9 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_body_td_name
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_meeting_name_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_body_td_weekday
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_weekday_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_body_td_start
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
         div.bmlt_nouveau_search_results_list_start_time_div
 {
     white-space: nowrap;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        td.bmlt_nouveau_search_results_list_body_td_location
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_list_location_div
-{
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1201,7 +914,7 @@ div#bmlt_page_items.bmlt_page_items
     left:0px;
     bottom:0px;
     right:0px;
-    margin-bottom:-3000px;
+    margin-bottom:-1000%;
 	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
 	filter: alpha(opacity=60);
 	-moz-opacity:0.6;
@@ -1268,7 +981,7 @@ div#bmlt_page_items.bmlt_page_items
     top: 5%;
     left:90%;
     margin-top:-12px;
-    margin-left:-12px;
+    margin-left:-4px;
     z-index:100000;
 }
 
@@ -1386,30 +1099,6 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        span.bmlt_nouveau_details_format_label_span
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_details_format_contents_div
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        dl.bmlt_nouveau_details_format_contents_dl
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        dt.bmlt_nouveau_details_formats_contents_dt
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
         span.bmlt_nouveau_details_formats_code_span
 {
     display:block;
@@ -1482,84 +1171,6 @@ div#bmlt_page_items.bmlt_page_items
     width:18px;
     padding:1px;
     cursor: help;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_00_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_05_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_10_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_15_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_20_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_25_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_30_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_35_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_40_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_45_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_50_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_55_img
-{
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        img.bmlt_nouvea_duration_60_img
-{
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1654,4 +1265,84 @@ div#bmlt_page_items.bmlt_page_items
         a.bmlt_nouveau_switch_a_selected:visited
 {
     display:none;
+}
+
+@media print
+{
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div_details_displayed
+            div.bmlt_nouveau_details_mask_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div_details_displayed
+            div.bmlt_nouveau_search_results_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_spec_switch_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_map_disclosure_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_list_disclosure_div
+    {
+        display:none;
+    }
+    
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_map_container_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_list_container_div
+    {
+        display:block;
+    }
+    
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_single_meeting_wrapper_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_single_meeting_name_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_single_meeting_time_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_single_meeting_location_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_details_format_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            tr.bmlt_nouveau_search_results_list_body_tr_even_multi td,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            tr.bmlt_nouveau_search_results_list_body_tr_odd_multi td,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            tr.bmlt_nouveau_search_results_list_body_tr_even_single td,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            tr.bmlt_nouveau_search_results_list_body_tr_odd_single td
+    {
+        background-color:auto !important;
+        color:black !important;
+    }
+    
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            a,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            a:visited
+    {
+        color:black;
+        text-decoration:none !important;
+    }
+    
+    tr.bmlt_nouveau_search_results_list_body_tr
+    {
+        page-break-before: auto;
+    }
 }

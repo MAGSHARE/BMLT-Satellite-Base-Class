@@ -1116,7 +1116,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_list_search_results_table_body.appendChild ( tr_element );
             };
         };
-        
+    
     /************************************************************************************//**
     *	\brief This creates a single node for one meeting in the table.                     *
     ****************************************************************************************/
@@ -2583,6 +2583,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 content_node = document.createElement ( 'a' );
                 content_node.className = 'bmlt_nouveau_details_service_body_uri_a';
                 content_node.setAttribute ( 'href', url );
+                content_node.setAttribute ( 'rel', 'external' );
                 content_node.appendChild ( document.createTextNode ( name ) );
                 }
             else
@@ -3056,7 +3057,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.goButtonHit = function()
         {
-        if ( this.m_location_checkbox.checked )
+        if ( this.m_location_checkbox.checked && this.m_text_input && this.m_text_input.value && (this.m_text_input.value != this.m_text_input.defaultValue) )
             {
             this.lookupLocation();
             }
@@ -3276,7 +3277,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_checked_location = in_checked_location;
     this.m_single_meeting_id = in_single_meeting_id;
     
-    this.m_checked_location = false;         ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
     this.m_advanced_weekdays_shown = false;
     this.m_advanced_formats_shown = false;
     this.m_advanced_service_bodies_shown = false;
@@ -3574,6 +3574,10 @@ NouveauMapSearch.prototype.sServiceBodiesCallback = function (  in_response_obje
             context.m_service_bodies = new_object;
             context.populate_Advanced_Service_Bodies_Content();
             context.hideThrobber();
+            if ( context.m_current_view == 'text' || context.m_current_view == 'advanced_text' )
+                {
+                context.m_text_input.focus();  // This just starts them off with the correct focus.
+                };
             };
         }
     else

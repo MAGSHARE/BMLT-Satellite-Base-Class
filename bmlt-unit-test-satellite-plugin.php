@@ -54,10 +54,9 @@ class BMLTUTestPlugin extends BMLTPlugin
         {
         // This line is customized for the developer's test environment. If you are debugging on a local machine, you may want to change the first choice.
         self::$default_rootserver = 'http://bmlt.newyorkna.org/main_server';
-        self::$default_gkey = 'ABQIAAAABCC8PsaKPPEsC3k649kYPRTayKsye0hTYG-iMuljzAHNM4JcxhSlV55ZKpjgC9b-QsLtlkYPMO6omg'; ///< This is for MAGSHARE. Change this to your own.
-        self::$default_map_center_latitude = 41.2;
+        self::$default_map_center_latitude = 41.3;
         self::$default_map_center_longitude = -73.4;
-        self::$default_map_zoom = 9;
+        self::$default_map_zoom = 10;
         parent::__construct ();
         }
     
@@ -350,8 +349,6 @@ class BMLTUTestPlugin extends BMLTPlugin
         
         $load_server_header = $this->get_shortcode ( $in_text, 'bmlt');   // No GMAP API key or no "bmlt" shortcode, no BMLT window.
         
-        $this->my_http_vars['gmap_key'] = $load_gmaps ? null : $options['gmaps_api_key'];
-        
         $this->my_http_vars['start_view'] = $options['bmlt_initial_view'];
         
         $this->load_params ( );
@@ -385,11 +382,11 @@ class BMLTUTestPlugin extends BMLTPlugin
         if ( $root_server_root )
             {
             $root_server = $root_server_root."/client_interface/xhtml/index.php";
-            
-            if ( $load_server_header )
-                {
-                $head_content .= bmlt_satellite_controller::call_curl ( "$root_server?switcher=GetHeaderXHTML".$this->my_params );
-                }
+//             
+//             if ( $load_server_header )
+//                 {
+//                 $head_content .= bmlt_satellite_controller::call_curl ( "$root_server?switcher=GetHeaderXHTML".$this->my_params );
+//                 }
             
             $additional_css = '.bmlt_container * {margin:0;padding:0;text-align:center }';
 
