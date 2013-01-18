@@ -3463,8 +3463,11 @@ NouveauMapSearch.prototype.sAdvancedMapDragStart = function (   in_id       ///<
     {
     eval ('var context = g_instance_' + in_id + '_js_handler');
 
-    context.m_main_map._circle_overlay.setMap(null);
-    context.m_main_map._circle_overlay = null;
+    if ( context.m_main_map._circle_overlay )
+        {
+        context.m_main_map._circle_overlay.setMap(null);
+        context.m_main_map._circle_overlay = null;
+        };
     };
 
 /****************************************************************************************//**

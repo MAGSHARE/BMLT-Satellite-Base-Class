@@ -76,7 +76,7 @@ function u_test()
         $ret .= '</script>';
         $ret .= '</head><body>';    // Open the page
         $ret .= '<div id="head_stuff"><div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'">Return to Start</a></div>';
-        $ret .= '<div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'?utest_string=clear_session">Clear Session And Create Second Default Settings</a></div></div>';
+        $ret .= '<div class="return_button"><a href="'.htmlspecialchars($_SERVER['PHP_SELF']).'?utest_string=clear_session">Restart Session</a></div></div>';
         $ret .= u_test_body();
         $ret .= '</body></html>';	// Wrap up the page.
 	    }
@@ -104,23 +104,9 @@ function u_test_operation()
     elseif ( strtolower ( $oper_text ) == 'clear_session' || (strtolower ( $oper_text ) == 'clear_session_start') )
         {
         $ret = 'clear_session';
-        
-        $seconds = $BMLTPluginOp->getBMLTOptions(-1);
-        
-        $seconds['setting_name'] = 'GNYR';
-        $seconds['root_server'] = 'http://bmlt.newyorkna.org/main_server';
-        $seconds['map_center_latitude'] = 41.37;
-        $seconds['map_center_longitude'] = -73.18;
-        $seconds['map_zoom'] = 5;
-        $seconds['id'] = '2';
-        $seconds['distance_units'] = 'km';
-        $seconds['theme'] = 'BlueAndWhite';
-        
-        $BMLTPluginOp->setBMLTOptions ( $seconds, 2 );
         $firsts = $BMLTPluginOp->getBMLTOptions ( 1 );
         $firsts['setting_name'] = 'GNYR';
         $firsts['id'] = '1';
-        $seconds['theme'] = 'GNYR';
         $BMLTPluginOp->setBMLTOptions ( $firsts, 1 );
         }
     elseif ( $BMLTPluginOp->get_shortcode('bmlt', $oper_text ) )
@@ -156,6 +142,7 @@ function u_test_header()
 {
     $ret = '';
     global $BMLTPluginOp;
+    session_start();
     
     switch ( u_test_operation() )
         {
@@ -172,10 +159,10 @@ function u_test_header()
         break;
         
         case 'clear_session':
-        case 'clear_session_start':
-            session_start();
             session_unset();
             session_destroy();
+            $ret .= '<title>BMLTPlugin Class Unit Test</title>';
+        break;
         
         default:
             $ret .= '<title>BMLTPlugin Class Unit Test</title>';
@@ -229,7 +216,7 @@ function u_test_form()
                 $ret .= '<h1>Enter the Test String</h1>';
                     $ret .= '<div class="preset_list_div">';
                         $ret .= '<label for="preset">Preset Text:<select id="preset" onchange="utest_preset_text(this.value)">';
-                        $ret .= '<option value="" disabled="disabled">Select A Preset String</option>';
+                        $ret .= '<option value="" disabled="disabled" selected="selected">Select A Preset String</option>';
                         $ret .= '<option value="[[bmlt]]">Standard BMLT (Brackets)</option>';
                         $ret .= '<option value="&lt;!--bmlt--&gt;">Standard BMLT (Comment)</option>';
                         $ret .= '<option value="[[bmlt_mobile]]">BMLT Mobile (Brackets)</option>';
@@ -244,12 +231,6 @@ function u_test_form()
                         $ret .= '<option value="&lt;!--BMLT_CHANGES(switcher=GetChanges&start_date='.date('Y-m-d',time()-(60 * 60 * 24 * 90)).'&service_body_id=1)--&gt;">BMLT Changes (Comments -Last 90 days in Greater New York Regional Service)</option>';
                         $ret .= '<option value="[[bmlt_map]]">BMLT Map -New Implementation (Brackets)</option>';
                         $ret .= '<option value="&lt;!--bmlt_map--&gt;">BMLT Map -New Implementation (Comments)</option>';
-                        $ret .= '<option value="" disabled="disabled"></option>';
-                        $ret .= '<option value="" disabled="disabled">NOTE: All the following Require that the Session Clear Be Called First!</option>';
-                        $ret .= '<option value="" disabled="disabled"></option>';
-                        $ret .= '<option value="[[bmlt_map(2)]]">BMLT Map -New Implementation (Brackets -UKNA)</option>';
-                        $ret .= '<option value="&lt;!--bmlt_map(2)--&gt;">BMLT Map -New Implementation (Comments -UKNA)</option>';
-                        $ret .= '<option value="&lt;fieldset&gt;&lt;legend&gt;GNYR OPTIONS&lt;/legend&gt;[[bmlt_map(1)]]&lt;/fieldset&gt;&lt;fieldset&gt;&lt;legend&gt;UKNA OPTIONS&lt;/legend&gt;[[bmlt_map(2)]]&lt;/fieldset&gt;">BMLT Map -New Implementation (Brackets -and Double-setup)</option>';
                         $ret .= '</select>';
                     $ret .= '</div>';
                 $ret .= '</div>';

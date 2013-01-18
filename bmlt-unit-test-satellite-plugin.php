@@ -54,9 +54,9 @@ class BMLTUTestPlugin extends BMLTPlugin
         {
         // This line is customized for the developer's test environment. If you are debugging on a local machine, you may want to change the first choice.
         self::$default_rootserver = 'http://bmlt.newyorkna.org/main_server';
-        self::$default_map_center_latitude = 41.3;
-        self::$default_map_center_longitude = -73.4;
-        self::$default_map_zoom = 10;
+        self::$default_map_center_latitude = 40.780281;
+        self::$default_map_center_longitude = -73.965497;
+        self::$default_map_zoom = 12;
         parent::__construct ();
         }
     
