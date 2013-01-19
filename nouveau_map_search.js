@@ -125,6 +125,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_advanced_weekdays_header_div = null;
     var m_advanced_weekdays_disclosure_a = null;
     var m_advanced_weekdays_content_div = null;
+    var m_advanced_weekdays_array = null;
     var m_advanced_weekdays_shown = null;
     
     /// Meeting Formats
@@ -133,6 +134,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_advanced_formats_disclosure_a = null;
     var m_advanced_formats_content_div = null;
     var m_advanced_formats_shown = null;
+    var m_advanced_format_checkboxes_array = null;  ///< This will contain all the formats checkboxes.
     
     /// Service Bodies
     var m_advanced_service_bodies_div = null;
@@ -140,6 +142,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_advanced_service_bodies_disclosure_a = null;
     var m_advanced_service_bodies_content_div = null;
     var m_advanced_service_bodies_shown = null;
+    var m_advanced_service_bodies_checkboxes_array = null;
     
     /// The GO Button
     var m_advanced_go_button_div = null;
@@ -178,7 +181,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_details_comments_div = null;          ///< The div that will show the meeting comments.
     var m_details_formats_div = null;           ///< The div that will list the meeting formats.
     var m_details_formats_contents_div = null;  ///< The div that will list the meeting formats.
-
     
     var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
     var m_long_lat_northeast = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
@@ -192,6 +194,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_format_descriptions = null;           ///< This will contain our formats.
     var m_service_bodies = null;                ///< This will contain our Service bodies.
     var m_geocoder = null;                      ///< This will hold any active address lookup.
+    var m_g_geo = null;                         ///< This will hold any Google Gears geo lookup.
         
     /****************************************************************************************
     *								  INTERNAL CLASS FUNCTIONS							    *
@@ -493,6 +496,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_location_checkbox.id = this.m_uid + '_location_checkbox';
         this.m_location_checkbox.className = 'bmlt_nouveau_text_loc_checkbox';
         this.m_location_checkbox.checked = this.m_checked_location;
+        var uid = this.m_uid;
+        this.m_location_checkbox.onchange = function () { NouveauMapSearch.prototype.sLocationCheckboxHit ( uid ); };
                 
         this.m_location_checkbox_label = document.createElement ( 'label' );
         this.m_location_checkbox_label.className = 'bmlt_nouveau_text_checkbox_label';
@@ -683,6 +688,41 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.buildDOMTree_Advanced_Weekdays_Content = function ()
         {
         this.m_advanced_weekdays_content_div = document.createElement ( 'div' );
+        this.m_advanced_weekdays_content_div.className = 'bmlt_nouveau_advanced_weekdays_content_div';
+        
+        var inner = document.createElement ( 'div' );
+        inner.className = 'bmlt_nouveau_advanced_weekdays_content_inner_div';
+        
+        this.m_advanced_weekdays_array = new Array;
+        
+        for ( var c = 0; c < 7; c++ )
+            {
+            var weekday_index = c + 1;
+
+            var enclosure = document.createElement ( 'div' );
+            enclosure.className = 'bmlt_nouveau_advanced_weekdays_content_one_weekday_enclosure_div';
+
+            this.m_advanced_weekdays_array[c] = document.createElement ( 'input' );
+            this.m_advanced_weekdays_array[c].type = 'checkbox';
+            this.m_advanced_weekdays_array[c].className = 'bmlt_nouveau_advanced_weekdays_checkbox bmlt_nouveau_advanced_weekdays_checkbox_' + weekday_index;
+            this.m_advanced_weekdays_array[c].id = this.m_uid + '_weekdays_checkbox_' + weekday_index;
+            enclosure.appendChild ( this.m_advanced_weekdays_array[c] );
+
+            var weekday_text = g_Nouveau_weekday_long_array[c];
+            var label = document.createElement ( 'label' );
+            label.className = 'bmlt_nouveau_advanced_weekdays_label bmlt_nouveau_advanced_weekdays_label_' + weekday_index;
+            label.setAttribute ( 'for', this.m_uid + '_weekdays_checkbox_' + weekday_index );
+            label.appendChild ( document.createTextNode ( g_Nouveau_weekday_long_array[c] ) );
+            enclosure.appendChild ( label );
+            
+            inner.appendChild ( enclosure );
+            };
+        
+        var closure = document.createElement ( 'div' );
+        closure.className = 'bmlt_nouveau_clear_both';
+        inner.appendChild ( closure );
+        
+        this.m_advanced_weekdays_content_div.appendChild ( inner );
         
         this.m_advanced_weekdays_div.appendChild ( this.m_advanced_weekdays_content_div );
         };
@@ -714,7 +754,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_formats_div.className = 'bmlt_nouveau_advanced_formats_div';
         
         this.buildDOMTree_Advanced_Formats_Header();
-        this.buildDOMTree_Advanced_Formats_Content();
+//         this.buildDOMTree_Advanced_Formats_Content();
         
         this.m_advanced_section_div.appendChild ( this.m_advanced_formats_div );
         };
@@ -745,6 +785,45 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_formats_content_div = document.createElement ( 'div' );
         this.m_advanced_formats_content_div.className = 'bmlt_nouveau_advanced_formats_content_div';
         
+        var inner = document.createElement ( 'div' );
+        inner.className = 'bmlt_nouveau_advanced_formats_content_inner_div';
+        
+        this.m_advanced_format_checkboxes_array = new Array;
+        
+        for ( var c = 0; this.m_format_descriptions && (c < this.m_format_descriptions.length); c++ )
+            {
+            var format_id = this.m_format_descriptions[c].id;
+            var format_code = this.m_format_descriptions[c].key_string;
+            var format_name = this.m_format_descriptions[c].name_string;
+            var format_description = this.m_format_descriptions[c].description_string;
+            
+            var enclosure = document.createElement ( 'div' );
+            enclosure.className = 'bmlt_nouveau_advanced_format_content_one_format_enclosure_div';
+
+            this.m_advanced_format_checkboxes_array[c] = document.createElement ( 'input' );
+            this.m_advanced_format_checkboxes_array[c].type = 'checkbox';
+            this.m_advanced_format_checkboxes_array[c].className = 'bmlt_nouveau_advanced_format_checkbox bmlt_nouveau_advanced_format_checkbox_' + format_code;
+            this.m_advanced_format_checkboxes_array[c].id = this.m_uid + '_format_checkbox_' + format_code;
+            this.m_advanced_format_checkboxes_array[c].setAttribute ( 'title', format_description );
+            this.m_advanced_format_checkboxes_array[c].value = format_id;
+            enclosure.appendChild ( this.m_advanced_format_checkboxes_array[c] );
+
+            var label = document.createElement ( 'label' );
+            label.className = 'bmlt_nouveau_advanced_format_label bmlt_nouveau_advanced_format_label_' + format_code;
+            label.setAttribute ( 'for', this.m_uid + '_format_checkbox_' + format_code );
+            label.setAttribute ( 'title', format_description );
+            label.appendChild ( document.createTextNode ( format_code ) );
+            enclosure.appendChild ( label );
+            
+            inner.appendChild ( enclosure );
+            };
+        
+        var closure = document.createElement ( 'div' );
+        closure.className = 'bmlt_nouveau_clear_both';
+        inner.appendChild ( closure );
+        
+        this.m_advanced_formats_content_div.appendChild ( inner );
+        
         this.m_advanced_formats_div.appendChild ( this.m_advanced_formats_content_div );
         };
     
@@ -757,12 +836,18 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( this.m_advanced_formats_shown )
             {
             this.m_advanced_formats_disclosure_a.className = 'bmlt_nouveau_advanced_formats_disclosure_open_a';
-            this.m_advanced_formats_content_div.className = 'bmlt_nouveau_advanced_formats_content_div';
+            if ( this.m_advanced_formats_content_div )
+                {
+                this.m_advanced_formats_content_div.className = 'bmlt_nouveau_advanced_formats_content_div';
+                };
             }
         else
             {
             this.m_advanced_formats_disclosure_a.className = 'bmlt_nouveau_advanced_formats_disclosure_a';
-            this.m_advanced_formats_content_div.className = 'bmlt_nouveau_advanced_formats_content_div bmlt_nouveau_advanced_formats_content_div_hidden';
+            if ( this.m_advanced_formats_content_div )
+                {
+                this.m_advanced_formats_content_div.className = 'bmlt_nouveau_advanced_formats_content_div bmlt_nouveau_advanced_formats_content_div_hidden';
+                };
             };
         };
     
@@ -775,7 +860,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_service_bodies_div.className = 'bmlt_nouveau_advanced_service_bodies_div';
         
         this.buildDOMTree_Advanced_Service_Bodies_Header();
-        this.buildDOMTree_Advanced_Service_Bodies_Content();
         
         this.m_advanced_section_div.appendChild ( this.m_advanced_service_bodies_div );
         };
@@ -803,8 +887,21 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree_Advanced_Service_Bodies_Content = function ()
         {
+        
         this.m_advanced_service_bodies_content_div = document.createElement ( 'div' );
-        this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_div';
+        
+        var inner = document.createElement ( 'div' );
+        inner.className = 'bmlt_nouveau_advanced_formats_content_inner_div';
+        
+        this.m_advanced_service_bodies_checkboxes_array = new Array;
+        
+        this.populate_Advanced_Service_Bodies_Content ( 0, inner );
+        
+        var closure = document.createElement ( 'div' );
+        closure.className = 'bmlt_nouveau_clear_both';
+        inner.appendChild ( closure );
+        
+        this.m_advanced_service_bodies_content_div.appendChild ( inner );
         
         this.m_advanced_service_bodies_div.appendChild ( this.m_advanced_service_bodies_content_div );
         };
@@ -812,8 +909,77 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     /************************************************************************************//**
     *	\brief Build the content for the Advanced Service Bodies section.                   *
     ****************************************************************************************/
-    this.populate_Advanced_Service_Bodies_Content = function ()
+    this.populate_Advanced_Service_Bodies_Content = function (  in_owner_id,
+                                                                in_container
+                                                            )
         {
+        var main_dl = null;
+        
+        for ( var c = 0; c < this.m_service_bodies.length; c++ )
+            {
+            if ( in_owner_id == this.m_service_bodies[c].parent_id )
+                {
+                if ( !main_dl )
+                    {
+                    main_dl = document.createElement ( 'dl' );
+                    main_dl.className = 'bmlt_nouveau_advanced_service_bodies_dl';
+                    };
+        
+                var index = this.m_advanced_service_bodies_checkboxes_array.length;
+                var name = this.m_service_bodies[c].name;
+                var description = this.m_service_bodies[c].description;
+                var id = this.m_service_bodies[c].id;
+                
+                var checkbox_dt = document.createElement ( 'dt' );
+                checkbox_dt.className = 'bmlt_nouveau_advanced_service_bodies_dt bmlt_nouveau_advanced_service_bodies_dt_' + id;
+                
+                var cb_wrapper = document.createElement ( 'div' );
+                cb_wrapper.className = 'bmlt_nouveau_advanced_service_bodies_checkbox_wrapper_div';
+                
+                this.m_advanced_service_bodies_checkboxes_array[index] = document.createElement ( 'input' );
+                this.m_advanced_service_bodies_checkboxes_array[index].type = 'checkbox';
+                this.m_advanced_service_bodies_checkboxes_array[index].className = 'bmlt_nouveau_advanced_service_bodies_checkbox bmlt_nouveau_advanced_service_body_checkbox_' + id;
+                this.m_advanced_service_bodies_checkboxes_array[index].id = this.m_uid + '_service_body_checkbox_' + id;
+                this.m_advanced_service_bodies_checkboxes_array[index].setAttribute ( 'title', description );
+                this.m_advanced_service_bodies_checkboxes_array[index].value = id;
+                this.m_advanced_service_bodies_checkboxes_array[index].parent_service_body_id = in_owner_id;
+                
+                cb_wrapper.appendChild ( this.m_advanced_service_bodies_checkboxes_array[index] );
+                
+                checkbox_dt.appendChild ( cb_wrapper );
+                
+                var label = document.createElement ( 'label' );
+                label.className = 'bmlt_nouveau_advanced_service_bodies_label bmlt_nouveau_advanced_service_bodies_label_' + id;
+                label.setAttribute ( 'for', this.m_uid + '_service_body_checkbox_' + id );
+                label.setAttribute ( 'title', description );
+                label.appendChild ( document.createTextNode ( name ) );
+                checkbox_dt.appendChild ( label );
+
+                main_dl.appendChild ( checkbox_dt );
+                
+                var next_level_dd = document.createElement ( 'dd' );
+                next_level_dd.className = 'bmlt_nouveau_advanced_service_bodies_container_dd bmlt_nouveau_advanced_service_bodies_container_dd_' + id;
+                
+                var uid = this.m_uid;
+                
+                if ( this.populate_Advanced_Service_Bodies_Content ( id, next_level_dd ) )
+                    {
+                    main_dl.appendChild ( next_level_dd );
+                    label.className = 'bmlt_nouveau_advanced_service_bodies_container_label bmlt_nouveau_advanced_service_bodies_container_label_' + id;
+                    this.m_advanced_service_bodies_checkboxes_array[index].onchange = function() { NouveauMapSearch.prototype.sServiceBodyContainerCheckHit ( this, uid ); };
+                    }
+                };
+            };
+            
+        if ( main_dl )
+            {
+            in_container.appendChild ( main_dl );
+            var closure = document.createElement ( 'div' );
+            closure.className = 'bmlt_nouveau_clear_both';
+            in_container.appendChild ( closure );
+            };
+            
+        return (main_dl != null);
         };
     
     /************************************************************************************//**
@@ -825,12 +991,18 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         if ( this.m_advanced_service_bodies_shown )
             {
             this.m_advanced_service_bodies_disclosure_a.className = 'bmlt_nouveau_advanced_service_bodies_disclosure_open_a';
-            this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_div';
+            if ( this.m_advanced_service_bodies_content_div )
+                {
+                this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_div';
+                };
             }
         else
             {
             this.m_advanced_service_bodies_disclosure_a.className = 'bmlt_nouveau_advanced_service_bodies_disclosure_a';
-            this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_div bmlt_nouveau_advanced_service_bodies_content_div_hidden';
+            if ( this.m_advanced_service_bodies_content_div )
+                {
+                this.m_advanced_service_bodies_content_div.className = 'bmlt_nouveau_advanced_service_bodies_content_div bmlt_nouveau_advanced_service_bodies_content_div_hidden';
+                };
             };
         };
     
@@ -2174,7 +2346,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_search_results = null;
         this.setDisplayedSearchResults();
         this.clearSearchResults();
-        this.m_ajax_request = BMLTPlugin_AjaxRequest ( this.createSearchURI(), NouveauMapSearch.prototype.sMeetingsCallback, 'get', this.m_uid );
+        var uri = this.createSearchURI();
+        this.m_ajax_request = BMLTPlugin_AjaxRequest ( uri, NouveauMapSearch.prototype.sMeetingsCallback, 'get', this.m_uid );
         };
         
     /************************************************************************************//**
@@ -2249,7 +2422,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             var search_text = this.m_text_input.value;
             
-            if ( search_text && this.m_location_checkbox.checked )
+            if ( search_text && (search_text != this.m_text_input.defaultValue) )
                 {
                 uri_elements[index] = new Array;
                 uri_elements[index][0] = 'SearchString';
@@ -2261,12 +2434,52 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 uri_elements[index++][1] = 1;
                 };
             };
+            
+        if ( this.m_advanced_weekdays_shown )
+            {
+            for ( var c = 0; c < this.m_advanced_weekdays_array.length; c++ )
+                {
+                if ( this.m_advanced_weekdays_array[c].checked )
+                    {
+                    uri_elements[index] = new Array;
+                    uri_elements[index][0] = 'weekdays[]';
+                    uri_elements[index++][1] = c + 1;
+                    };
+                };
+            };
+        
+        if ( this.m_advanced_formats_shown )
+            {
+            for ( var c = 0; c < this.m_advanced_format_checkboxes_array.length; c++ )
+                {
+                if ( this.m_advanced_format_checkboxes_array[c].checked )
+                    {
+                    uri_elements[index] = new Array;
+                    uri_elements[index][0] = 'formats[]';
+                    uri_elements[index++][1] = this.m_advanced_format_checkboxes_array[c].value;
+                    };
+                };
+            };
+            
+        if ( this.m_advanced_service_bodies_shown )
+            {
+            for ( var c = 0; c < this.m_advanced_service_bodies_checkboxes_array.length; c++ )
+                {
+                if ( this.m_advanced_service_bodies_checkboxes_array[c].checked )
+                    {
+                    uri_elements[index] = new Array;
+                    uri_elements[index][0] = 'services[]';
+                    uri_elements[index++][1] = this.m_advanced_service_bodies_checkboxes_array[c].value;
+                    };
+                };
+            };
         
         // Concatenate all the various parameters we gathered.
         for ( var i = 0; i < index; i++ )
             {
             ret += '&' + uri_elements[i][0] + '=' + uri_elements[i][1];
             };
+
         // Return the complete URI for a JSON response.
         return ret;
         };
@@ -2357,7 +2570,40 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	    
         this.m_ajax_request = BMLTPlugin_AjaxRequest ( this.createSearchURI_ServiceBodies(), NouveauMapSearch.prototype.sServiceBodiesCallback, 'get', this.m_uid );
 	};
-        
+    
+	/************************************************************************************//**
+	*	\brief  
+	****************************************************************************************/
+    this.lookupMyLocation = function()
+    {
+        if( typeof ( google ) == 'object' && typeof ( google.gears ) == 'object' )
+            {
+            if ( !this.m_g_geo )
+                {
+                this.m_g_geo = google.gears.factory.create ('beta.geolocation');
+                };
+            
+            g_watch_position = this.m_g_geo.watchPosition ( WhereAmI_CallBack, WhereAmI_Fail_Final, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
+            }
+        else
+            {
+            if( typeof ( navigator ) == 'object' && typeof ( navigator.geolocation ) == 'object' )
+                {
+                g_watch_position = navigator.geolocation.watchPosition ( NouveauMapSearch.prototype.sWhereAmI_CallBack, NouveauMapSearch.prototype.sWhereAmI_Fail_Final, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
+                }
+            else if( window.blackberry && blackberry.location.GPSSupported )
+                {
+                blackberry.location.onLocationUpdate ( "NouveauMapSearch.prototype.sBlackberry_callback()" );
+                blackberry.location.setAidMode(2);
+                blackberry.location.refreshLocation();
+                }
+            else
+                {
+                alert ( g_Nouveau_cant_lookup_display );
+                };
+            };
+    };
+    
     /****************************************************************************************
     *################################# SET UP SEARCH RESULTS ###############################*
     ****************************************************************************************/    
@@ -3202,7 +3448,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.validateGoButtons = function()
         {
-        if ( !this.m_geocoder && (this.m_text_input.value && (this.m_text_input.value != this.m_text_input.defaultValue)) )
+        if ( !this.m_geocoder && ((this.m_text_input.value && (this.m_text_input.value != this.m_text_input.defaultValue)) || !this.m_location_checkbox.checked) )
             {
             this.m_advanced_go_a.className = 'bmlt_nouveau_text_go_button_a';
             this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
@@ -3211,17 +3457,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             }
         else
             {
-            if ( this.m_current_view == 'advanced_text' )
-                {
-                this.m_advanced_go_a.className = 'bmlt_nouveau_text_go_button_a bmlt_nouveau_button_disabled';
-                this.m_advanced_go_a.removeAttribute ( 'href' );
-                }
-            else
-                {
-                this.m_advanced_go_a.className = 'bmlt_nouveau_text_go_button_a';
-                this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
-                };
-            
+            this.m_advanced_go_a.className = 'bmlt_nouveau_text_go_button_a bmlt_nouveau_button_disabled';
+            this.m_advanced_go_a.removeAttribute ( 'href' );
             this.m_text_go_a.className = 'bmlt_nouveau_text_go_button_a bmlt_nouveau_button_disabled';
             this.m_text_go_a.removeAttribute ( 'href' );
             };
@@ -3349,6 +3586,35 @@ NouveauMapSearch.prototype.sGeoCallback = function ( in_geocode_response,	///< T
 	};
 
 /****************************************************************************************//**
+*	\brief This reacts to a Service body container checkbox being hit.                      *
+*          It will either completely select, or completely unselect its members.            *
+********************************************************************************************/
+NouveauMapSearch.prototype.sServiceBodyContainerCheckHit = function (   in_checkbox_object,
+                                                                        in_uid  ///< The unique ID of the object (establishes context).
+                                                                    )
+    {
+    eval ('var context = g_instance_' + in_uid + '_js_handler');
+    for ( var c = 0; c < context.m_advanced_service_bodies_checkboxes_array.length; c++ )
+        {
+        if ( in_checkbox_object.value == context.m_advanced_service_bodies_checkboxes_array[c].parent_service_body_id )
+            {
+            context.m_advanced_service_bodies_checkboxes_array[c].checked = in_checkbox_object.checked;
+            };
+        };
+    };
+
+/****************************************************************************************//**
+*	\brief This reacts to the location checkbox changing. It validates the go buttons.      *
+********************************************************************************************/
+NouveauMapSearch.prototype.sLocationCheckboxHit = function (    in_uid  ///< The unique ID of the object (establishes context).
+                                                            )
+    {
+    eval ('var context = g_instance_' + in_uid + '_js_handler');
+    context.validateGoButtons();
+    context.m_text_input.focus();
+    };
+
+/****************************************************************************************//**
 *	\brief Will check a text element upon blur, and will fill it with the default string.   *
 ********************************************************************************************/
 NouveauMapSearch.prototype.sCheckTextInputBlur = function ( in_text_element  ///< The text element being evaluated.
@@ -3387,7 +3653,6 @@ NouveauMapSearch.prototype.sCheckTextInputKeyUp = function ( in_text_element ///
     else
         {
         in_text_element.className = 'bmlt_nouveau_text_input_empty';
-        in_text_element.value = (in_text_element.hasFocus()) ? '' : in_text_element.defaultValue;
         };
 
     context.validateGoButtons();
@@ -3547,6 +3812,8 @@ NouveauMapSearch.prototype.sFormatCallback = function ( in_response_object, ///<
             // This is how you create JSON objects.
             eval ( json_builder );
             context.m_format_descriptions = new_object;
+            context.buildDOMTree_Advanced_Formats_Content();
+            context.setAdvancedFormatsDisclosure();
             context.getServiceBodies();
             };
         }
@@ -3575,7 +3842,8 @@ NouveauMapSearch.prototype.sServiceBodiesCallback = function (  in_response_obje
             // This is how you create JSON objects.
             eval ( json_builder );
             context.m_service_bodies = new_object;
-            context.populate_Advanced_Service_Bodies_Content();
+            context.buildDOMTree_Advanced_Service_Bodies_Content();
+            context.setAdvancedServiceBodiesDisclosure();
             context.hideThrobber();
             if ( context.m_current_view == 'text' || context.m_current_view == 'advanced_text' )
                 {
@@ -3663,7 +3931,11 @@ NouveauMapSearch.prototype.sKeyDown = function (    in_id       ///< The unique 
     if ( event.keyCode == 13 )
         {
         eval ('var context = g_instance_' + in_id + '_js_handler');
-        context.goButtonHit();
+        
+        if ( context.m_text_go_a.className == 'bmlt_nouveau_text_go_button_a' )
+            {
+            context.goButtonHit();
+            };
         };
     };
   
@@ -3677,7 +3949,28 @@ NouveauMapSearch.prototype.sDetailsButtonHit = function (   in_uid,         ///<
     eval ('var context = g_instance_' + in_uid + '_js_handler;' );
     context.detailsButtonHit(in_meeting_id);
     };
-    
+
+/********************************************************************************************
+*	\brief 
+********************************************************************************************/
+NouveauMapSearch.prototype.sWhereAmI_CallBack = function ()
+{
+};
+
+/********************************************************************************************
+*	\brief 
+********************************************************************************************/
+NouveauMapSearch.prototype.sWhereAmI_Fail_Final = function ()
+{
+};
+
+/********************************************************************************************
+*	\brief 
+********************************************************************************************/
+NouveauMapSearch.prototype.sBlackberry_callback = function ()
+{
+};
+
 /********************************************************************************************
 *	\brief Used to sort the search results. Context is established by fetching the          *
 *          'context' data member of either of the passed in objects.                        *
@@ -3876,21 +4169,24 @@ NouveauMapSearch.prototype.sMapOverlappingMarkers = function (  in_meeting_array
 
             for ( var c2 = 0; c2 < in_meeting_array.length; c2++ )
                 {
-                if ( false == tmp[c2].matched )
+                if ( false == tmp[c2].matched && tmp[c] && tmp[c2] )
                     {
                     var outer_coords = tmp[c].coords;
                     var inner_coords = tmp[c2].coords;
                     
-                    var xmin = outer_coords.x - tolerance;
-                    var xmax = outer_coords.x + tolerance;
-                    var ymin = outer_coords.y - tolerance;
-                    var ymax = outer_coords.y + tolerance;
-                    
-                    /* We have an overlap. */
-                    if ( (inner_coords.x >= xmin) && (inner_coords.x <= xmax) && (inner_coords.y >= ymin) && (inner_coords.y <= ymax) )
+                    if ( outer_coords && inner_coords )
                         {
-                        tmp[c].matches[tmp[c].matches.length] = tmp[c2].object;
-                        tmp[c2].matched = true;
+                        var xmin = outer_coords.x - tolerance;
+                        var xmax = outer_coords.x + tolerance;
+                        var ymin = outer_coords.y - tolerance;
+                        var ymax = outer_coords.y + tolerance;
+                    
+                        /* We have an overlap. */
+                        if ( (inner_coords.x >= xmin) && (inner_coords.x <= xmax) && (inner_coords.y >= ymin) && (inner_coords.y <= ymax) )
+                            {
+                            tmp[c].matches[tmp[c].matches.length] = tmp[c2].object;
+                            tmp[c2].matched = true;
+                            };
                         };
                     };
                 };
@@ -3924,26 +4220,32 @@ NouveauMapSearch.prototype.sFromLatLngToPixel = function (  in_Latng,
     {
     var	ret = null;
     
-    // We measure the container div element.
-    var	div = in_map_object.getDiv();
-    
-    if ( div )
+    if ( in_map_object )
         {
-        var	pixel_width = div.offsetWidth;
-        var	pixel_height = div.offsetHeight;
-        var	lat_lng_bounds = in_map_object.getBounds();
-        var north_west_corner = new google.maps.LatLng ( lat_lng_bounds.getNorthEast().lat(), lat_lng_bounds.getSouthWest().lng() );
-        var lng_width = lat_lng_bounds.getNorthEast().lng()-lat_lng_bounds.getSouthWest().lng();
-        var	lat_height = lat_lng_bounds.getNorthEast().lat()-lat_lng_bounds.getSouthWest().lat();
+        // We measure the container div element.
+        var	div = in_map_object.getDiv();
+    
+        if ( div )
+            {
+            var	pixel_width = div.offsetWidth;
+            var	pixel_height = div.offsetHeight;
+            var	lat_lng_bounds = in_map_object.getBounds();
+            if ( lat_lng_bounds )
+                {
+                var north_west_corner = new google.maps.LatLng ( lat_lng_bounds.getNorthEast().lat(), lat_lng_bounds.getSouthWest().lng() );
+                var lng_width = lat_lng_bounds.getNorthEast().lng()-lat_lng_bounds.getSouthWest().lng();
+                var	lat_height = lat_lng_bounds.getNorthEast().lat()-lat_lng_bounds.getSouthWest().lat();
         
-        // We do this, so we have the largest values possible, to get the most accuracy.
-        var	pixels_per_degree = (( pixel_width > pixel_height ) ? (pixel_width / lng_width) : (pixel_height / lat_height));
+                // We do this, so we have the largest values possible, to get the most accuracy.
+                var	pixels_per_degree = (( pixel_width > pixel_height ) ? (pixel_width / lng_width) : (pixel_height / lat_height));
         
-        // Figure out the offsets, in long/lat degrees.
-        var	offset_vert = north_west_corner.lat() - in_Latng.lat();
-        var	offset_horiz = in_Latng.lng() - north_west_corner.lng();
+                // Figure out the offsets, in long/lat degrees.
+                var	offset_vert = north_west_corner.lat() - in_Latng.lat();
+                var	offset_horiz = in_Latng.lng() - north_west_corner.lng();
         
-        ret = new google.maps.Point ( Math.round(offset_horiz * pixels_per_degree),  Math.round(offset_vert * pixels_per_degree) );
+                ret = new google.maps.Point ( Math.round(offset_horiz * pixels_per_degree),  Math.round(offset_vert * pixels_per_degree) );
+                };
+            };
         };
 
     return ret;

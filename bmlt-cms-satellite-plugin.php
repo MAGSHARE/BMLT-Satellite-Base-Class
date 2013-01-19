@@ -1682,7 +1682,6 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= $this->BMLTPlugin_nouveau_map_search_global_javascript_stuff ( );
                 // Most of the display is built in DOM, but this is how we get our localized strings into JS. We put them in globals.
                 $the_new_content .= '<script type="text/javascript">';
-                $the_new_content .= "var g_NouveauMapSearch_basic_name_string ='".$this->process_text ( self::$local_nouveau_basic_button )."';";
                 $the_new_content .= "var g_NouveauMapSearch_advanced_name_string ='".$this->process_text ( self::$local_nouveau_advanced_button )."';";
                 $the_new_content .= "var g_NouveauMapSearch_map_name_string ='".$this->process_text ( self::$local_nouveau_map_button )."';";
                 $the_new_content .= "var g_NouveauMapSearch_text_name_string ='".$this->process_text ( self::$local_nouveau_text_button )."';";
@@ -1693,6 +1692,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_advanced_formats_disclosure_text ='".$this->process_text ( self::$local_nouveau_advanced_formats_disclosure_text )."';";
                 $the_new_content .= "var g_Nouveau_advanced_service_bodies_disclosure_text ='".$this->process_text ( self::$local_nouveau_advanced_service_bodies_disclosure_text )."';";
                 $the_new_content .= "var g_Nouveau_no_search_results_text ='".$this->process_text ( self::$local_nouveau_cant_find_meetings_display )."';";
+                $the_new_content .= "var g_Nouveau_cant_lookup_display ='".$this->process_text ( self::$local_nouveau_cant_lookup_display )."';";
                 $the_new_content .= "var g_Nouveau_select_search_spec_text ='".$this->process_text ( self::$local_nouveau_select_search_spec_text )."';";
                 $the_new_content .= "var g_Nouveau_select_search_results_text ='".$this->process_text ( self::$local_nouveau_select_search_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_map_results_text ='".$this->process_text ( self::$local_nouveau_display_map_results_text )."';";

@@ -142,7 +142,6 @@ function u_test_header()
 {
     $ret = '';
     global $BMLTPluginOp;
-    session_start();
     
     switch ( u_test_operation() )
         {
@@ -159,6 +158,7 @@ function u_test_header()
         break;
         
         case 'clear_session':
+            session_start();
             session_unset();
             session_destroy();
             $ret .= '<title>BMLTPlugin Class Unit Test</title>';

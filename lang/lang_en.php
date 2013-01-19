@@ -108,8 +108,7 @@ class BMLT_Localized_BaseClass
     ****************************************************************************************/
     
     /// These are all for the [[bmlt_nouveau]] shortcode.
-    static  $local_nouveau_basic_button = 'Basic Search';                   ///< The button name for the basic search in the nouveau search.
-    static  $local_nouveau_advanced_button = 'Advanced Search';             ///< The button name for the advanced search in the nouveau search.
+    static  $local_nouveau_advanced_button = 'More Options';                ///< The button name for the advanced search in the nouveau search.
     static  $local_nouveau_map_button = 'Search By Map Instead of Text';    ///< The button name for the map search in the nouveau search.
     static  $local_nouveau_text_button = 'Search By Text instead of Map';   ///< The button name for the text search in the nouveau search.
     static  $local_nouveau_text_go_button = 'GO';                           ///< The button name for the "GO" button in the text search in the nouveau search.
@@ -126,6 +125,7 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_select_search_spec_text = 'Specify A New Search';                    ///< The text that is used for the link that tells you to select the search specification.
     static  $local_nouveau_select_search_results_text = 'View the Results of the Last Search';  ///< The text that is used for the link that tells you to select the search results.
     static  $local_nouveau_cant_find_meetings_display = 'No Meetings Found In This Search';     ///< When the new map search cannot find any meetings.
+    static  $local_nouveau_cant_lookup_display = 'Unable to determine your location.';          ///< Displayed if the app is unable to determine the location.
     static  $local_nouveau_display_map_results_text = 'Display the Search Results in a Map';    ///< The text for the display map results disclosure link.
     static  $local_nouveau_display_list_results_text = 'Display the Search Results in a List';  ///< The text for the display list results disclosure link.
     static  $local_nouveau_table_header_array = array ( 'Nation', 'State', 'County', 'Town', 'Meeting Name', 'Weekday', 'Start Time', 'Location', 'Format', ' ' );

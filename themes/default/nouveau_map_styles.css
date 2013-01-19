@@ -22,6 +22,14 @@
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
+        .bmlt_nouveau_clear_both
+{
+    clear:both;
+    float:none;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
         div.bmlt_nouveau_search_spec_div
 {
     background-color:#555;
@@ -230,6 +238,130 @@ div#bmlt_page_items.bmlt_page_items
     float:left;
     padding:2px;
     cursor: help;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_weekdays_content_div,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_formats_content_div
+{
+    text-align:center;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_weekdays_content_inner_div,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_formats_content_inner_div
+{
+    display:table;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_weekdays_content_one_weekday_enclosure_div
+{
+    width:130px;
+    float:left;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_format_content_one_format_enclosure_div
+{
+    width:60px;
+    float:left;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        input.bmlt_nouveau_advanced_weekdays_checkbox,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        input.bmlt_nouveau_advanced_format_checkbox,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        input.bmlt_nouveau_advanced_service_bodies_checkbox
+{
+    margin-top:4px;
+    display:block;
+    float:left;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        label.bmlt_nouveau_advanced_weekdays_label,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        label.bmlt_nouveau_advanced_format_label
+{
+    display:block;
+    float:left;
+    margin-left:4px;
+    font-weight:bold;
+    font-size:large;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_service_bodies_content_div
+{
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        dl.bmlt_nouveau_advanced_service_bodies_dl
+{
+    margin-left:1.5em;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        dt.bmlt_nouveau_advanced_service_bodies_dt
+{
+    margin-left:1.5em;
+    clear:both;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        dd.bmlt_nouveau_advanced_service_bodies_container_dd
+{
+    margin-left:1.5em;
+    clear:both;
+    margin-bottom:8px;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_service_bodies_checkbox_wrapper_div
+{
+    clear:both;
+    float:left;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        label.bmlt_nouveau_advanced_service_bodies_label,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        label.bmlt_nouveau_advanced_service_bodies_container_label
+{
+    font-size:large;
+    float:left;
+    margin-left:4px;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        label.bmlt_nouveau_advanced_service_bodies_container_label
+{
+    font-weight:bold;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -725,34 +857,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_advanced_map_options_div
 {
-    height: 40px;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_weekdays_content_div
-{
-    height: 40px;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_formats_content_div
-{
-    height: 40px;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_service_bodies_content_div
-{
-    height: 40px;
-}
-
-div#bmlt_page_items.bmlt_page_items
-    div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_map_container_div
-{
+    padding:8px;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1084,6 +1189,14 @@ div#bmlt_page_items.bmlt_page_items
         span.bmlt_nouveau_details_service_body_contents_span
 {
     padding-left:4px;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_details_comments_div
+{
+    font-style:italic;
+    padding:8px;
 }
 
 div#bmlt_page_items.bmlt_page_items
