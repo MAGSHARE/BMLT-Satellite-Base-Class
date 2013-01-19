@@ -2652,7 +2652,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 }
             else if( window.blackberry && blackberry.location.GPSSupported )
                 {
-                blackberry.location.onLocationUpdate ( "NouveauMapSearch.prototype.sBlackberry_callback('".uid."')" );
+                blackberry.location.onLocationUpdate ( "NouveauMapSearch.prototype.sBlackberry_callback('" + uid + "')" );
                 blackberry.location.setAidMode(2);
                 blackberry.location.refreshLocation();
                 }
