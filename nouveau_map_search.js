@@ -189,7 +189,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_long_lat_northeast = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
     var m_long_lat_southwest = null;            ///< This will contain the long/lat for the maximum South and East coordinate to show all the meetings in the search.
     var m_search_results_shown = null;          ///< If this is true, then the results div is displayed.
-    var m_map_search_results_display_result_text_div = null;    ///< This will display a count of returned meetings.
+    var m_map_search_results_display_result_text_div = null;        ///< This will display a count of returned meetings.
+    var m_map_search_results_display_result_print_text_div = null;  ///< THis is a version that shows up in printed results.
     
     var m_ajax_request = null;                  ///< This is used to handle AJAX calls.
     
@@ -1073,6 +1074,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         this.m_search_results_div.appendChild ( this.m_map_search_results_display_result_text_div );
         
+        this.m_map_search_results_display_result_print_text_div = document.createElement ( 'div' );
+        this.m_map_search_results_display_result_print_text_div.className = 'bmlt_nouveau_search_results_print_only_display_text_div';
+        
+        this.m_search_results_div.appendChild ( this.m_map_search_results_display_result_print_text_div );
+        
         if ( this.m_search_results && this.m_search_results.length )
             {
             this.setMeetingResultCountText();
@@ -1088,10 +1094,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.setMeetingResultCountText = function ()
         {
-        if ( this.m_map_search_results_display_result_text_div)
+        if ( this.m_map_search_results_display_result_text_div && this.m_map_search_results_display_result_print_text_div )
             {
+            this.m_map_search_results_display_result_text_div.innerHTML = '';
+            this.m_map_search_results_display_result_print_text_div.innerHTML = '';
+            
             if ( this.m_search_results.length )
                 {
+                this.m_map_search_results_display_result_print_text_div.innerHTML = sprintf ( g_Nouveau_meeting_results_count_sprintf_format, this.m_search_results.length );
+                
                 if ( this.m_selected_search_results == 1 )
                     {
                     this.m_map_search_results_display_result_text_div.innerHTML = sprintf ( g_Nouveau_meeting_results_single_selection_count_sprintf_format, this.m_search_results.length );
@@ -1104,10 +1115,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                     {
                     this.m_map_search_results_display_result_text_div.innerHTML = sprintf ( g_Nouveau_meeting_results_count_sprintf_format, this.m_search_results.length );
                     };
-                }
-            else
-                {
-                this.m_map_search_results_display_result_text_div.innerHTML = '';
                 };
             };
         };

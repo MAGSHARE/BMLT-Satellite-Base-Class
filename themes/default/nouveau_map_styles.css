@@ -1387,7 +1387,10 @@ div#bmlt_page_items.bmlt_page_items
         a.bmlt_nouveau_switch_a_selected,
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        a.bmlt_nouveau_switch_a_selected:visited
+        a.bmlt_nouveau_switch_a_selected:visited,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_search_results_print_only_display_text_div
 {
     display:none;
 }
@@ -1408,17 +1411,24 @@ div#bmlt_page_items.bmlt_page_items
             div.bmlt_nouveau_search_results_map_disclosure_div,
     div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_div
-            div.bmlt_nouveau_search_results_list_disclosure_div
+            div.bmlt_nouveau_search_results_list_disclosure_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_display_text_div
     {
         display:none;
     }
     
     div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_div
-            div.bmlt_nouveau_search_results_map_container_div,
+            div.bmlt_nouveau_search_results_display_text_div
+    {
+        display:none;
+    }
+    
     div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_div
-            div.bmlt_nouveau_search_results_list_container_div
+            div.bmlt_nouveau_search_results_print_only_display_text_div
     {
         display:block;
     }
@@ -1457,6 +1467,16 @@ div#bmlt_page_items.bmlt_page_items
     
     div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_print_only_display_text_div
+    {
+        font-size:large;
+        font-weight:bold;
+        text-align:center;
+        color:black;
+    }
+    
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
             a,
     div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_div
@@ -1464,10 +1484,5 @@ div#bmlt_page_items.bmlt_page_items
     {
         color:black;
         text-decoration:none !important;
-    }
-    
-    tr.bmlt_nouveau_search_results_list_body_tr
-    {
-        page-break-before: auto;
     }
 }
