@@ -185,6 +185,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_details_formats_contents_div = null;  ///< The div that will list the meeting formats.
     
     var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
+    var m_selected_search_results = null;       ///< This contains the number of meetings selected in the list.
     var m_long_lat_northeast = null;            ///< This will contain the long/lat for the maximum North and West coordinate to show all the meetings in the search.
     var m_long_lat_southwest = null;            ///< This will contain the long/lat for the maximum South and East coordinate to show all the meetings in the search.
     var m_search_results_shown = null;          ///< If this is true, then the results div is displayed.
@@ -1034,6 +1035,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_long_lat_northwest = null;
         this.m_long_lat_southeast = null;
         this.m_search_results = null;
+        this.m_selected_search_results = 0;
         this.m_search_results_shown = false;
         this.m_map_search_results_map = null;
         this.m_mapResultsDisplayed = false;
@@ -1073,12 +1075,41 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         if ( this.m_search_results && this.m_search_results.length )
             {
-            this.m_map_search_results_display_result_text_div.innerHTML = sprintf ( g_Nouveau_meeting_resuls_count_sprintf_format, this.m_search_results.length );
+            this.setMeetingResultCountText();
             this.buildDOMTree_SearchResults_Map();
             this.buildDOMTree_SearchResults_List();
             };
         
         this.m_display_div.appendChild ( this.m_search_results_div );
+        };
+    
+    /************************************************************************************//**
+    *	\brief 
+    ****************************************************************************************/
+    this.setMeetingResultCountText = function ()
+        {
+        if ( this.m_map_search_results_display_result_text_div)
+            {
+            if ( this.m_search_results.length )
+                {
+                if ( this.m_selected_search_results == 1 )
+                    {
+                    this.m_map_search_results_display_result_text_div.innerHTML = sprintf ( g_Nouveau_meeting_results_single_selection_count_sprintf_format, this.m_search_results.length );
+                    }
+                else if ( this.m_selected_search_results )
+                    {
+                    this.m_map_search_results_display_result_text_div.innerHTML = sprintf ( g_Nouveau_meeting_results_selection_count_sprintf_format, this.m_selected_search_results, this.m_search_results.length );
+                    }
+                else
+                    {
+                    this.m_map_search_results_display_result_text_div.innerHTML = sprintf ( g_Nouveau_meeting_results_count_sprintf_format, this.m_search_results.length );
+                    };
+                }
+            else
+                {
+                this.m_map_search_results_display_result_text_div.innerHTML = '';
+                };
+            };
         };
         
     /************************************************************************************//**
@@ -2209,6 +2240,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_map_search_results_map.meeting_marker_array[c].setIcon(this.m_map_search_results_map.meeting_marker_array[c].oldImage);
                 };
             };
+        
+        this.m_selected_search_results = 0;
+        this.setMeetingResultCountText();
         };
         
     /************************************************************************************//**
@@ -2289,6 +2323,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             location.hash = "#" + tr_element.id;
             };
+        
+        this.m_selected_search_results = 1;
+        this.setMeetingResultCountText();
         };
 
     /************************************************************************************//**
@@ -2330,6 +2367,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             location.hash = "#" + tr_element.id;
             };
+        
+        this.m_selected_search_results = in_mtg_obj_array.length;
+        this.setMeetingResultCountText();
         };
         
     /************************************************************************************//**
@@ -2352,6 +2392,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         this.displayThrobber();
         this.m_search_results = null;
+        this.m_selected_search_results = 0;
         this.setDisplayedSearchResults();
         this.clearSearchResults();
         var uri = this.createSearchURI();
@@ -2622,6 +2663,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                         )
         {
         this.m_search_results = in_search_results_json_object;
+        this.m_selected_search_results = 0;
         this.analyzeSearchResults();
         this.m_search_results_shown = true;
         this.buildDOMTree_SearchResults_Section();
@@ -3490,9 +3532,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                     )
         {
         var marker = this.getMarkerForMeetingId ( in_meeting_id );
+        this.m_selected_search_results = 0;
         
         if ( marker )
             {
+            this.m_selected_search_results = marker.meeting_obj_array.length;
             if ( marker.meeting_obj_array.length > 1 )
                 {
                 this.respondToMultiClick ( marker, true );
@@ -3877,6 +3921,7 @@ NouveauMapSearch.prototype.sMeetingsCallback = function (   in_response_object, 
         {
         context.m_ajax_request = null;
         context.m_search_results = null;
+        context.m_selected_search_results = 0;
         context.hideThrobber();
         
         var text_reply = in_response_object.responseText;
