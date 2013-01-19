@@ -2632,24 +2632,27 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	****************************************************************************************/
     this.lookupMyLocation = function()
     {
+        var uid = this.m_uid;
+        
         if( typeof ( google ) == 'object' && typeof ( google.gears ) == 'object' )
             {
             if ( !this.m_g_geo )
                 {
                 this.m_g_geo = google.gears.factory.create ('beta.geolocation');
+                this.m_g_geo.owner_object = this;
                 };
             
-            g_watch_position = this.m_g_geo.watchPosition ( WhereAmI_CallBack, WhereAmI_Fail_Final, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
+            g_watch_position = this.m_g_geo.watchPosition ( function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid); }, function() { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(uid); }, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
             }
         else
             {
             if( typeof ( navigator ) == 'object' && typeof ( navigator.geolocation ) == 'object' )
                 {
-                g_watch_position = navigator.geolocation.watchPosition ( NouveauMapSearch.prototype.sWhereAmI_CallBack, NouveauMapSearch.prototype.sWhereAmI_Fail_Final, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
+                g_watch_position = navigator.geolocation.watchPosition ( function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid); }, function() { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(uid); }, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
                 }
             else if( window.blackberry && blackberry.location.GPSSupported )
                 {
-                blackberry.location.onLocationUpdate ( "NouveauMapSearch.prototype.sBlackberry_callback()" );
+                blackberry.location.onLocationUpdate ( "NouveauMapSearch.prototype.sBlackberry_callback('".uid."')" );
                 blackberry.location.setAidMode(2);
                 blackberry.location.refreshLocation();
                 }
@@ -2658,6 +2661,39 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 alert ( g_Nouveau_cant_lookup_display );
                 };
             };
+    };
+    
+    /********************************************************************************************
+    *	\brief Handles a successful location result.                                            *
+    ********************************************************************************************/
+    this.handleWhereAmI_CallBack = function (   in_position ///< The found position
+                                            )
+    {
+    };
+
+    /********************************************************************************************
+    *	\brief Handles failure to locate.                                                       *
+    ********************************************************************************************/
+    this.handleWhereAmI_Fail_Final = function ()
+    {
+    };
+
+    /********************************************************************************************
+    *	\brief Handles Blackberry location services.                                            *
+    ********************************************************************************************/
+    this.handleBlackberry_callback = function ()
+    {
+    };
+    
+    /********************************************************************************************
+    *	\brief Test to see if the browser supports location services.                           *
+    *   \returns a Boolean. TRUE, if the browser supports location services.                    *
+    ********************************************************************************************/
+    this.hasNavCapability = function()
+    {
+        return      ( ( typeof ( google ) == 'object' && typeof ( google.gears ) == 'object' ) )
+                ||  ( typeof ( navigator ) == 'object' && typeof ( navigator.geolocation ) == 'object' )
+                ||  ( window.blackberry && blackberry.location.GPSSupported );
     };
     
     /****************************************************************************************
@@ -4012,22 +4048,32 @@ NouveauMapSearch.prototype.sDetailsButtonHit = function (   in_uid,         ///<
 /********************************************************************************************
 *	\brief 
 ********************************************************************************************/
-NouveauMapSearch.prototype.sWhereAmI_CallBack = function ()
+NouveauMapSearch.prototype.sWhereAmI_CallBack = function (  in_position,
+                                                            in_uid
+                                                        )
 {
+    eval ('var context = g_instance_' + in_uid + '_js_handler;' );
+    context.handleWhereAmI_CallBack(in_position);
 };
 
 /********************************************************************************************
 *	\brief 
 ********************************************************************************************/
-NouveauMapSearch.prototype.sWhereAmI_Fail_Final = function ()
+NouveauMapSearch.prototype.sWhereAmI_Fail_Final = function (    in_uid
+                                                            )
 {
+    eval ('var context = g_instance_' + in_uid + '_js_handler;' );
+    context.handleWhereAmI_Fail_Final();
 };
 
 /********************************************************************************************
 *	\brief 
 ********************************************************************************************/
-NouveauMapSearch.prototype.sBlackberry_callback = function ()
+NouveauMapSearch.prototype.sBlackberry_callback = function (    in_uid
+                                                            )
 {
+    eval ('var context = g_instance_' + in_uid + '_js_handler;' );
+    context.handleBlackberry_callback();
 };
 
 /********************************************************************************************
