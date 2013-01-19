@@ -132,6 +132,7 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_weekday_long_array = array ( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
     static  $local_nouveau_weekday_short_array = array ( 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' );
     
+    static  $local_nouveau_meeting_resuls_count_sprintf_format = '%s Meetings Found';
     static  $local_nouveau_single_time_sprintf_format = 'Meeting gathers every %s, at %s, and lasts for %s.';
     static  $local_nouveau_single_duration_sprintf_format_1_hr = '1 hour';
     static  $local_nouveau_single_duration_sprintf_format_mins = '%s minutes';

@@ -1698,6 +1698,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_display_map_results_text ='".$this->process_text ( self::$local_nouveau_display_map_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_list_results_text ='".$this->process_text ( self::$local_nouveau_display_list_results_text )."';";
                 
+                $the_new_content .= "var g_Nouveau_meeting_resuls_count_sprintf_format ='".self:: $local_nouveau_meeting_resuls_count_sprintf_format."';";
                 $the_new_content .= "var g_Nouveau_single_time_sprintf_format ='".self:: $local_nouveau_single_time_sprintf_format."';";
                 $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_1_hr ='".self:: $local_nouveau_single_duration_sprintf_format_1_hr."';";
                 $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_mins ='".self:: $local_nouveau_single_duration_sprintf_format_mins."';";
