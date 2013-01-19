@@ -150,7 +150,7 @@ div#bmlt_page_items.bmlt_page_items
     cursor:default;
     display:block;
     margin:0px;
-    padding:2px;
+    padding:1px;
     margin-right:auto;
     margin-left:auto;
     text-align:center;
@@ -1467,7 +1467,10 @@ div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_location_services_hidden_div,
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouveau_advanced_marker_button_hidden_div
+        div.bmlt_nouveau_advanced_marker_button_hidden_div,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_location_services_panel_date_button_hidden_div
 {
     display:none;
 }

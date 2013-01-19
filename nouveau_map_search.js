@@ -194,6 +194,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_map_search_results_display_result_text_div = null;            ///< This will display a count of returned meetings.
     var m_map_search_results_display_result_print_text_div = null;      ///< THis is a version that shows up in printed results.
     var m_location_services_panel_advanced_marker_button_div = null;    ///< This will hold the button that allows the advanced marker position to be set to the user's location.
+    var m_location_services_panel_date_button_div = null;               ///< This will hold the buttons that do a date-sensitive lookup of the user location..
     
     var m_ajax_request = null;                  ///< This is used to handle AJAX calls.
     
@@ -203,6 +204,14 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_service_bodies = null;                ///< This will contain our Service bodies.
     var m_geocoder = null;                      ///< This will hold any active address lookup.
     var m_g_geo = null;                         ///< This will hold any Google Gears geo lookup.
+    
+    var m_semaphore_lookup_location_in_progress = null; ///< This is set while a location lookup is going on.
+    var m_semaphore_lookup_day = null;                  ///< If we are going to look up today or tomorrow, this holds that value.
+    var m_last_accuracy = null;                         ///< This records the last accuracy measurement.
+    var m_callback_count = null;                        ///< How many times we've retried.
+    var m_location_lookup_coords = null;                ///< Will hold the location services result.
+    var m_watch_position = null;                        ///< This holds a location lookup request.
+    var m_additional_uri_values = null;                 ///< This holds any additional URI values.
         
     /****************************************************************************************
     *								  INTERNAL CLASS FUNCTIONS							    *
@@ -563,6 +572,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         button_div.appendChild ( regular_button );
         inner_div.appendChild ( button_div );
         
+        this.m_location_services_panel_date_button_div = document.createElement ( 'div' );
+        this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
+        
         button_div = document.createElement ( 'div' );
         button_div.className = 'bmlt_nouveau_find_nearby_meetings_today_button_div';
         
@@ -571,8 +583,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         regular_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_find_nearby_meetings_today_button_a';
         regular_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.handleFindNearbyMeetingsByDay(\'today\')' );
         button_div.appendChild ( regular_button );
-        inner_div.appendChild ( button_div );
         
+        this.m_location_services_panel_date_button_div.appendChild ( button_div );
+                
         button_div = document.createElement ( 'div' );
         button_div.className = 'bmlt_nouveau_find_nearby_meetings_tomorrow_button_div';
         
@@ -581,7 +594,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         regular_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_find_nearby_meetings_tomorrow_button_a';
         regular_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.handleFindNearbyMeetingsByDay(\'tomorrow\')' );
         button_div.appendChild ( regular_button );
-        inner_div.appendChild ( button_div );
+        
+        this.m_location_services_panel_date_button_div.appendChild ( button_div );
+        
+        inner_div.appendChild ( this.m_location_services_panel_date_button_div );
         
         this.m_location_services_panel.appendChild ( inner_div );
         this.m_search_spec_div.appendChild ( this.m_location_services_panel );
@@ -643,6 +659,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div advanced_div_hidden';
             this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div';
             this.m_location_services_panel_advanced_marker_button_div.className = 'bmlt_nouveau_advanced_marker_button_hidden_div';
+            };
+            
+        if ( this.m_advanced_weekdays_shown && ((this.m_current_view == 'advanced_map') || (this.m_current_view == 'advanced_text')) )
+            {
+            this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_hidden_div';
+            }
+        else
+            {
+            this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
             };
         
         this.displayMarkerInAdvancedMap();
@@ -808,11 +833,20 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             this.m_advanced_weekdays_disclosure_a.className = 'bmlt_nouveau_advanced_weekdays_disclosure_open_a';
             this.m_advanced_weekdays_content_div.className = 'bmlt_nouveau_advanced_weekdays_content_div';
+            if ( (this.m_current_view == 'advanced_map') || (this.m_current_view == 'advanced_text') )
+                {
+                this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_hidden_div';
+                }
+            else
+                {
+                this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
+                };
             }
         else
             {
             this.m_advanced_weekdays_disclosure_a.className = 'bmlt_nouveau_advanced_weekdays_disclosure_a';
             this.m_advanced_weekdays_content_div.className = 'bmlt_nouveau_advanced_weekdays_content_div bmlt_nouveau_advanced_weekdays_content_div_hidden';
+            this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
             };
         };
     
@@ -2693,18 +2727,26 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	    };
     
     /************************************************************************************//**
-    *	\brief  
+    *	\brief  This handles looking up the location, then setting the marker in the        *
+    *           advanced map display to that position.                                      *
     ****************************************************************************************/
     this.setLocationOfMainMarker = function ()
         {
         };
     
     /************************************************************************************//**
-    *	\brief  
+    *	\brief  This locates the user's position, then looks up meetings around that. The   *
+    *           variants are default (null passed in), which just does a "one-click" search *
+    *           around the position, 'today', which looks for meetings that are nearby, and *
+    *           start later today, and 'tomorrow', in which we look for nearby meetings     *
+    *           tomorrow.                                                                   *
     ****************************************************************************************/
     this.handleFindNearbyMeetingsByDay = function ( in_day  ///< This is null, 'today', or 'tomorrow'
                                                     )
         {
+        this.m_semaphore_lookup_day = in_day;
+        this.displayThrobber();
+        this.lookupMyLocation();
         };
 
 	/************************************************************************************//**
@@ -2712,6 +2754,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	****************************************************************************************/
     this.lookupMyLocation = function()
         {
+        this.m_semaphore_lookup_location_in_progress = false;
+        this.m_callback_count = 0;
+        this.m_last_accuracy = null;
+        this.m_location_lookup_coords = null;
+        this.m_watch_position = null;
+        this.m_additional_uri_values = null;
+        
         var uid = this.m_uid;
         
         if( typeof ( google ) == 'object' && typeof ( google.gears ) == 'object' )
@@ -2722,19 +2771,15 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_g_geo.owner_object = this;
                 };
             
-            g_watch_position = this.m_g_geo.watchPosition ( function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid); }, function() { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(uid); }, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
+            this.m_semaphore_lookup_location_in_progress = true;
+            this.m_watch_position = this.m_g_geo.watchPosition ( function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid); }, function() { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(uid); }, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
             }
         else
             {
             if( typeof ( navigator ) == 'object' && typeof ( navigator.geolocation ) == 'object' )
                 {
-                g_watch_position = navigator.geolocation.watchPosition ( function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid); }, function() { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(uid); }, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
-                }
-            else if( window.blackberry && blackberry.location.GPSSupported )
-                {
-                blackberry.location.onLocationUpdate ( "NouveauMapSearch.prototype.sBlackberry_callback('" + uid + "')" );
-                blackberry.location.setAidMode(2);
-                blackberry.location.refreshLocation();
+                this.m_semaphore_lookup_location_in_progress = true;
+                this.m_watch_position = navigator.geolocation.watchPosition ( function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid); }, function() { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(uid); }, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
                 }
             else
                 {
@@ -2749,19 +2794,67 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.handleWhereAmI_CallBack = function (   in_position ///< The found position
                                             )
         {
+		if ( in_position.coords && in_position.coords.accuracy )
+			{
+			this.m_last_accuracy = in_position.coords.accuracy;
+			};
+
+		// The first line is a hideous kludge for Firefox. Yuch.
+		if ( (typeof ( google ) == 'object') && (typeof ( google.gears ) == 'object') && in_position.coords && ((in_position.coords.accuracy == 95000) || (in_position.coords.accuracy == 43000))
+			|| in_position.coords
+			&& (!in_position.coords.accuracy || (in_position.coords.accuracy < 200) || (this.m_callback_count++ > 2) || ((in_position.coords.accuracy == this.m_last_accuracy) && (this.m_callback_count > 1))) )	// Wait until we're pretty durn accurate.
+			{
+            this.m_semaphore_lookup_location_in_progress = false;
+            this.m_callback_count = 0;
+            this.m_last_accuracy = null;
+            this.m_watch_position = null;
+            
+			// We "normalize" the response, so the reponse from both Gears and the Navigator object are the same.
+			if ( !in_position.coords )
+				{		
+				this.m_location_lookup_coords = new google.maps.LatLng ( in_position.latitude, in_position.longitude );
+				}
+			else
+				{
+				this.m_location_lookup_coords = new google.maps.LatLng ( in_position.coords['latitude'], in_position.coords['longitude'] );
+				};
+			
+			this.m_additional_uri_values = '';
+			
+			if ( this.m_semaphore_lookup_day )
+				{
+				var todays_date = new Date ();
+				
+				var today_weekday = parseInt(todays_date.getDay()) + 1;
+				var today_hour = parseInt(todays_date.getHours());
+				var today_minute = parseInt(todays_date.getMinutes());
+				
+				// If today, then we look for this weekday, and a time after now.
+				if ( this.m_semaphore_lookup_day == 'today' )
+					{
+					this.m_additional_uri_values += '&weekdays[]='+today_weekday.toString();
+					this.m_additional_uri_values += '&StartsAfterH='+today_hour.toString();
+					this.m_additional_uri_values += '&StartsAfterM='+today_minute.toString();
+					}
+				else
+					{
+					if ( this.m_semaphore_lookup_day == 'tomorrow' )
+						{
+						var tomorrow_weeday = (today_weekday < 7) ? today_weekday + 1 : 1;
+						this.m_additional_uri_values += '&weekdays[]='+tomorrow_weeday.toString();
+						};
+					};
+				};	
+					    
+			this.m_semaphore_lookup_day = null;
+			this.hideThrobber();        
+			};
         };
 
     /********************************************************************************************
     *	\brief Handles failure to locate.                                                       *
     ********************************************************************************************/
     this.handleWhereAmI_Fail_Final = function ()
-        {
-        };
-
-    /********************************************************************************************
-    *	\brief Handles Blackberry location services.                                            *
-    ********************************************************************************************/
-    this.handleBlackberry_callback = function ()
         {
         };
     
@@ -2772,8 +2865,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.hasNavCapability = function()
         {
         return      ( ( typeof ( google ) == 'object' && typeof ( google.gears ) == 'object' ) )
-                ||  ( typeof ( navigator ) == 'object' && typeof ( navigator.geolocation ) == 'object' )
-                ||  ( window.blackberry && blackberry.location.GPSSupported );
+                ||  ( typeof ( navigator ) == 'object' && typeof ( navigator.geolocation ) == 'object' );
         };
     
     /****************************************************************************************
