@@ -114,7 +114,7 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_text_go_button = 'GO';                           ///< The button name for the "GO" button in the text search in the nouveau search.
     static  $local_nouveau_text_item_default_text = 'Enter Search Text';    ///< The text that fills an empty text item.
     static  $local_nouveau_text_location_label_text = 'This is a location or postcode';         ///< The label text for the location checkbox.
-    static  $local_nouveau_advanced_map_radius_label_1 = 'Find Meetings Within';                       ///< The label text for the radius popup.
+    static  $local_nouveau_advanced_map_radius_label_1 = 'Find Meetings Within';                ///< The label text for the radius popup.
     static  $local_nouveau_advanced_map_radius_label_2 = 'of the Marker Location.';             ///< The second part of the label.
     static  $local_nouveau_advanced_map_radius_value_auto = 'An Automatically Chosen Radius';   ///< The second part of the label, if Miles
     static  $local_nouveau_advanced_map_radius_value_km = 'Km';                                 ///< The second part of the popup value, if Kilometers
@@ -141,7 +141,8 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_single_duration_sprintf_format_hrs = '%s hours';
     static  $local_nouveau_single_duration_sprintf_format_hr_mins = '1 hour and %s minutes';
     static  $local_nouveau_single_duration_sprintf_format_hrs_mins = '%s hours and %s minutes';
-
+    
+    /// These are all variants of the text that explains the location of a single meeting (Details View).
     static  $local_nouveau_location_sprintf_format_loc_street_info = '%s, %s (%s)';
     static  $local_nouveau_location_sprintf_format_loc_street = '%s, %s';
     static  $local_nouveau_location_sprintf_format_street_info = '%s (%s)';
@@ -199,6 +200,11 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_location_sprintf_format_single_loc = '%s';
     
     static  $local_nouveau_location_sprintf_format_wtf = 'No Location Given';
+    
+    static  $local_nouveau_location_services_set_my_location_advanced_button = 'Set the Marker to My Current Location';
+    static  $local_nouveau_location_services_find_all_meetings_nearby_button = 'Find Meetings Near Me';
+    static  $local_nouveau_location_services_find_all_meetings_nearby_later_today_button = 'Find Meetings Near Me Later Today';
+    static  $local_nouveau_location_services_find_all_meetings_nearby_tomorrow_button = 'Find Meetings Near Me Tomorrow';
     
     static  $local_nouveau_location_sprintf_format_duration_title = 'This meeting is %s hours and %s minutes long.';
     static  $local_nouveau_location_sprintf_format_duration_hour_only_title = 'This meeting is 1 hour long.';

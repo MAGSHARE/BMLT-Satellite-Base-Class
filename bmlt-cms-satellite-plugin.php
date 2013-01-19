@@ -1698,6 +1698,12 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_display_map_results_text ='".$this->process_text ( self::$local_nouveau_display_map_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_list_results_text ='".$this->process_text ( self::$local_nouveau_display_list_results_text )."';";
                 
+
+                $the_new_content .= "var g_Nouveau_location_services_set_my_location_advanced_button ='".$this->process_text ( self::$local_nouveau_location_services_set_my_location_advanced_button )."';";
+                $the_new_content .= "var g_Nouveau_location_services_find_all_meetings_nearby_button ='".$this->process_text ( self::$local_nouveau_location_services_find_all_meetings_nearby_button )."';";
+                $the_new_content .= "var g_Nouveau_location_services_find_all_meetings_nearby_later_today_button ='".$this->process_text ( self::$local_nouveau_location_services_find_all_meetings_nearby_later_today_button )."';";
+                $the_new_content .= "var g_Nouveau_location_services_find_all_meetings_nearby_tomorrow_button ='".$this->process_text ( self::$local_nouveau_location_services_find_all_meetings_nearby_tomorrow_button )."';";
+
                 $the_new_content .= "var g_Nouveau_meeting_results_count_sprintf_format ='".self:: $local_nouveau_meeting_results_count_sprintf_format."';";
                 $the_new_content .= "var g_Nouveau_meeting_results_selection_count_sprintf_format ='".self:: $local_nouveau_meeting_results_selection_count_sprintf_format."';";
                 $the_new_content .= "var g_Nouveau_meeting_results_single_selection_count_sprintf_format ='".self:: $local_nouveau_meeting_results_single_selection_count_sprintf_format."';";

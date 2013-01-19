@@ -130,7 +130,19 @@ div#bmlt_page_items.bmlt_page_items
         a.bmlt_nouveau_text_go_button_a,
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        a.bmlt_nouveau_advanced_go_button_a
+        a.bmlt_nouveau_advanced_go_button_a,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_text_go_button_a:visited,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_advanced_go_button_a:visited,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_location_button_a,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_location_button_a:visited
 {
     color: black;
     background-color:white;
@@ -138,19 +150,71 @@ div#bmlt_page_items.bmlt_page_items
     cursor:default;
     display:block;
     margin:0px;
-    padding:0px;
+    padding:2px;
     margin-right:auto;
     margin-left:auto;
     text-align:center;
     vertical-align:middle;
     font-size:small;
     font-weight:bold;
-    width:60px;
-    height:16px;
-    border:1px solid black;
     -moz-border-radius: 4px;
     -webkit-border-radius: 4px;
     border-radius: 4px;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_text_go_button_a,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_text_go_button_a:visited
+{
+    border:1px solid black;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_advanced_go_button_a,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_advanced_go_button_a:visited,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_location_button_a,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_location_button_a:visited
+{
+    border:1px solid white;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_text_go_button_a,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_advanced_go_button_a,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_text_go_button_a:visited,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_advanced_go_button_a:visited
+{
+    width:5em;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_location_button_a,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_location_button_a:visited
+{
+    margin:4px;
+    margin-left:auto;
+    margin-right:auto;
+    width:25em;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -164,9 +228,15 @@ div#bmlt_page_items.bmlt_page_items
         a.bmlt_nouveau_text_go_button_a:active,
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        a.bmlt_nouveau_advanced_go_button_a:active
+        a.bmlt_nouveau_advanced_go_button_a:active,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_location_button_a:hover,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_nouveau_location_button_a:active
 {
-    background-color:black;
+    background-color:#555;
     color:white;
 }
 
@@ -438,6 +508,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_advanced_map_options_div
 {
+    margin-top:4px;
     border:7px solid white;
     background-color:white;
     -moz-border-radius: 8px;
@@ -1390,7 +1461,13 @@ div#bmlt_page_items.bmlt_page_items
         a.bmlt_nouveau_switch_a_selected:visited,
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouveau_search_results_print_only_display_text_div
+        div.bmlt_nouveau_search_results_print_only_display_text_div,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_location_services_hidden_div,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        div.bmlt_nouveau_advanced_marker_button_hidden_div
 {
     display:none;
 }
@@ -1482,7 +1559,7 @@ div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_div
             a:visited
     {
-        color:black;
+        color:black !important;
         text-decoration:none !important;
     }
 }
