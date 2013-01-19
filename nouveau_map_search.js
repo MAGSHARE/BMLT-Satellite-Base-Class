@@ -1,10 +1,13 @@
 /****************************************************************************************//**
-* \file map_search.js																        *
+* \file nuveau_map_search.js																*
 * \brief Javascript functions for the new default implementation.                           *
 *                                                                                           *
 *   This class implements the entire new default search algorithm (basic/advanced/text/map) *
 *   in a manner that exports all the functionality to the client. It uses the JSON API      *
 *   to communicate with the root server.                                                    *
+*   This builds almost the entire BMLT search as a dynamic, DOM-constructed page. Very      *
+*   little is done before execution time. A great deal of care has been taken to allow      *
+*   robust, complete CSS presentation management.                                           *
 *                                                                                           *
 *   \version 2.0                                                                            *
 *                                                                                           *
@@ -66,11 +69,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     
     var m_default_duration = null;          ///< The default meeting length.
     
-	var m_icon_image_single = null;
-	var m_icon_image_multi = null;
-	var m_icon_image_selected = null;
-	var m_icon_shadow = null;
-	var m_icon_shape = null;
+	var m_icon_image_single = null;         ///< The blue icon image.
+	var m_icon_image_multi = null;          ///< The red icon image.
+	var m_icon_image_selected = null;       ///< The selected (green) icon.
+	var m_icon_shadow = null;               ///< The standard icon shadow.
 	
 	/// These describe the "You are here" icon.
 	var m_center_icon_image = null;
@@ -332,7 +334,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         this.m_map_div = document.createElement ( 'div' );   // Create the map container.
         this.m_map_div.className = 'bmlt_nouveau_map_div';
-        if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
+        if ( ((this.m_current_view == 'map') || (this.m_current_view == 'advanced_map')) && !this.m_search_results_shown )
             {
             this.loadSpecMap();
             };
@@ -2160,7 +2162,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                                     'map':		    this.m_map_search_results_map,
                                                     'shadow':		this.m_icon_shadow,
                                                     'icon':			displayed_image,
-                                                    'shape':		this.m_icon_shape,
                                                     'clickable':	true,
                                                     'cursor':		'pointer',
                                                     'draggable':    false
@@ -2950,7 +2951,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                                                     'map':		    this.m_details_map,
                                                                     'shadow':		this.m_icon_shadow,
                                                                     'icon':			this.m_icon_image_selected,
-                                                                    'shape':		this.m_icon_shape,
                                                                     'clickable':	false,
                                                                     'cursor':		'default',
                                                                     'draggable':    false
@@ -3276,12 +3276,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_search_results_shown = false;
         this.m_current_zoom = this.m_initial_zoom;
         
-        if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
+        this.setDisplayedSearchResults();
+        
+        if ( ((this.m_current_view == 'map') || (this.m_current_view == 'advanced_map')) && !this.m_search_results_shown )
             {
             this.loadSpecMap();
             };
-        
-        this.setDisplayedSearchResults();
         };
     
     /************************************************************************************//**
@@ -3339,13 +3339,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.validateGoButtons();
             break;
             };
+
+        this.setBasicAdvancedSwitch();
         
-        if ( (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
+        if ( ((this.m_current_view == 'map') || (this.m_current_view == 'advanced_map')) && !this.m_search_results_shown )
             {
             this.loadSpecMap();
             };
-
-        this.setBasicAdvancedSwitch();
         };
         
     /************************************************************************************//**
@@ -3365,11 +3365,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             break;
             };
             
-        this.loadSpecMap();
-        
         this.setMapTextSwitch();
 
         this.setBasicAdvancedSwitch();
+        
+        this.loadSpecMap();
         };
         
     /************************************************************************************//**
