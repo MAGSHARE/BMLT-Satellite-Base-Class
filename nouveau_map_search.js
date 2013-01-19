@@ -588,21 +588,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         };
     
     /************************************************************************************//**
-    *	\brief  
-    ****************************************************************************************/
-    this.setLocationOfMainMarker = function ()
-        {
-        };
-    
-    /************************************************************************************//**
-    *	\brief  
-    ****************************************************************************************/
-    this.handleFindNearbyMeetingsByDay = function ( in_day  ///< This is null, 'today', or 'tomorrow'
-                                                    )
-        {
-        };
-    
-    /************************************************************************************//**
     *	\brief This sets up the "MAP/TEXT" tab switch div.                                  *
     ****************************************************************************************/
     this.buildDOMTree_Basic_Advanced_Switch = function ()
@@ -840,7 +825,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_advanced_formats_div.className = 'bmlt_nouveau_advanced_formats_div';
         
         this.buildDOMTree_Advanced_Formats_Header();
-//         this.buildDOMTree_Advanced_Formats_Content();
         
         this.m_advanced_section_div.appendChild ( this.m_advanced_formats_div );
         };
@@ -2657,7 +2641,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	****************************************************************************************/
 	this.callRootServer = function ( in_uri ///< The URI to call (with all the parameters).
 	                                )
-	{
+	    {
         this.displayThrobber();
 	    if ( this.m_ajax_request )   // This prevents the requests from piling up. We are single-threaded.
 	        {
@@ -2666,7 +2650,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	        };
 	    
         this.m_ajax_request = BMLTPlugin_AjaxRequest ( in_uri, NouveauMapSearch.prototype.sFormatCallback, 'get', this.m_uid );
-	};
+	    };
 	
 	/************************************************************************************//**
 	*	\brief  Does an AJAX call for a JSON response, based on the given criteria and      *
@@ -2677,7 +2661,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	*           it will be null if the function failed.                                     *
 	****************************************************************************************/
 	this.getFormats = function ()
-	{
+	    {
         this.displayThrobber();
 	    if ( this.m_ajax_request )   // This prevents the requests from piling up. We are single-threaded.
 	        {
@@ -2686,7 +2670,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	        };
 	    
         this.m_ajax_request = BMLTPlugin_AjaxRequest ( this.createSearchURI_Formats(), NouveauMapSearch.prototype.sFormatCallback, 'get', this.m_uid );
-	};
+	    };
 	
 	/************************************************************************************//**
 	*	\brief  Does an AJAX call for a JSON response, based on the given criteria and      *
@@ -2697,7 +2681,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	*           it will be null if the function failed.                                     *
 	****************************************************************************************/
 	this.getServiceBodies = function ()
-	{
+	    {
         this.displayThrobber();
 	    if ( this.m_ajax_request )   // This prevents the requests from piling up. We are single-threaded.
 	        {
@@ -2706,13 +2690,28 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	        };
 	    
         this.m_ajax_request = BMLTPlugin_AjaxRequest ( this.createSearchURI_ServiceBodies(), NouveauMapSearch.prototype.sServiceBodiesCallback, 'get', this.m_uid );
-	};
+	    };
     
+    /************************************************************************************//**
+    *	\brief  
+    ****************************************************************************************/
+    this.setLocationOfMainMarker = function ()
+        {
+        };
+    
+    /************************************************************************************//**
+    *	\brief  
+    ****************************************************************************************/
+    this.handleFindNearbyMeetingsByDay = function ( in_day  ///< This is null, 'today', or 'tomorrow'
+                                                    )
+        {
+        };
+
 	/************************************************************************************//**
 	*	\brief  
 	****************************************************************************************/
     this.lookupMyLocation = function()
-    {
+        {
         var uid = this.m_uid;
         
         if( typeof ( google ) == 'object' && typeof ( google.gears ) == 'object' )
@@ -2742,40 +2741,40 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 alert ( g_Nouveau_cant_lookup_display );
                 };
             };
-    };
+        };
     
     /********************************************************************************************
     *	\brief Handles a successful location result.                                            *
     ********************************************************************************************/
     this.handleWhereAmI_CallBack = function (   in_position ///< The found position
                                             )
-    {
-    };
+        {
+        };
 
     /********************************************************************************************
     *	\brief Handles failure to locate.                                                       *
     ********************************************************************************************/
     this.handleWhereAmI_Fail_Final = function ()
-    {
-    };
+        {
+        };
 
     /********************************************************************************************
     *	\brief Handles Blackberry location services.                                            *
     ********************************************************************************************/
     this.handleBlackberry_callback = function ()
-    {
-    };
+        {
+        };
     
     /********************************************************************************************
     *	\brief Test to see if the browser supports location services.                           *
     *   \returns a Boolean. TRUE, if the browser supports location services.                    *
     ********************************************************************************************/
     this.hasNavCapability = function()
-    {
+        {
         return      ( ( typeof ( google ) == 'object' && typeof ( google.gears ) == 'object' ) )
                 ||  ( typeof ( navigator ) == 'object' && typeof ( navigator.geolocation ) == 'object' )
                 ||  ( window.blackberry && blackberry.location.GPSSupported );
-    };
+        };
     
     /****************************************************************************************
     *################################# SET UP SEARCH RESULTS ###############################*
