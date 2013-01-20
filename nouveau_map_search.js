@@ -205,14 +205,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_geocoder = null;                      ///< This will hold any active address lookup.
     var m_g_geo = null;                         ///< This will hold any Google Gears geo lookup.
     
-    var m_semaphore_lookup_location_in_progress = null; ///< This is set while a location lookup is going on.
     var m_semaphore_lookup_day = null;                  ///< If we are going to look up today or tomorrow, this holds that value.
-    var m_last_accuracy = null;                         ///< This records the last accuracy measurement.
-    var m_callback_count = null;                        ///< How many times we've retried.
-    var m_location_lookup_coords = null;                ///< Will hold the location services result.
-    var m_watch_position = null;                        ///< This holds a location lookup request.
-    var m_additional_uri_values = null;                 ///< This holds any additional URI values.
-        
+    var m_semaphore_lookup_location_services = null;    ///< This is a flag, stating that we are in a location services search (pretends to be a map search).
+    var m_semaphore_lookup_set_marker = null;           ///< This will indicate that the advanced marker is to be positioned.
+    var m_semaphore_lookup_retry_count = null;          ///< This counts cache retries.
+    
     /****************************************************************************************
     *								  INTERNAL CLASS FUNCTIONS							    *
     ****************************************************************************************/
@@ -405,6 +402,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             this.m_main_map.setCenter ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
             this.m_main_map.setZoom ( this.m_current_zoom );
+            };
+            
+        if ( this.m_current_view == 'advanced_map' )
+            {
+            this.displayMarkerInAdvancedMap();
             };
 	    };
     
@@ -2184,6 +2186,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             else
                 {
                 this.m_main_map.map_marker.setPosition ( position );
+                this.m_main_map.setCenter ( position );
                 };
             
             if ( this.m_search_radius > 0 )
@@ -2565,7 +2568,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         uri_elements[index++][1] = this.m_current_lat;
         // First, if we have a map up, we use the specified width. (not done if the search is specified using text).
         // This restricts the search area.
-        if ( this.m_location_checkbox.checked || (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
+        if ( this.m_semaphore_lookup_location_services || this.m_location_checkbox.checked || (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
             {
             uri_elements[index] = new Array;
             uri_elements[index][0] = 'geo_width';
@@ -2628,6 +2631,37 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                     };
                 };
             };
+			
+        if ( this.m_semaphore_lookup_day )
+            {
+            var todays_date = new Date ();
+            
+            var today_weekday = parseInt(todays_date.getDay()) + 1;
+            var today_hour = parseInt(todays_date.getHours());
+            var today_minute = parseInt(todays_date.getMinutes());
+            
+            // If today, then we look for this weekday, and a time after now.
+            if ( this.m_semaphore_lookup_day == 'today' )
+                {
+                uri_elements[index] = new Array;
+                uri_elements[index][0] = 'StartsAfterH';
+                uri_elements[index++][1] = today_hour.toString();
+                
+                uri_elements[index] = new Array;
+                uri_elements[index][0] = 'StartsAfterM';
+                uri_elements[index++][1] = today_minute.toString();
+                }
+            else if ( this.m_semaphore_lookup_day == 'tomorrow' )
+                {
+                today_weekday = (today_weekday < 7) ? today_weekday + 1 : 1;
+                };
+            
+            uri_elements[index] = new Array;
+            uri_elements[index][0] = 'weekdays[]';
+            uri_elements[index++][1] = today_weekday.toString();
+            
+            this.m_semaphore_lookup_day = null;
+            };	
         
         // Concatenate all the various parameters we gathered.
         for ( var i = 0; i < index; i++ )
@@ -2732,6 +2766,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.setLocationOfMainMarker = function ()
         {
+        this.m_semaphore_lookup_set_marker = true;
+        this.handleFindNearbyMeetingsByDay ( null );
         };
     
     /************************************************************************************//**
@@ -2744,8 +2780,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.handleFindNearbyMeetingsByDay = function ( in_day  ///< This is null, 'today', or 'tomorrow'
                                                     )
         {
+        this.m_semaphore_lookup_location_services = true;
         this.m_semaphore_lookup_day = in_day;
-        this.displayThrobber();
+        this.m_semaphore_lookup_retry_count = 0;
         this.lookupMyLocation();
         };
 
@@ -2754,38 +2791,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 	****************************************************************************************/
     this.lookupMyLocation = function()
         {
-        this.m_semaphore_lookup_location_in_progress = false;
-        this.m_callback_count = 0;
-        this.m_last_accuracy = null;
-        this.m_location_lookup_coords = null;
-        this.m_watch_position = null;
-        this.m_additional_uri_values = null;
+        this.displayThrobber();
         
         var uid = this.m_uid;
         
-        if( typeof ( google ) == 'object' && typeof ( google.gears ) == 'object' )
-            {
-            if ( !this.m_g_geo )
-                {
-                this.m_g_geo = google.gears.factory.create ('beta.geolocation');
-                this.m_g_geo.owner_object = this;
-                };
-            
-            this.m_semaphore_lookup_location_in_progress = true;
-            this.m_watch_position = this.m_g_geo.watchPosition ( function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid); }, function() { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(uid); }, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
-            }
-        else
-            {
-            if( typeof ( navigator ) == 'object' && typeof ( navigator.geolocation ) == 'object' )
-                {
-                this.m_semaphore_lookup_location_in_progress = true;
-                this.m_watch_position = navigator.geolocation.watchPosition ( function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid); }, function() { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(uid); }, { 'enableHighAccuracy' : true, 'maximumAge' : 30000, 'timeout' : 27000 } );
-                }
-            else
-                {
-                alert ( g_Nouveau_cant_lookup_display );
-                };
-            };
+        navigator.geolocation.getCurrentPosition (  function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid) },
+                                                    function(in_error) { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(in_error, uid); },
+                                                    {enableHighAccuracy:true, maximumAge:600000, timeout:0});
         };
     
     /********************************************************************************************
@@ -2794,68 +2806,53 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.handleWhereAmI_CallBack = function (   in_position ///< The found position
                                             )
         {
-		if ( in_position.coords && in_position.coords.accuracy )
+        var move_marker = this.m_semaphore_lookup_set_marker;
+        
+        this.m_semaphore_lookup_set_marker = false;
+        
+		if ( in_position.coords )
 			{
-			this.m_last_accuracy = in_position.coords.accuracy;
-			};
-
-		// The first line is a hideous kludge for Firefox. Yuch.
-		if ( (typeof ( google ) == 'object') && (typeof ( google.gears ) == 'object') && in_position.coords && ((in_position.coords.accuracy == 95000) || (in_position.coords.accuracy == 43000))
-			|| in_position.coords
-			&& (!in_position.coords.accuracy || (in_position.coords.accuracy < 200) || (this.m_callback_count++ > 2) || ((in_position.coords.accuracy == this.m_last_accuracy) && (this.m_callback_count > 1))) )	// Wait until we're pretty durn accurate.
-			{
-            this.m_semaphore_lookup_location_in_progress = false;
-            this.m_callback_count = 0;
-            this.m_last_accuracy = null;
-            this.m_watch_position = null;
-            
-			// We "normalize" the response, so the reponse from both Gears and the Navigator object are the same.
-			if ( !in_position.coords )
-				{		
-				this.m_location_lookup_coords = new google.maps.LatLng ( in_position.latitude, in_position.longitude );
-				}
+            this.m_current_lat = in_position.coords.latitude;
+            this.m_current_long = in_position.coords.longitude;
+			if ( move_marker && (this.m_current_view == 'advanced_map') )
+			    {
+                this.displayMarkerInAdvancedMap();
+                this.hideThrobber();
+			    }
 			else
-				{
-				this.m_location_lookup_coords = new google.maps.LatLng ( in_position.coords['latitude'], in_position.coords['longitude'] );
-				};
-			
-			this.m_additional_uri_values = '';
-			
-			if ( this.m_semaphore_lookup_day )
-				{
-				var todays_date = new Date ();
-				
-				var today_weekday = parseInt(todays_date.getDay()) + 1;
-				var today_hour = parseInt(todays_date.getHours());
-				var today_minute = parseInt(todays_date.getMinutes());
-				
-				// If today, then we look for this weekday, and a time after now.
-				if ( this.m_semaphore_lookup_day == 'today' )
-					{
-					this.m_additional_uri_values += '&weekdays[]='+today_weekday.toString();
-					this.m_additional_uri_values += '&StartsAfterH='+today_hour.toString();
-					this.m_additional_uri_values += '&StartsAfterM='+today_minute.toString();
-					}
-				else
-					{
-					if ( this.m_semaphore_lookup_day == 'tomorrow' )
-						{
-						var tomorrow_weeday = (today_weekday < 7) ? today_weekday + 1 : 1;
-						this.m_additional_uri_values += '&weekdays[]='+tomorrow_weeday.toString();
-						};
-					};
-				};	
-					    
-			this.m_semaphore_lookup_day = null;
-			this.hideThrobber();        
-			};
+			    {
+                this.beginSearch();
+                };
+			}
+		else
+		    {
+            alert ( g_Nouveau_cant_lookup_display );
+		    };
+        
+        this.m_semaphore_lookup_location_services = false;
         };
 
     /********************************************************************************************
     *	\brief Handles failure to locate.                                                       *
     ********************************************************************************************/
-    this.handleWhereAmI_Fail_Final = function ()
+    this.handleWhereAmI_Fail_Final = function ( in_error    ///< The error that caused the failure.
+                                                )
         {
+        switch ( in_error.code )
+            {
+            case in_error.TIMEOUT:
+                var uid = this.m_uid;
+                navigator.geolocation.getCurrentPosition (  function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid) },
+                                                            function(in_error) { NouveauMapSearch.prototype.sWhereAmI_Fail_Final(in_error, uid); },
+                                                            {enableHighAccuracy:true, maximumAge:600000, timeout:100});
+            break;
+            
+            default:
+                this.m_semaphore_lookup_set_marker = false;
+                this.m_semaphore_lookup_location_services = false;
+                alert ( g_Nouveau_cant_lookup_display );
+            break;
+            };
         };
     
     /********************************************************************************************
@@ -4231,11 +4228,12 @@ NouveauMapSearch.prototype.sWhereAmI_CallBack = function (  in_position,
 /********************************************************************************************
 *	\brief 
 ********************************************************************************************/
-NouveauMapSearch.prototype.sWhereAmI_Fail_Final = function (    in_uid
+NouveauMapSearch.prototype.sWhereAmI_Fail_Final = function (    in_error,   ///< The error that caused the failure.
+                                                                in_uid      ///< A unique ID, to establish context.
                                                             )
 {
     eval ('var context = g_instance_' + in_uid + '_js_handler;' );
-    context.handleWhereAmI_Fail_Final();
+    context.handleWhereAmI_Fail_Final(in_error);
 };
 
 /********************************************************************************************
