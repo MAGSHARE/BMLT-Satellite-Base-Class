@@ -2065,6 +2065,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         this.m_throbber_div = document.createElement ( 'div' );
         this.m_throbber_div.className = 'bmlt_nouveau_throbber_div bmlt_nouveau_throbber_div_hidden';
+        this.m_throbber_div.id = this.m_uid + '_throbber_div';
         
         var inner_div = document.createElement ( 'div' );
         inner_div.className = 'bmlt_nouveau_throbber_mask_div';
@@ -2093,6 +2094,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         this.m_details_div = document.createElement ( 'div' );
         this.m_details_div.className = 'bmlt_nouveau_details_div bmlt_nouveau_details_div_hidden';
+        this.m_details_div.id = this.m_uid + '_details_div';
         
         var mask_div = document.createElement ( 'div' );
         mask_div.className = 'bmlt_nouveau_details_mask_div';

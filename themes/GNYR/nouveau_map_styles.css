@@ -157,8 +157,8 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         a.bmlt_nouveau_location_button_a:visited
 {
-    color: #006;
-    background-color:#ff9;
+    color: #f30;
+    background-color:#006;
     text-decoration:none;
     cursor:default;
     display:block;
@@ -249,8 +249,8 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         a.bmlt_nouveau_location_button_a:active
 {
-    background-color:#006;
-    color:#f30;
+    background-color:#f30;
+    color:#006;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -390,7 +390,7 @@ div#bmlt_page_items.bmlt_page_items
     float:left;
     margin-left:4px;
     font-weight:bold;
-    font-size:large;
+    font-size:medium;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1158,7 +1158,7 @@ div#bmlt_page_items.bmlt_page_items
     padding:4px;
     width:80%;
     margin-left:-40%;
-    top: 5%;
+    top: 30px;
     left:50%;
     background-color:#ffc;
     border:2px solid #f30;
@@ -1183,7 +1183,7 @@ div#bmlt_page_items.bmlt_page_items
     padding:0;
     height:24px;
     width:24px;
-    top: 5%;
+    top: 30px;
     left:90%;
     margin-top:-12px;
     margin-left:-4px;
