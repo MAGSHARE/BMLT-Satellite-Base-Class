@@ -2570,11 +2570,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         // This restricts the search area.
         if ( this.m_semaphore_lookup_location_services || this.m_location_checkbox.checked || (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
             {
+            // In the case of the advanced map, we will also have a radius value. Otherwise, we use the default auto.
+            this.m_search_radius = (this.m_current_view == 'advanced_map') ? this.m_search_radius : g_Nouveau_default_geo_width;
+
             uri_elements[index] = new Array;
             uri_elements[index][0] = 'geo_width';
-            
-            // In the case of the advanced map, we will also have a radius value. Otherwise, we use the default auto.
-            uri_elements[index++][1] = (this.m_current_view == 'advanced_map') ? this.m_search_radius : g_Nouveau_default_geo_width;
+            uri_elements[index++][1] = this.m_search_radius;
             }
         else    // Otherwise, we use whatever is in the text box.
             {
@@ -2668,7 +2669,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             ret += '&' + uri_elements[i][0] + '=' + uri_elements[i][1];
             };
-
+        
+        // Belt and suspenders.
+        this.m_semaphore_lookup_location_services = false;
+        
         // Return the complete URI for a JSON response.
         return ret;
         };
@@ -3972,14 +3976,19 @@ NouveauMapSearch.prototype.sResultsMapDragend = function (  in_event,   ///< The
 	// We set the long/lat from the event.
 	context.m_current_long = in_event.latLng.lng().toString();
 	context.m_current_lat = in_event.latLng.lat().toString();
-    context.m_main_map.setCenter ( in_event.latLng );
-    context.m_main_map.setZoom ( context.m_current_zoom );
+	
+	if ( context.m_main_map )
+	    {
+        context.m_main_map.setCenter ( in_event.latLng );
+        context.m_main_map.setZoom ( context.m_current_zoom );
 
-    if ( context.m_current_view == 'advanced_map' ) // If it is a simple map, we go straight to a search.
-        {
-        context.advancedMapClicked();
+        if ( context.m_current_view == 'advanced_map' ) // If it is a simple map, we go straight to a search.
+            {
+            context.advancedMapClicked();
+            };
         };
     
+    context.m_semaphore_lookup_location_services = true;
     context.basicMapClicked();
     };
 
