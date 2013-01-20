@@ -279,7 +279,7 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouveau_text_checkbox_label
+        label.bmlt_nouveau_text_checkbox_label
 {
     margin-left:8px;
     vertical-align:middle;

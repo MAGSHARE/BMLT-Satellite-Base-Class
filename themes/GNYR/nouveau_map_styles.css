@@ -23,7 +23,13 @@
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
 {
-    background-color:#ffc;
+    background-color:#006;
+    margin-top:4px;
+    padding:4px;
+    border:3px solid #f30;
+    -moz-border-radius: 8px;
+    -webkit-border-radius: 8px;
+    border-radius: 8px;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -75,7 +81,7 @@ div#bmlt_page_items.bmlt_page_items
     margin:0px;
     padding:0px;
     padding-top:8px;
-    background-color:#ffc;
+    background-color:#006;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -95,6 +101,7 @@ div#bmlt_page_items.bmlt_page_items
 {
     float:left;
     height:20px;
+    margin-left: 40px;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -104,7 +111,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         input.bmlt_nouveau_text_input_empty
 {
-    width: 500px;
+    width: 410px;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -259,7 +266,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         a.bmlt_nouveau_button_disabled:hover
 {
-    color: #006;
+    color: #555;
     background-color:#eee;
 }
 
@@ -280,15 +287,18 @@ div#bmlt_page_items.bmlt_page_items
     width:16px;
     height:16px;
     float:left;
-    margin:auto;
+    margin-left:40px;
+    margin-bottom:4px;
 }
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
-        div.bmlt_nouveau_text_checkbox_label
+        label.bmlt_nouveau_text_checkbox_label
 {
     margin-left:8px;
     vertical-align:middle;
+    color:#ffc;
+    font-weight:bold;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -515,7 +525,8 @@ div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_advanced_map_options_div
 {
     margin-top:4px;
-    border:7px solid #f30;
+    padding:4px;
+    border:3px solid #f30;
     background-color:#ffc;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
@@ -1101,7 +1112,7 @@ div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_details_mask_div
 {
     position:absolute;
-    background-color:black;
+    background-color:#006;
     margin:0;
     padding:0;
     top:0px;
@@ -1549,6 +1560,15 @@ div#bmlt_page_items.bmlt_page_items
     {
         background-color:auto !important;
         color:black !important;
+    }
+    
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+    {
+        background-color:white;
+        margin-top:0;
+        padding:0;
+        border:none;
     }
     
     div#bmlt_page_items.bmlt_page_items
