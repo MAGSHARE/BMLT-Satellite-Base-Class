@@ -184,7 +184,9 @@ function BMLTPlugin_SaveOptions()
             }
         
         url += '&BMLTPlugin_location_selected_checkbox_'+option_index+'='+(document.getElementById ( 'BMLTPlugin_location_selected_checkbox_'+option_index ).checked ? '1' : '0');
-       
+        
+        url += '&BMLTPlugin_location_services_checkbox_'+option_index+'='+(document.getElementById ( 'BMLTPlugin_location_services_checkbox_'+option_index ).checked ? '1' : '0');
+        
         var initial_view = document.getElementById ( 'BMLTPlugin_option_sheet_initial_view_'+option_index ).value.toString();
          
         url += '&BMLTPlugin_option_sheet_initial_view_'+option_index+'='+initial_view;

@@ -46,6 +46,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                             in_root_server_uri,     ///< The base root server URI,
                             in_initial_text,        ///< If there is any initial text to be displayed, it should be here.
                             in_checked_location,    ///< If the "Location" checkbox should be checked, this should be TRUE.
+                            in_show_location,       ///< If this is true, then the location services will be available.
                             in_single_meeting_id    ///< If this has an integer number in it, it will display the details for a single meeting.
                             )
 {
@@ -65,6 +66,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_root_server_uri = null;           ///< A string, containing the URI of the root server. It will not change after construction.
     var m_initial_text = null;              ///< This will contain any initial text for the search text box.
     var m_checked_location = null;          ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
+    var m_show_location;                    ///< If this is true, then the location services will be available.
     var m_single_meeting_id = null;         ///< This will contain the ID of any single meeting being displayed.
     
     var m_default_duration = null;          ///< The default meeting length.
@@ -329,7 +331,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_text_div.className = 'bmlt_nouveau_text_div text_div_hidden';
             this.m_map_div.className = 'bmlt_nouveau_map_div';
             this.m_advanced_map_options_div.className = 'bmlt_nouveau_advanced_map_options_div';
-            this.m_location_services_panel_advanced_marker_button_div.className = (this.m_current_view == 'advanced_map') ? 'bmlt_nouveau_advanced_marker_button_div' : 'bmlt_nouveau_advanced_marker_button_hidden_div';
+            if ( m_location_services_panel_advanced_marker_button_div )
+                {
+                this.m_location_services_panel_advanced_marker_button_div.className = (this.m_current_view == 'advanced_map') ? 'bmlt_nouveau_advanced_marker_button_div' : 'bmlt_nouveau_advanced_marker_button_hidden_div';
+                };
             }
         else
             {
@@ -339,7 +344,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_text_div.className = 'bmlt_nouveau_text_div';
             this.m_advanced_map_options_div.className = 'bmlt_nouveau_advanced_map_options_div bmlt_nouveau_advanced_map_options_div_hidden';
             this.m_text_input.select();
-            this.m_location_services_panel_advanced_marker_button_div.className = 'bmlt_nouveau_advanced_marker_button_hidden_div';
+            if ( m_location_services_panel_advanced_marker_button_div )
+                {
+                this.m_location_services_panel_advanced_marker_button_div.className = 'bmlt_nouveau_advanced_marker_button_hidden_div';
+                };
             };
         };
     
@@ -547,62 +555,54 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree_Location_Services_Panel = function ()
         {
-        this.m_location_services_panel = document.createElement ( 'div' );
-        this.m_location_services_panel.className = (this.hasNavCapability()) ? 'bmlt_nouveau_location_services_div' : 'bmlt_nouveau_location_services_hidden_div';
+        if ( this.m_show_location )
+            {
+            this.m_location_services_panel = document.createElement ( 'div' );
+            this.m_location_services_panel.className = (this.hasNavCapability()) ? 'bmlt_nouveau_location_services_div' : 'bmlt_nouveau_location_services_hidden_div';
         
-        var inner_div = document.createElement ( 'div' );
-        inner_div.className = 'bmlt_nouveau_location_services_inner_div';
+            var inner_div = document.createElement ( 'div' );
+            inner_div.className = 'bmlt_nouveau_location_services_inner_div';
         
-        this.m_location_services_panel_advanced_marker_button_div = document.createElement ( 'div' );
-        this.m_location_services_panel_advanced_marker_button_div.className = 'bmlt_nouveau_advanced_marker_button_div';
+            var button_div = document.createElement ( 'div' );
+            button_div.className = 'bmlt_nouveau_find_nearby_meetings_button_div';
         
-        var marker_button = document.createElement ( 'a' );
-        marker_button.appendChild ( document.createTextNode(g_Nouveau_location_services_set_my_location_advanced_button) );
-        marker_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_advanced_marker_button_a';
-        marker_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.setLocationOfMainMarker()' );
-        this.m_location_services_panel_advanced_marker_button_div.appendChild ( marker_button );
+            var regular_button = document.createElement ( 'a' );
+            regular_button.appendChild ( document.createTextNode(g_Nouveau_location_services_find_all_meetings_nearby_button) );
+            regular_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_find_nearby_meetings_button_a';
+            regular_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.handleFindNearbyMeetingsByDay(null)' );
+            button_div.appendChild ( regular_button );
+            inner_div.appendChild ( button_div );
         
-        inner_div.appendChild ( this.m_location_services_panel_advanced_marker_button_div );
+            this.m_location_services_panel_date_button_div = document.createElement ( 'div' );
+            this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
         
-        var button_div = document.createElement ( 'div' );
-        button_div.className = 'bmlt_nouveau_find_nearby_meetings_button_div';
+            button_div = document.createElement ( 'div' );
+            button_div.className = 'bmlt_nouveau_find_nearby_meetings_today_button_div';
         
-        var regular_button = document.createElement ( 'a' );
-        regular_button.appendChild ( document.createTextNode(g_Nouveau_location_services_find_all_meetings_nearby_button) );
-        regular_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_find_nearby_meetings_button_a';
-        regular_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.handleFindNearbyMeetingsByDay(null)' );
-        button_div.appendChild ( regular_button );
-        inner_div.appendChild ( button_div );
+            regular_button = document.createElement ( 'a' );
+            regular_button.appendChild ( document.createTextNode(g_Nouveau_location_services_find_all_meetings_nearby_later_today_button) );
+            regular_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_find_nearby_meetings_today_button_a';
+            regular_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.handleFindNearbyMeetingsByDay(\'today\')' );
+            button_div.appendChild ( regular_button );
         
-        this.m_location_services_panel_date_button_div = document.createElement ( 'div' );
-        this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
-        
-        button_div = document.createElement ( 'div' );
-        button_div.className = 'bmlt_nouveau_find_nearby_meetings_today_button_div';
-        
-        regular_button = document.createElement ( 'a' );
-        regular_button.appendChild ( document.createTextNode(g_Nouveau_location_services_find_all_meetings_nearby_later_today_button) );
-        regular_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_find_nearby_meetings_today_button_a';
-        regular_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.handleFindNearbyMeetingsByDay(\'today\')' );
-        button_div.appendChild ( regular_button );
-        
-        this.m_location_services_panel_date_button_div.appendChild ( button_div );
+            this.m_location_services_panel_date_button_div.appendChild ( button_div );
                 
-        button_div = document.createElement ( 'div' );
-        button_div.className = 'bmlt_nouveau_find_nearby_meetings_tomorrow_button_div';
+            button_div = document.createElement ( 'div' );
+            button_div.className = 'bmlt_nouveau_find_nearby_meetings_tomorrow_button_div';
         
-        regular_button = document.createElement ( 'a' );
-        regular_button.appendChild ( document.createTextNode(g_Nouveau_location_services_find_all_meetings_nearby_tomorrow_button) );
-        regular_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_find_nearby_meetings_tomorrow_button_a';
-        regular_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.handleFindNearbyMeetingsByDay(\'tomorrow\')' );
-        button_div.appendChild ( regular_button );
+            regular_button = document.createElement ( 'a' );
+            regular_button.appendChild ( document.createTextNode(g_Nouveau_location_services_find_all_meetings_nearby_tomorrow_button) );
+            regular_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_find_nearby_meetings_tomorrow_button_a';
+            regular_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.handleFindNearbyMeetingsByDay(\'tomorrow\')' );
+            button_div.appendChild ( regular_button );
         
-        this.m_location_services_panel_date_button_div.appendChild ( button_div );
+            this.m_location_services_panel_date_button_div.appendChild ( button_div );
         
-        inner_div.appendChild ( this.m_location_services_panel_date_button_div );
+            inner_div.appendChild ( this.m_location_services_panel_date_button_div );
         
-        this.m_location_services_panel.appendChild ( inner_div );
-        this.m_search_spec_div.appendChild ( this.m_location_services_panel );
+            this.m_location_services_panel.appendChild ( inner_div );
+            this.m_search_spec_div.appendChild ( this.m_location_services_panel );
+            };
         };
     
     /************************************************************************************//**
@@ -653,23 +653,32 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switch_disclosure_open_a';
             this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div';
             this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div text_go_a_hidden';
-            this.m_location_services_panel_advanced_marker_button_div.className = (this.m_current_view == 'advanced_map') ? 'bmlt_nouveau_advanced_marker_button_div' : 'bmlt_nouveau_advanced_marker_button_hidden_div';
+            if ( this.m_location_services_panel_advanced_marker_button_div )
+                {
+                this.m_location_services_panel_advanced_marker_button_div.className = (this.m_current_view == 'advanced_map') ? 'bmlt_nouveau_advanced_marker_button_div' : 'bmlt_nouveau_advanced_marker_button_hidden_div';
+                };
             }
         else
             {
             this.m_advanced_switch_a.className = 'bmlt_nouveau_advanced_switch_disclosure_a';
             this.m_advanced_section_div.className = 'bmlt_nouveau_advanced_section_div advanced_div_hidden';
             this.m_text_go_button_div.className = 'bmlt_nouveau_text_go_button_div';
-            this.m_location_services_panel_advanced_marker_button_div.className = 'bmlt_nouveau_advanced_marker_button_hidden_div';
+            if ( this.m_location_services_panel_advanced_marker_button_div )
+                {
+                this.m_location_services_panel_advanced_marker_button_div.className = 'bmlt_nouveau_advanced_marker_button_hidden_div';
+                };
             };
             
-        if ( this.m_advanced_weekdays_shown && ((this.m_current_view == 'advanced_map') || (this.m_current_view == 'advanced_text')) )
+        if ( this.m_location_services_panel_date_button_div )
             {
-            this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_hidden_div';
-            }
-        else
-            {
-            this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
+            if ( this.m_advanced_weekdays_shown && ((this.m_current_view == 'advanced_map') || (this.m_current_view == 'advanced_text')) )
+                {
+                this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_hidden_div';
+                }
+            else
+                {
+                this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
+                };
             };
         
         this.displayMarkerInAdvancedMap();
@@ -680,6 +689,20 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.buildDOMTree_Advanced_MapOptions = function ()
         {
+        if ( this.m_show_location )
+            {
+            this.m_location_services_panel_advanced_marker_button_div = document.createElement ( 'div' );
+            this.m_location_services_panel_advanced_marker_button_div.className = 'bmlt_nouveau_advanced_marker_button_div';
+        
+            var marker_button = document.createElement ( 'a' );
+            marker_button.appendChild ( document.createTextNode(g_Nouveau_location_services_set_my_location_advanced_button) );
+            marker_button.className = 'bmlt_nouveau_location_button_a bmlt_nouveau_advanced_marker_button_a';
+            marker_button.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.setLocationOfMainMarker()' );
+            this.m_location_services_panel_advanced_marker_button_div.appendChild ( marker_button );
+        
+            this.m_advanced_section_div.appendChild ( this.m_location_services_panel_advanced_marker_button_div );
+            };
+            
         this.m_advanced_map_options_div = document.createElement ( 'div' );
         this.buildDOMTree_Advanced_DistancePopup();
         this.m_advanced_section_div.appendChild ( this.m_advanced_map_options_div );
@@ -835,20 +858,26 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             {
             this.m_advanced_weekdays_disclosure_a.className = 'bmlt_nouveau_advanced_weekdays_disclosure_open_a';
             this.m_advanced_weekdays_content_div.className = 'bmlt_nouveau_advanced_weekdays_content_div';
-            if ( (this.m_current_view == 'advanced_map') || (this.m_current_view == 'advanced_text') )
+            if ( this.m_location_services_panel_date_button_div )
                 {
-                this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_hidden_div';
-                }
-            else
-                {
-                this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
+                if ( (this.m_current_view == 'advanced_map') || (this.m_current_view == 'advanced_text') )
+                    {
+                    this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_hidden_div';
+                    }
+                else
+                    {
+                    this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
+                    };
                 };
             }
         else
             {
             this.m_advanced_weekdays_disclosure_a.className = 'bmlt_nouveau_advanced_weekdays_disclosure_a';
             this.m_advanced_weekdays_content_div.className = 'bmlt_nouveau_advanced_weekdays_content_div bmlt_nouveau_advanced_weekdays_content_div_hidden';
-            this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
+            if ( this.m_location_services_panel_date_button_div )
+                {
+                this.m_location_services_panel_date_button_div.className = 'bmlt_nouveau_location_services_panel_date_button_div';
+                };
             };
         };
     
@@ -3779,6 +3808,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_root_server_uri = in_root_server_uri;
     this.m_initial_text = in_initial_text;
     this.m_checked_location = in_checked_location;
+    this.m_show_location = in_show_location;
     this.m_single_meeting_id = in_single_meeting_id;
     
     this.m_advanced_weekdays_shown = false;

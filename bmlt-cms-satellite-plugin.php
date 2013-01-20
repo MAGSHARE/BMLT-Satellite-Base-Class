@@ -193,6 +193,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
     static  $default_map_zoom = 8;                                          ///< This is the default basic search map zoom level
     static  $default_details_map_zoom = 11;                                 ///< This is the default basic search map zoom level
     static  $default_location_checked = 0;                                  ///< If nonzero, then the "This is a location" checkbox will be preselected.
+    static  $default_location_services = 0;                                 ///< This tells the new default implementation whether or not location services should be available only for mobile devices.
     static  $default_new_search = '';                                       ///< If this is set to something, then a new search uses the exact URI.
     static  $default_gkey = '';                                             ///< This is only necessary for older versions.
     static  $default_additional_css = '';                                   ///< This is additional CSS that is inserted inline into the <head> section.
@@ -473,6 +474,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                         'id' => strval ( time() + intval(rand(0, 999))),   // This gives the option a unique slug
                         'setting_name' => '',
                         'bmlt_location_checked'=> self::$default_location_checked,
+                        'bmlt_location_services' => self::$default_location_services,
                         'theme' => self::$default_theme,
                         'distance_units' => self::$default_distance_units,
                         'grace_period' => self::$default_grace_period,
@@ -1180,6 +1182,11 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                         $ret .= '<div class="BMLTPlugin_option_sheet_checkbox_div"><input class="BMLTPlugin_option_sheet_line_location_checkbox" onchange="BMLTPlugin_DirtifyOptionSheet()" id="'.htmlspecialchars ( $id ).'" type="checkbox"'.($options['bmlt_location_checked'] == 1 ? ' checked="checked"' : '' ).'"></div>';
                         $ret .= '<label for="'.htmlspecialchars ( $id ).'">'.$this->process_text ( self::$local_options_settings_location_checkbox_label ).'</label>';
                     $ret .= '</div>';
+                    $ret .= '<div class="BMLTPlugin_option_sheet_line_div BMLTPlugin_location_checkbox_line">';
+                        $id = 'BMLTPlugin_location_services_checkbox_'.$in_options_index;
+                        $ret .= '<div class="BMLTPlugin_option_sheet_checkbox_div"><input class="BMLTPlugin_option_sheet_line_location_services_checkbox" onchange="BMLTPlugin_DirtifyOptionSheet()" id="'.htmlspecialchars ( $id ).'" type="checkbox"'.($options['bmlt_location_services'] == 1 ? ' checked="checked"' : '' ).'"></div>';
+                        $ret .= '<label for="'.htmlspecialchars ( $id ).'">'.$this->process_text ( self::$local_options_selectLocation_checkbox_text ).'</label>';
+                    $ret .= '</div>';
 //                     $ret .= '<div class="BMLTPlugin_option_sheet_line_div">';
 //                         $id = 'BMLTPlugin_option_sheet_grace_period_'.$in_options_index;
 //                         $ret .= '<label for="'.htmlspecialchars ( $id ).'">'.$this->process_text ( self::$local_options_mobile_grace_period_label ).'</label>';
@@ -1354,6 +1361,11 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                         if ( isset ( $this->my_http_vars['BMLTPlugin_location_selected_checkbox_'.$i] ) )
                             {
                             $options['bmlt_location_checked'] = ($this->my_http_vars['BMLTPlugin_location_selected_checkbox_'.$i] != 0 ? 1 : 0);
+                            }
+                        
+                        if ( isset ( $this->my_http_vars['BMLTPlugin_location_services_checkbox_'.$i] ) )
+                            {
+                            $options['bmlt_location_services'] = ($this->my_http_vars['BMLTPlugin_location_services_checkbox_'.$i] != 0 ? 1 : 0);
                             }
                         
                         if ( !$this->setBMLTOptions ( $options, $i ) )
@@ -1655,6 +1667,12 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
     function display_bmlt_nouveau ($in_content      ///< This is the content to be filtered.
                                     )
         {
+        function weAreMobile($in_http_vars)
+            {
+            $language = BMLTPlugin::mobile_sniff_ua($in_http_vars);
+            return ($language == 'wml') || ($language == 'xhtml_mp') || ($language == 'smartphone');
+            }
+        
         $theshortcode = 'bmlt';
         
         $options_id = $this->cms_get_page_settings_id( $in_content );
@@ -1698,7 +1716,6 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_display_map_results_text ='".$this->process_text ( self::$local_nouveau_display_map_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_list_results_text ='".$this->process_text ( self::$local_nouveau_display_list_results_text )."';";
                 
-
                 $the_new_content .= "var g_Nouveau_location_services_set_my_location_advanced_button ='".$this->process_text ( self::$local_nouveau_location_services_set_my_location_advanced_button )."';";
                 $the_new_content .= "var g_Nouveau_location_services_find_all_meetings_nearby_button ='".$this->process_text ( self::$local_nouveau_location_services_find_all_meetings_nearby_button )."';";
                 $the_new_content .= "var g_Nouveau_location_services_find_all_meetings_nearby_later_today_button ='".$this->process_text ( self::$local_nouveau_location_services_find_all_meetings_nearby_later_today_button )."';";
@@ -1818,12 +1835,11 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= '</script>';
                 $first = false;
                 }
-            
             if ( defined ( '_DEBUG_MODE_' ) ) $the_new_content .= "\n"; // These just make the code easier to look at.
             // This is the overall container div.
             $the_new_content .= '<div id="'.$uid.'_container" class="bmlt_nouveau_container">';
                 // What we do here, is tell the client to create a global variable (in JS DOM), with a unique handler for this instance of the Nouveau search.
-                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options['bmlt_initial_view'].'\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".$this->get_plugin_path()."/themes/".$options['theme']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=', '', ".($options['bmlt_location_checked'] ? 'true' : 'false').");</script>";
+                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options['bmlt_initial_view'].'\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".$this->get_plugin_path()."/themes/".$options['theme']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=', '', ".($options['bmlt_location_checked'] ? 'true' : 'false').", ".($options['bmlt_location_services'] == 0 || ($options['bmlt_location_services'] == 1 && weAreMobile($this->my_http_vars)) ? 'true' : 'false').");</script>";
             $the_new_content .= '</div>';
 
             $in_content = self::replace_shortcode ( $in_content, $theshortcode, $the_new_content );
