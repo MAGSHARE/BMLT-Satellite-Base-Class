@@ -32,6 +32,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_search_spec_div
 {
+    display:table;
     background-color:#555;
     padding:4px;
 }
