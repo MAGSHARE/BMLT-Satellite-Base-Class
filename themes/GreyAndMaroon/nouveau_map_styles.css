@@ -34,7 +34,7 @@ div#bmlt_page_items.bmlt_page_items
 {
     display:table;
     width:100%;
-    background-color:#006;
+    background-color:#600;
     padding:4px;
 }
 
@@ -42,7 +42,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_search_results_div
 {
-    background-color:#006;
+    background-color:#600;
     padding:8px;
 }
 
@@ -71,7 +71,7 @@ div#bmlt_page_items.bmlt_page_items
     margin:0px;
     padding:0px;
     padding-top:8px;
-    background-color:white;
+    background-color:#ccc;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -146,7 +146,7 @@ div#bmlt_page_items.bmlt_page_items
         a.bmlt_nouveau_location_button_a:visited
 {
     color: black;
-    background-color:white;
+    background-color:#ccc;
     text-decoration:none;
     cursor:default;
     display:block;
@@ -170,7 +170,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         a.bmlt_nouveau_text_go_button_a:visited
 {
-    border:1px solid #f30;
+    border:1px solid black;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -186,7 +186,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         a.bmlt_nouveau_location_button_a:visited
 {
-    border:1px solid #f30;
+    border:1px solid #ccc;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -237,8 +237,8 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         a.bmlt_nouveau_location_button_a:active
 {
-    background-color:#006;
-    color:white;
+    background-color:#600;
+    color:#ccc;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -254,8 +254,8 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         a.bmlt_nouveau_button_disabled:hover
 {
-    color: #006;
-    background-color:#eef;
+    color: #600;
+    background-color:#eee;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -457,7 +457,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_switcher_div
 {
-    background-color:#006;
+    background-color:#600;
     padding-bottom:2px;
 }
 
@@ -465,12 +465,12 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_search_results_display_text_div
 {
-    background-color:#006;
+    background-color:#600;
     padding-bottom:2px;
     text-align:center;
     font-size:large;
     font-weight:bold;
-    color:white;
+    color:#ccc;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -486,7 +486,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_advanced_service_bodies_div
 {
-    background-color:#006;
+    background-color:#600;
     padding:4px;
 }
 
@@ -510,9 +510,9 @@ div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_advanced_map_options_div
 {
     margin-top:4px;
-    border:3px solid #f30;
+    border:3px solid #600;
     padding:2px;
-    background-color:white;
+    background-color:#ccc;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
     border-radius: 8px;
@@ -601,7 +601,7 @@ div#bmlt_page_items.bmlt_page_items
     font-weight:bold;
     display:block;
     height:20px;
-    background-color:#006;
+    background-color:#600;
     color:#99f;
     text-decoration:underline;
 }
@@ -979,7 +979,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         tr.bmlt_nouveau_search_results_list_body_tr_even td
 {
-    background-color:#eef;
+    background-color:#eee;
     color: black;
 }
 
@@ -1024,7 +1024,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_search_results_list_start_time_div
 {
-    white-space: nowrap;
+    #ccc-space: nowrap;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1032,7 +1032,7 @@ div#bmlt_page_items.bmlt_page_items
         tr.bmlt_nouveau_search_results_list_body_tr_even_multi td
 {
     background-color:#933;
-    color: white;
+    color: #ccc;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1040,7 +1040,7 @@ div#bmlt_page_items.bmlt_page_items
         tr.bmlt_nouveau_search_results_list_body_tr_odd_multi td
 {
     background-color:#c66;
-    color: white;
+    color: #ccc;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1048,7 +1048,7 @@ div#bmlt_page_items.bmlt_page_items
         tr.bmlt_nouveau_search_results_list_body_tr_even_single td
 {
     background-color:#339;
-    color: white;
+    color: #ccc;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1056,7 +1056,7 @@ div#bmlt_page_items.bmlt_page_items
         tr.bmlt_nouveau_search_results_list_body_tr_odd_single td
 {
     background-color:#66c;
-    color: white;
+    color: #ccc;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1118,8 +1118,8 @@ div#bmlt_page_items.bmlt_page_items
     width: 100px;
     top:50%;
     left:50%;
-    background-color:#006;
-    border:2px solid #f30;
+    background-color:#ccc;
+    border:2px solid #600;
     text-align:center;
     vertical-align:middle;
     -moz-border-radius: 50px;
@@ -1138,8 +1138,8 @@ div#bmlt_page_items.bmlt_page_items
     margin-left:-40%;
     top: 5%;
     left:50%;
-    background-color:white;
-    border:2px solid #f30;
+    background-color:#ccc;
+    border:2px solid #600;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
     border-radius: 8px;
@@ -1183,8 +1183,8 @@ div#bmlt_page_items.bmlt_page_items
     text-align:center;
     margin:8px;
     padding:8px;
-    background-color:white;
-    border:2px solid #f30;
+    background-color:#ccc;
+    border:2px solid #600;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
     border-radius: 8px;
@@ -1210,8 +1210,8 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_single_meeting_time_div
 {
-    background-color:#006;
-    color:white;
+    background-color:#600;
+    color:#ccc;
     text-align:center;
     font-weight:bold;
 }
@@ -1286,8 +1286,8 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_details_format_div
 {
-    background-color:#006;
-    color:white;
+    background-color:#600;
+    color:#ccc;
     font-size:large;
     text-align:center;
     padding:4px;
