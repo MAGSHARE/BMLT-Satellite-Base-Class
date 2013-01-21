@@ -2627,7 +2627,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         uri_elements[index++][1] = this.m_current_lat;
         // First, if we have a map up, we use the specified width. (not done if the search is specified using text).
         // This restricts the search area.
-        if ( this.m_semaphore_lookup_location_services || this.m_location_checkbox.checked || (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
+        if ( this.m_semaphore_lookup_location_services || (this.m_location_checkbox.checked && this.m_text_input.value && (this.m_text_input.value != this.m_text_input.defaultValue)) || (this.m_current_view == 'map') || (this.m_current_view == 'advanced_map') )
             {
             // In the case of the advanced map, we will also have a radius value. Otherwise, we use the default auto.
             this.m_search_radius = (this.m_current_view == 'advanced_map') ? this.m_search_radius : g_Nouveau_default_geo_width;
@@ -2636,7 +2636,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             uri_elements[index][0] = 'geo_width';
             uri_elements[index++][1] = this.m_search_radius;
             }
-        else    // Otherwise, we use whatever is in the text box.
+        else if ( !this.m_location_checkbox.checked )   // Otherwise, we use whatever is in the text box.
             {
             var search_text = this.m_text_input.value;
             
@@ -3803,7 +3803,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.validateGoButtons = function()
         {
-        if ( !this.m_geocoder && ((this.m_text_input.value && (this.m_text_input.value != this.m_text_input.defaultValue)) || !this.m_location_checkbox.checked) )
+        if ( !this.m_geocoder && !((this.m_current_view == 'text') && this.m_location_checkbox.checked && (!this.m_text_input.value || (this.m_text_input.value == this.m_text_input.defaultValue))) && ((this.m_current_view == 'advanced_map') || (this.m_current_view == 'map') || !this.m_location_checkbox.checked || !this.m_text_input.value || (this.m_text_input.value == this.m_text_input.defaultValue)) )
             {
             this.m_advanced_go_a.className = 'bmlt_nouveau_advanced_go_button_a';
             this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
