@@ -954,6 +954,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         table.bmlt_nouveau_search_results_list_table
 {
+    font-size:small;
     width:100%;
 }
 
@@ -961,7 +962,6 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         td.bmlt_nouveau_search_results_list_header_td
 {
-    font-size:small;
     font-weight:bold;
     vertical-align:top;
 }
@@ -1095,19 +1095,12 @@ div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_details_mask_div
 {
     position:absolute;
-    background-color:black;
     margin:0;
     padding:0;
     top:0px;
     left:0px;
     bottom:0px;
     right:0px;
-    margin-bottom:-1000%;
-	-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=60)";
-	filter: alpha(opacity=60);
-	-moz-opacity:0.6;
-	-khtml-opacity: 0.6;
-	opacity: 0.6;
 }
 
 div#bmlt_page_items.bmlt_page_items
@@ -1144,10 +1137,15 @@ div#bmlt_page_items.bmlt_page_items
     top: 5%;
     left:50%;
     background-color:white;
-    border:2px solid white;
+    border:2px solid #555;
     -moz-border-radius: 8px;
     -webkit-border-radius: 8px;
     border-radius: 8px;
+    -moz-box-shadow: 3px 3px 4px #000;
+    -webkit-box-shadow: 3px 3px 4px #000;
+    box-shadow: 3px 3px 4px #000;
+    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000')";
+    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000');
 }
 
 div#bmlt_page_items.bmlt_page_items
