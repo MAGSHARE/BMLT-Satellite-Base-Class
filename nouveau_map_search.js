@@ -375,51 +375,54 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
 	this.loadSpecMap = function ( )
 	    {
-        if ( this.m_map_div && !this.m_main_map )
-            {
-            var myOptions = {
-                            'center': new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
-                            'zoom': this.m_current_zoom,
-                            'mapTypeId': google.maps.MapTypeId.ROADMAP,
-                            'mapTypeControlOptions': { 'style': google.maps.MapTypeControlStyle.DROPDOWN_MENU },
-                            'zoomControl': true,
-                            'mapTypeControl': true,
-                            'disableDoubleClickZoom' : true,
-                            'draggableCursor': "crosshair",
-                            'scaleControl' : true
-                            };
-
-            myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
-
-            this.m_main_map = new google.maps.Map ( this.m_map_div, myOptions );
-            
-            if ( this.m_main_map )
+	    if ( !this.m_search_results_shown && ((this.m_current_view == 'advanced_map') || this.m_current_view == 'map') ) // This can only happen when the spec map is shown.
+	        {
+            if ( this.m_map_div && !this.m_main_map )
                 {
-                this.m_main_map.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
-                this.m_main_map.map_marker = null;
-                this.m_main_map.geo_width = null;
-                this.m_main_map._circle_overlay = null;
-                
-                var id = this.m_uid;
-                
-                google.maps.event.addListener ( this.m_main_map, 'click', function(in_event) { NouveauMapSearch.prototype.sMapClicked( in_event, id ); } );
-                };
-            };
-        
-        if ( this.m_map_search_results_map && this.m_main_map )
-            {
-            this.m_main_map.setCenter ( this.m_map_search_results_map.getCenter() );
-            this.m_main_map.setZoom ( this.m_map_search_results_map.getZoom() );
-            }
-        else if ( this.m_main_map )
-            {
-            this.m_main_map.setCenter ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
-            this.m_main_map.setZoom ( this.m_current_zoom );
-            };
+                var myOptions = {
+                                'center': new google.maps.LatLng ( this.m_current_lat, this.m_current_long ),
+                                'zoom': this.m_current_zoom,
+                                'mapTypeId': google.maps.MapTypeId.ROADMAP,
+                                'mapTypeControlOptions': { 'style': google.maps.MapTypeControlStyle.DROPDOWN_MENU },
+                                'zoomControl': true,
+                                'mapTypeControl': true,
+                                'disableDoubleClickZoom' : true,
+                                'draggableCursor': "crosshair",
+                                'scaleControl' : true
+                                };
+
+                myOptions.zoomControlOptions = { 'style': google.maps.ZoomControlStyle.LARGE };
+
+                this.m_main_map = new google.maps.Map ( this.m_map_div, myOptions );
             
-        if ( this.m_current_view == 'advanced_map' )
-            {
-            this.displayMarkerInAdvancedMap();
+                if ( this.m_main_map )
+                    {
+                    this.m_main_map.setOptions({'scrollwheel': false});   // For some reason, it ignores setting this in the options.
+                    this.m_main_map.map_marker = null;
+                    this.m_main_map.geo_width = null;
+                    this.m_main_map._circle_overlay = null;
+                
+                    var id = this.m_uid;
+                
+                    google.maps.event.addListener ( this.m_main_map, 'click', function(in_event) { NouveauMapSearch.prototype.sMapClicked( in_event, id ); } );
+                    };
+                };
+        
+            if ( this.m_map_search_results_map && this.m_main_map )
+                {
+                this.m_main_map.setCenter ( this.m_map_search_results_map.getCenter() );
+                this.m_main_map.setZoom ( this.m_map_search_results_map.getZoom() );
+                }
+            else if ( this.m_main_map )
+                {
+                this.m_main_map.setCenter ( new google.maps.LatLng ( this.m_current_lat, this.m_current_long ) );
+                this.m_main_map.setZoom ( this.m_current_zoom );
+                };
+            
+            if ( this.m_current_view == 'advanced_map' )
+                {
+                this.displayMarkerInAdvancedMap();
+                };
             };
 	    };
     
