@@ -1838,8 +1838,9 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
             if ( defined ( '_DEBUG_MODE_' ) ) $the_new_content .= "\n"; // These just make the code easier to look at.
             // This is the overall container div.
             $the_new_content .= '<div id="'.$uid.'_container" class="bmlt_nouveau_container">';
+                $single_meeting_id = intval($this->my_http_vars['single_meeting_id']);
                 // What we do here, is tell the client to create a global variable (in JS DOM), with a unique handler for this instance of the Nouveau search.
-                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options['bmlt_initial_view'].'\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".$this->get_plugin_path()."/themes/".$options['theme']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=', '', ".($options['bmlt_location_checked'] ? 'true' : 'false').", ".($options['bmlt_location_services'] == 0 || ($options['bmlt_location_services'] == 1 && weAreMobile($this->my_http_vars)) ? 'true' : 'false').");</script>";
+                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options['bmlt_initial_view'].'\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".$this->get_plugin_path()."/themes/".$options['theme']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=', '', ".($options['bmlt_location_checked'] ? 'true' : 'false').", ".($options['bmlt_location_services'] == 0 || ($options['bmlt_location_services'] == 1 && weAreMobile($this->my_http_vars)) ? 'true' : 'false').", ".$single_meeting_id.", ".$options['grace_period'].");</script>";
             $the_new_content .= '</div>';
 
             $in_content = self::replace_shortcode ( $in_content, $theshortcode, $the_new_content );

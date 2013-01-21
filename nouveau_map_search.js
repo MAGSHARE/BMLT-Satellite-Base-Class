@@ -47,7 +47,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                             in_initial_text,        ///< If there is any initial text to be displayed, it should be here.
                             in_checked_location,    ///< If the "Location" checkbox should be checked, this should be TRUE.
                             in_show_location,       ///< If this is true, then the location services will be available.
-                            in_single_meeting_id    ///< If this has an integer number in it, it will display the details for a single meeting.
+                            in_single_meeting_id,   ///< If this has an integer number in it, it will display the details for a single meeting.
+                            in_grace_period         ///< This is the number of minutes "grace" to give meetings in the location services ("Find Later Today").
                             )
 {
 	/****************************************************************************************
@@ -68,6 +69,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_checked_location = null;          ///< This is set at construction. If true, then the "Location" checkbox will be checked at startup.
     var m_show_location;                    ///< If this is true, then the location services will be available.
     var m_single_meeting_id = null;         ///< This will contain the ID of any single meeting being displayed.
+    var m_grace_period = null;              ///< This is the number of minutes "grace" to give meetings in the location services ("Find Later Today").
     
     var m_default_duration = null;          ///< The default meeting length.
     
@@ -206,6 +208,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_service_bodies = null;                ///< This will contain our Service bodies.
     var m_geocoder = null;                      ///< This will hold any active address lookup.
     var m_g_geo = null;                         ///< This will hold any Google Gears geo lookup.
+    
+    var m_pre_search_lat = null;                ///< This will hold the main latitude, prior to a search (used to replace it if the search fails).
+    var m_pre_search_long = null;               ///< The same for longitude.
     
     var m_semaphore_lookup_day = null;                  ///< If we are going to look up today or tomorrow, this holds that value.
     var m_semaphore_lookup_location_services = null;    ///< This is a flag, stating that we are in a location services search (pretends to be a map search).
@@ -2105,8 +2110,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
         var closer_a = document.createElement ( 'a' );
         closer_a.className = 'bmlt_nouveau_details_closer_a';
-        closer_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.hideDetails()' );
-        
+        closer_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.closeSingle()' );
+
         this.m_details_div.appendChild ( closer_a );
         this.m_details_div.appendChild ( this.m_details_inner_div );
         this.m_display_div.appendChild ( this.m_details_div );
@@ -2124,6 +2129,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             if ( this.m_geocoder )
                 {
                 var id = this.m_uid;
+                
+                // Save this, in case the lookup goes walkabout
+                this.m_pre_search_lat = this.m_current_lat;
+                this.m_pre_search_long = this.m_current_long;
+
                 var	status = this.m_geocoder.geocode ( { 'address' : this.m_text_input.value }, function ( in_geocode_response ) { NouveauMapSearch.prototype.sGeoCallback ( in_geocode_response, id ); } );
                 
                 this.m_text_input.select();
@@ -2574,6 +2584,19 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_display_div.className = 'bmlt_nouveau_div';
         this.m_details_div.className = 'bmlt_nouveau_details_div bmlt_nouveau_details_div_hidden';
         };
+                
+    /************************************************************************************//**
+    *	\brief  Closes the single results detail page.                                      *
+    ****************************************************************************************/
+    this.closeSingle = function()
+        {
+        this.hideDetails();
+        if ( this.m_single_meeting_id )
+            {
+            this.searchSpecButtonHit();
+            this.m_single_meeting_id = 0;
+            };
+        };
 
     /************************************************************************************//**
     *	\brief This function constructs a URI to the root server that reflects the search   *
@@ -2582,6 +2605,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.createSearchURI = function ()
         {
+        var is_advanced = (this.m_current_view == 'advanced_map') || (this.m_current_view == 'advanced_text') ;
+        
         var ret = this.m_root_server_uri; // We append a question mark, so all the rest can be added without worrying about this.
         
         ret += escape ( 'switcher=GetSearchResults' );
@@ -2624,76 +2649,99 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 uri_elements[index++][1] = 1;
                 };
             };
-            
-        if ( this.m_advanced_weekdays_shown )
-            {
-            for ( var c = 0; c < this.m_advanced_weekdays_array.length; c++ )
-                {
-                if ( this.m_advanced_weekdays_array[c].checked )
-                    {
-                    uri_elements[index] = new Array;
-                    uri_elements[index][0] = 'weekdays[]';
-                    uri_elements[index++][1] = c + 1;
-                    };
-                };
-            };
         
-        if ( this.m_advanced_formats_shown )
+        if ( this.m_single_meeting_id )
             {
-            for ( var c = 0; c < this.m_advanced_format_checkboxes_array.length; c++ )
-                {
-                if ( this.m_advanced_format_checkboxes_array[c].checked )
-                    {
-                    uri_elements[index] = new Array;
-                    uri_elements[index][0] = 'formats[]';
-                    uri_elements[index++][1] = this.m_advanced_format_checkboxes_array[c].value;
-                    };
-                };
-            };
-            
-        if ( this.m_advanced_service_bodies_shown )
-            {
-            for ( var c = 0; c < this.m_advanced_service_bodies_checkboxes_array.length; c++ )
-                {
-                if ( this.m_advanced_service_bodies_checkboxes_array[c].checked )
-                    {
-                    uri_elements[index] = new Array;
-                    uri_elements[index][0] = 'services[]';
-                    uri_elements[index++][1] = this.m_advanced_service_bodies_checkboxes_array[c].value;
-                    };
-                };
-            };
-			
-        if ( this.m_semaphore_lookup_day )
-            {
-            var todays_date = new Date ();
-            
-            var today_weekday = parseInt(todays_date.getDay()) + 1;
-            var today_hour = parseInt(todays_date.getHours());
-            var today_minute = parseInt(todays_date.getMinutes());
-            
-            // If today, then we look for this weekday, and a time after now.
-            if ( this.m_semaphore_lookup_day == 'today' )
-                {
-                uri_elements[index] = new Array;
-                uri_elements[index][0] = 'StartsAfterH';
-                uri_elements[index++][1] = today_hour.toString();
-                
-                uri_elements[index] = new Array;
-                uri_elements[index][0] = 'StartsAfterM';
-                uri_elements[index++][1] = today_minute.toString();
-                }
-            else if ( this.m_semaphore_lookup_day == 'tomorrow' )
-                {
-                today_weekday = (today_weekday < 7) ? today_weekday + 1 : 1;
-                };
-            
             uri_elements[index] = new Array;
-            uri_elements[index][0] = 'weekdays[]';
-            uri_elements[index++][1] = today_weekday.toString();
+            uri_elements[index][0] = 'meeting_ids[]';
+            uri_elements[index++][1] = this.m_single_meeting_id;
+            }
+        else
+            {
+            if ( is_advanced && this.m_advanced_weekdays_shown )
+                {
+                for ( var c = 0; c < this.m_advanced_weekdays_array.length; c++ )
+                    {
+                    if ( this.m_advanced_weekdays_array[c].checked )
+                        {
+                        uri_elements[index] = new Array;
+                        uri_elements[index][0] = 'weekdays[]';
+                        uri_elements[index++][1] = c + 1;
+                        };
+                    };
+                };
+        
+            if ( is_advanced && this.m_advanced_formats_shown )
+                {
+                for ( var c = 0; c < this.m_advanced_format_checkboxes_array.length; c++ )
+                    {
+                    if ( this.m_advanced_format_checkboxes_array[c].checked )
+                        {
+                        uri_elements[index] = new Array;
+                        uri_elements[index][0] = 'formats[]';
+                        uri_elements[index++][1] = this.m_advanced_format_checkboxes_array[c].value;
+                        };
+                    };
+                };
             
-            this.m_semaphore_lookup_day = null;
-            };	
+            if ( is_advanced && this.m_advanced_service_bodies_shown )
+                {
+                for ( var c = 0; c < this.m_advanced_service_bodies_checkboxes_array.length; c++ )
+                    {
+                    if ( this.m_advanced_service_bodies_checkboxes_array[c].checked )
+                        {
+                        uri_elements[index] = new Array;
+                        uri_elements[index][0] = 'services[]';
+                        uri_elements[index++][1] = this.m_advanced_service_bodies_checkboxes_array[c].value;
+                        };
+                    };
+                };
+            
+            if ( this.m_semaphore_lookup_day )
+                {
+                var todays_date = new Date ();
+            
+                var today_weekday = parseInt(todays_date.getDay()) + 1;
+                var today_hour = parseInt(todays_date.getHours());
+                var today_minute = parseInt(todays_date.getMinutes());
+            
+                today_minute -= parseInt ( this.m_grace_period );
+            
+                if ( today_minute < 0 )
+                    {
+                    today_hour--;
+                    today_minute += 60;
+                
+                    if ( today_hour < 0 )   // Can't go earlier than midnight.
+                        {
+                        today_hour = 0;
+                        today_minute = 0;
+                        };
+                    };
+            
+                // If today, then we look for this weekday, and a time after now.
+                if ( this.m_semaphore_lookup_day == 'today' )
+                    {
+                    uri_elements[index] = new Array;
+                    uri_elements[index][0] = 'StartsAfterH';
+                    uri_elements[index++][1] = today_hour.toString();
+                
+                    uri_elements[index] = new Array;
+                    uri_elements[index][0] = 'StartsAfterM';
+                    uri_elements[index++][1] = today_minute.toString();
+                    }
+                else if ( this.m_semaphore_lookup_day == 'tomorrow' )
+                    {
+                    today_weekday = (today_weekday < 7) ? today_weekday + 1 : 1;
+                    };
+            
+                uri_elements[index] = new Array;
+                uri_elements[index][0] = 'weekdays[]';
+                uri_elements[index++][1] = today_weekday.toString();
+            
+                this.m_semaphore_lookup_day = null;
+                };	
+            };
         
         // Concatenate all the various parameters we gathered.
         for ( var i = 0; i < index; i++ )
@@ -2828,6 +2876,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         {
         this.displayThrobber();
         
+        // Save this, in case the lookup goes walkabout
+        this.m_pre_search_lat = this.m_current_lat;
+        this.m_pre_search_long = this.m_current_long;
+        
         var uid = this.m_uid;
         
         navigator.geolocation.getCurrentPosition (  function (in_position) { NouveauMapSearch.prototype.sWhereAmI_CallBack(in_position,uid) },
@@ -2920,6 +2972,10 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.loadResultsMap();
         this.redrawResultMapMarkers();
         this.validateGoButtons();
+        if ( this.m_single_meeting_id )
+            {
+            this.detailsButtonHit(this.m_single_meeting_id);
+            };
         };
     
     /************************************************************************************//**
@@ -3812,6 +3868,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_checked_location = in_checked_location;
     this.m_show_location = in_show_location;
     this.m_single_meeting_id = in_single_meeting_id;
+    this.m_grace_period = in_grace_period;
     
     this.m_advanced_weekdays_shown = false;
     this.m_advanced_formats_shown = false;
@@ -4123,8 +4180,17 @@ NouveauMapSearch.prototype.sFormatCallback = function ( in_response_object, ///<
         }
     else
         {
+        if ( context.m_pre_search_lat && context.m_pre_search_long )
+            {
+            context.m_current_lat = context.m_pre_search_lat;
+            context.m_current_long = context.m_pre_search_long;
+            };
+        
         alert ( g_Nouveau_no_search_results_text );
         };
+    
+    context.m_pre_search_lat = null;
+    context.m_pre_search_long = null;
     };
 	
 /****************************************************************************************//**
@@ -4148,17 +4214,33 @@ NouveauMapSearch.prototype.sServiceBodiesCallback = function (  in_response_obje
             context.m_service_bodies = new_object;
             context.buildDOMTree_Advanced_Service_Bodies_Content();
             context.setAdvancedServiceBodiesDisclosure();
-            context.hideThrobber();
-            if ( context.m_current_view == 'text' || context.m_current_view == 'advanced_text' )
+            if ( context.m_single_meeting_id )
                 {
-                context.m_text_input.focus();  // This just starts them off with the correct focus.
+                context.beginSearch();
+                }
+            else
+                {
+                context.hideThrobber();
+                if ( context.m_current_view == 'text' || context.m_current_view == 'advanced_text' )
+                    {
+                    context.m_text_input.focus();  // This just starts them off with the correct focus.
+                    };
                 };
             };
         }
     else
         {
+        if ( context.m_pre_search_lat && context.m_pre_search_long )
+            {
+            context.m_current_lat = context.m_pre_search_lat;
+            context.m_current_long = context.m_pre_search_long;
+            };
+        
         alert ( g_Nouveau_no_search_results_text );
         };
+    
+    context.m_pre_search_lat = null;
+    context.m_pre_search_long = null;
     };
 	
 /****************************************************************************************//**
@@ -4192,18 +4274,39 @@ NouveauMapSearch.prototype.sMeetingsCallback = function (   in_response_object, 
                 }
             else
                 {
+                if ( context.m_pre_search_lat && context.m_pre_search_long )
+                    {
+                    context.m_current_lat = context.m_pre_search_lat;
+                    context.m_current_long = context.m_pre_search_long;
+                    };
+                    
                 alert ( g_Nouveau_no_search_results_text );
                 };
             }
         else
             {
+            if ( context.m_pre_search_lat && context.m_pre_search_long )
+                {
+                context.m_current_lat = context.m_pre_search_lat;
+                context.m_current_long = context.m_pre_search_long;
+                };
+                    
             alert ( g_Nouveau_no_search_results_text );
             };
         }
     else
         {
+        if ( context.m_pre_search_lat && context.m_pre_search_long )
+            {
+            context.m_current_lat = context.m_pre_search_lat;
+            context.m_current_long = context.m_pre_search_long;
+            };
+        
         alert ( g_Nouveau_no_search_results_text );
         };
+    
+    context.m_pre_search_lat = null;
+    context.m_pre_search_long = null;
     };
     
 /********************************************************************************************
@@ -4275,16 +4378,6 @@ NouveauMapSearch.prototype.sWhereAmI_Fail_Final = function (    in_error,   ///<
 {
     eval ('var context = g_instance_' + in_uid + '_js_handler;' );
     context.handleWhereAmI_Fail_Final(in_error);
-};
-
-/********************************************************************************************
-*	\brief 
-********************************************************************************************/
-NouveauMapSearch.prototype.sBlackberry_callback = function (    in_uid
-                                                            )
-{
-    eval ('var context = g_instance_' + in_uid + '_js_handler;' );
-    context.handleBlackberry_callback();
 };
 
 /********************************************************************************************

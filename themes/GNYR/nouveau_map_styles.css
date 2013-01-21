@@ -962,9 +962,21 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
+        div.bmlt_nouveau_search_results_map_inner_container_div
+{
+    background-color:#f30;
+    padding:1px;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
         div.bmlt_nouveau_search_results_map_div
 {
     height: 400px;
+    border:1px solid #f30;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
 }
 
 div#bmlt_page_items.bmlt_page_items
