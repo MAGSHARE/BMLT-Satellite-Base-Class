@@ -3803,7 +3803,9 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.validateGoButtons = function()
         {
-        if ( !this.m_geocoder && !((this.m_current_view == 'text') && this.m_location_checkbox.checked && (!this.m_text_input.value || (this.m_text_input.value == this.m_text_input.defaultValue))) && ((this.m_current_view == 'advanced_map') || (this.m_current_view == 'map') || !this.m_location_checkbox.checked || !this.m_text_input.value || (this.m_text_input.value == this.m_text_input.defaultValue)) )
+        var valid = !this.m_geocoder && !((this.m_current_view == 'text') && this.m_location_checkbox.checked && (!this.m_text_input.value || (this.m_text_input.value == this.m_text_input.defaultValue)));
+        
+        if ( valid )
             {
             this.m_advanced_go_a.className = 'bmlt_nouveau_advanced_go_button_a';
             this.m_advanced_go_a.setAttribute ( 'href', 'javascript:g_instance_' + this.m_uid + '_js_handler.goButtonHit()' );
