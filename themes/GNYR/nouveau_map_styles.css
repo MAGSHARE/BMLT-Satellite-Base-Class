@@ -1124,13 +1124,7 @@ div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
         div.bmlt_nouveau_details_mask_div
 {
-    position:absolute;
-    margin:0;
-    padding:0;
-    top:0px;
-    left:0px;
-    bottom:0px;
-    right:0px;
+    display:none;
 }
 
 div#bmlt_page_items.bmlt_page_items
