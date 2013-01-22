@@ -2146,16 +2146,19 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                     if ( google.maps.INVALID_REQUEST != status )
                         {
                         alert ( g_Nouveau_lookup_location_failed );
+                        this.hideThrobber();
                         }
                     else
                         {
                         if ( google.maps.ZERO_RESULTS != status )
                             {
                             alert ( g_Nouveau_lookup_location_failed );
+                            this.hideThrobber();
                             }
                         else
                             {
                             alert ( g_Nouveau_lookup_location_server_error );
+                            this.hideThrobber();
                             };
                         };
                     };
@@ -2163,11 +2166,13 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             else	// None of that stuff is defined if we couldn't create the geocoder.
                 {
                 alert ( g_Nouveau_lookup_location_server_error );
+                this.hideThrobber();
                 };
             }
         else
             {
 			alert ( g_Nouveau_lookup_location_failed );
+            this.hideThrobber();
             };
         };
 	
@@ -2917,6 +2922,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
 		else
 		    {
             alert ( g_Nouveau_cant_lookup_display );
+            this.hideThrobber();
 		    };
         
         this.m_semaphore_lookup_location_services = false;
@@ -2941,6 +2947,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_semaphore_lookup_set_marker = false;
                 this.m_semaphore_lookup_location_services = false;
                 alert ( g_Nouveau_cant_lookup_display );
+                this.hideThrobber();
             break;
             };
         };
@@ -4192,6 +4199,7 @@ NouveauMapSearch.prototype.sFormatCallback = function ( in_response_object, ///<
             };
         
         alert ( g_Nouveau_no_search_results_text );
+        this.hideThrobber();
         };
     
     context.m_pre_search_lat = null;
@@ -4242,6 +4250,7 @@ NouveauMapSearch.prototype.sServiceBodiesCallback = function (  in_response_obje
             };
         
         alert ( g_Nouveau_no_search_results_text );
+        this.hideThrobber();
         };
     
     context.m_pre_search_lat = null;
