@@ -382,20 +382,8 @@ class BMLTUTestPlugin extends BMLTPlugin
         if ( $root_server_root )
             {
             $root_server = $root_server_root."/client_interface/xhtml/index.php";
-//             
-//             if ( $load_server_header )
-//                 {
-//                 $head_content .= bmlt_satellite_controller::call_curl ( "$root_server?switcher=GetHeaderXHTML".$this->my_params );
-//                 }
             
             $additional_css = '.bmlt_container * {margin:0;padding:0;text-align:center }';
-
-            if ( $options['push_down_more_details'] )
-                {
-                $additional_css .= 'table#bmlt_container div.c_comdef_search_results_single_ajax_div{position:static;margin:0;width:100%;}';
-                $additional_css .= 'table#bmlt_container div.c_comdef_search_results_single_close_box_div{position:relative;left:100%;margin-left:-18px;}';
-                $additional_css .= 'table#bmlt_container div#bmlt_contact_us_form_div{position:static;width:100%;margin:0;}';
-                }
             
             if ( $options['additional_css'] )
                 {
@@ -407,17 +395,6 @@ class BMLTUTestPlugin extends BMLTPlugin
                 $head_content .= '<style type="text/css">'.preg_replace ( "|\s+|", " ", $additional_css ).'</style>';
                 }
             }
-        
-        $head_content .= '<script type="text/javascript" src="';
-        
-        $head_content .= htmlspecialchars ( $url );
-        
-        if ( !defined ('_DEBUG_MODE_' ) )
-            {
-            $head_content .= 'js_stripper.php?filename=';
-            }
-        
-        $head_content .= 'javascript.js"></script>';
         
         return $head_content;
         }

@@ -2087,16 +2087,8 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         $ret .= "var c_g_BMLTPlugin_images = '".htmlspecialchars ( $this->get_plugin_path()."/google_map_images" )."';";
         $ret .= "var c_g_BMLTPlugin_default_location_text = '".$this->process_text ( self::$local_new_map_text_entry_default_text )."';";
         $ret .= '</script>';
-       
-        $url = $this->get_plugin_path();
-        if ( defined ( '_DEBUG_MODE_' ) ) // In debug mode, we use unoptimized versions of these files for easier tracking.
-            {
-            $ret .= '<script src="'.htmlspecialchars ( $url ).'map_search.js" type="text/javascript"></script>';
-            }
-        else
-            {
-            $ret .= '<script src="'.htmlspecialchars ( $url ).'js_stripper.php?filename=map_search.js" type="text/javascript"></script>';
-            }
+        $ret .= '<script src="'.htmlspecialchars ( $this->get_plugin_path() ).(!defined ( '_DEBUG_MODE_' ) ? 'js_stripper.php?filename=' : '').'javascript.js" type="text/javascript"></script>';
+        $ret .= '<script src="'.htmlspecialchars ( $this->get_plugin_path() ).(!defined ( '_DEBUG_MODE_' ) ? 'js_stripper.php?filename=' : '').'map_search.js" type="text/javascript"></script>';
 
         return $ret;
         }
@@ -2112,6 +2104,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         // Include the Google Maps API V3 files.
         $ret = '<script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>';
         $ret .= '<script type="text/javascript" src="http://maps.googleapis.com/maps/api/js?sensor=false&libraries=geometry"></script>';       
+        $ret .= '<script src="'.htmlspecialchars ( $this->get_plugin_path() ).(!defined ( '_DEBUG_MODE_' ) ? 'js_stripper.php?filename=' : '').'javascript.js" type="text/javascript"></script>';
         $ret .= '<script src="'.htmlspecialchars ( $this->get_plugin_path() ).(!defined ( '_DEBUG_MODE_' ) ? 'js_stripper.php?filename=' : '').'nouveau_map_search.js" type="text/javascript"></script>';
 
         return $ret;
@@ -2442,14 +2435,8 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         $ret .= "var c_g_BMLTPlugin_images = '$img_url';";
         $ret .= '</script>';
        
-        if ( defined ( '_DEBUG_MODE_' ) ) // In debug mode, we use unoptimized versions of these files for easier tracking.
-            {
-            $ret .= '<script src="'.htmlspecialchars ( $url ).'fast_mobile_lookup.js" type="text/javascript"></script>';
-            }
-        else
-            {
-            $ret .= '<script src="'.htmlspecialchars ( $url ).'js_stripper.php?filename=fast_mobile_lookup.js" type="text/javascript"></script>';
-            }
+        $ret .= '<script src="'.htmlspecialchars ( $this->get_plugin_path() ).(!defined ( '_DEBUG_MODE_' ) ? 'js_stripper.php?filename=' : '').'javascript.js" type="text/javascript"></script>';
+        $ret .= '<script src="'.htmlspecialchars ( $this->get_plugin_path() ).(!defined ( '_DEBUG_MODE_' ) ? 'js_stripper.php?filename=' : '').'fast_mobile_lookup.js" type="text/javascript"></script>';
 
         return $ret;
         }
