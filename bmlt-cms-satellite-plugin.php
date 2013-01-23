@@ -1691,7 +1691,6 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
             $options = $this->getBMLTOptions_by_id ( $options_id );
             $uid = htmlspecialchars ( 'bmlt_nouveau_'.uniqid() );
             
-            if ( defined ( '_DEBUG_MODE_' ) ) $the_new_content .= "\n"; // These just make the code easier to look at.
             $the_new_content = '<noscript>'.$this->process_text ( self::$local_noscript ).'</noscript>';    // We let non-JS browsers know that this won't work for them.
             
             if ( $first )   // We only load this the first time.
@@ -1835,10 +1834,13 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= '</script>';
                 $first = false;
                 }
+            
+            $in_options_id = $options['id'];
+            
             if ( defined ( '_DEBUG_MODE_' ) ) $the_new_content .= "\n"; // These just make the code easier to look at.
             // This is the overall container div.
             $the_new_content .= '<div id="'.$uid.'_container" class="bmlt_nouveau_container">';
-                $single_meeting_id = intval($this->my_http_vars['single_meeting_id']);
+                $single_meeting_id = isset ( $this->my_http_vars['single_meeting_id'] ) ? intval($this->my_http_vars['single_meeting_id']) : 0;
                 // What we do here, is tell the client to create a global variable (in JS DOM), with a unique handler for this instance of the Nouveau search.
                 $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options['bmlt_initial_view'].'\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".$this->get_plugin_path()."themes/".$options['theme']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=', '', ".($options['bmlt_location_checked'] ? 'true' : 'false').", ".($options['bmlt_location_services'] == 0 || ($options['bmlt_location_services'] == 1 && weAreMobile($this->my_http_vars)) ? 'true' : 'false').", ".$single_meeting_id.", ".$options['grace_period'].");</script>";
             $the_new_content .= '</div>';
@@ -2123,7 +2125,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         $options = $this->getBMLTOptions_by_id ( $in_options_id );
 
         // Declare the various globals and display strings. This is how we pass strings to the JavaScript, as opposed to the clunky way we do it in the root server.
-        $ret .= '<script type="text/javascript">';
+        $ret = '<script type="text/javascript">';
         $ret .= 'var c_ms_'.$in_uid.' = null;';
         $ret .= 'var c_g_distance_units_are_km_'.$in_uid.' = '.((strtolower ($options['distance_units']) == 'km' ) ? 'true' : 'false').';';
         $ret .= 'var c_g_distance_units_'.$in_uid.' = \''.((strtolower ($options['distance_units']) == 'km' ) ? $this->process_text ( self::$local_mobile_kilometers ) : $this->process_text ( self::$local_mobile_miles ) ).'\';';
