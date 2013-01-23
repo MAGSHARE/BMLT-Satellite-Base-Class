@@ -1,4 +1,5 @@
 <?php
+// Sverige
 /****************************************************************************************//**
 *   \file   lang_sv.php                                                                     *
 *                                                                                           *
@@ -50,6 +51,7 @@ class BMLT_Localized_BaseClass
     static  $local_options_access_failure = 'You are not allowed to perform this operation.';               ///< This is displayed if a user attempts a no-no.
     static  $local_options_unsaved_message = 'You have unsaved changes. Are you sure you want to leave without saving them?';   ///< This is displayed if a user attempts to leave a page without saving the options.
     static  $local_options_settings_id_prompt = 'The ID for this Setting is ';                              ///< This is so that users can see the ID for the setting.
+    static  $local_options_settings_location_checkbox_label = 'Text Searches Start Off with the "Location" Checkbox On.';                              ///< This is so that users can see the ID for the setting.
     
     /// These are all for the admin page option sheets.
     static  $local_options_name_label = 'Setting Name:';                    ///< The Label for the setting name item.
@@ -61,41 +63,36 @@ class BMLT_Localized_BaseClass
     static  $local_options_no_new_search_string = 'Enter a New Search URL'; ///< The Value to use for a new search with no URL.
     static  $local_options_no_gkey_string = 'Enter a New API Key';          ///< The Value to use for a new search with no URL.
     static  $local_options_test_server = 'Test';                            ///< This is the title for the "test server" button.
-    static  $local_options_fetch_server_langs = 'Fetch Server Languages';   ///< This is the title for the "Fetch Server Languages" button.
-    static  $local_options_fetch_server_langs_tooltip = 'If you press this button, the server will be queried for its available and default languages.';    ///< This is the tooltip for the "Fetch Server Languages" button.
     static  $local_options_test_server_success = 'Version ';                ///< This is a prefix for the version, on success.
     static  $local_options_test_server_failure = 'This Root Server URL is not Valid';                       ///< This is a prefix for the version, on failure.
     static  $local_options_test_server_tooltip = 'This tests the root server, to see if it is OK.';         ///< This is the tooltip text for the "test server" button.
     static  $local_options_map_label = 'Select a Center Point and Zoom Level for Map Displays';             ///< The Label for the map.
-    static  $local_options_gkey_caveat = 'These are only necessary for old-style BMLT implementations';     ///< This lets people know that this is not necessary for newer installs.
-    static  $local_options_mobile_legend = 'These are for the fast mobile lookup';                          ///< This indicates that the enclosed settings are for the fast mobile lookup.
+    static  $local_options_mobile_legend = 'These affect the Various Interactive Searches (such as Map, Mobile and Advanced)';  ///< This indicates that the enclosed settings are for the fast mobile lookup.
     static  $local_options_mobile_grace_period_label = 'Grace Period:';     ///< When you do a "later today" search, you get a "Grace Period."
     static  $local_options_mobile_time_offset_label = 'Time Offset:';       ///< This may have an offset (time zone difference) from the main server.
     static  $local_options_initial_view = array (                           ///< The list of choices for presentation in the popup.
-                                                '' => 'Root Server Decides', 'map' => 'Map', 'text' => 'Text', 'advanced' => 'Advanced (Server Decides)', 'advanced_map' => 'Advanced Map', 'advanced_text' => 'Advanced Text'
+                                                'map' => 'Map', 'text' => 'Text', 'advanced_map' => 'Advanced Map', 'advanced_text' => 'Advanced Text'
                                                 );
     static  $local_options_initial_view_prompt = 'Initial Search Type:';    ///< The label for the initial view popup.
     static  $local_options_theme_prompt = 'Select a Color Theme:';          ///< The label for the theme selection popup.
-    static  $local_options_push_down_checkbox_label = '"More Details" Windows "push down" the main list or map, as opposed to popping up over them.';       ///< The label for the "more details" checkbox.
     static  $local_options_more_styles_label = 'Add CSS Styles to the Plugin:';                             ///< The label for the Additional CSS textarea.
-    static  $local_single_meeting_tooltip = 'Follow This Link for Details About This Meeting.'; ///< The tooltip shown for a single meeting.
-    static  $local_gm_link_tooltip = 'Follow This Link to be Taken to A Google Maps Location for This Meeting.';    ///< The tooltip shown for the Google Maps link.
-    static  $local_not_enough_for_old_style = 'In order to display the "classic" BMLT window, you need to have both a root server and a Google Maps API key in the corresponding setting.'; ///< Displayed if there is no GMAP API key.
-    static  $local_options_language_prompt = 'Language:';                   ///< This is for the language select.
     static  $local_options_distance_prompt = 'Distance Units:';             ///< This is for the distance units select.
     static  $local_options_distance_disclaimer = 'This will not affect all of the displays.';               ///< This tells the admin that only some stuff will be affected.
-    static  $local_options_grace_period_disclaimer = 'Minutes Elapsed Before A Meeting is Considered "Past."';      ///< This explains what the grace period means.
-    static  $local_options_time_offset_disclaimer = 'Hours of Difference From the Main Server.';            ///< This explains what the time offset means.
+    static  $local_options_grace_period_disclaimer = 'Minutes Elapsed Before A Meeting is Considered "Past" (For the fast Lookup Searches).';      ///< This explains what the grace period means.
+    static  $local_options_time_offset_disclaimer = 'Hours of Difference From the Main Server (This is usually not necessary).';            ///< This explains what the time offset means.
     static  $local_options_miles = 'Miles';                                 ///< The string for miles.
     static  $local_options_kilometers = 'Kilometers';                       ///< The string for kilometers.
+    static  $local_options_selectLocation_checkbox_text = 'Only Display Location Services for Mobile Devices';  ///< The label for the location services checkbox.
     
     static  $local_no_root_server = 'You need to provide a root server URI in order for this to work.';    ///< Displayed if there was no root server provided.
-    
+
     /// These are for the actual search displays
     static  $local_select_search = 'Select a Quick Search';                 ///< Used for the "filler" in the quick search popup.
     static  $local_clear_search = 'Clear Search Results';                   ///< Used for the "Clear" item in the quick search popup.
     static  $local_menu_new_search_text = 'New Search';                     ///< For the new search menu in the old-style BMLT search.
     static  $local_cant_find_meetings_display = 'No Meetings Found In This Search'; ///< When the new map search cannot find any meetings.
+    static  $local_single_meeting_tooltip = 'Follow This Link for Details About This Meeting.'; ///< The tooltip shown for a single meeting.
+    static  $local_gm_link_tooltip = 'Follow This Link to be Taken to A Google Maps Location for This Meeting.';    ///< The tooltip shown for the Google Maps link.
     
     /// These are for the change display
     static  $local_change_label_date =  'Change Date:';                     ///< The date when the change was made.
@@ -107,7 +104,148 @@ class BMLT_Localized_BaseClass
     
     /// A simple message for most <noscript> elements. We have a different one for the older interactive search (below).
     static  $local_noscript = 'This will not work, because you do not have JavaScript active.';             ///< The string displayed in a <noscript> element.
-                                    
+    
+    /************************************************************************************//**
+    *                   NEW SHORTCODE STATIC DATA MEMBERS (LOCALIZABLE)                     *
+    ****************************************************************************************/
+    
+    /// These are all for the [[bmlt_nouveau]] shortcode.
+    static  $local_nouveau_advanced_button = 'More Options';                ///< The button name for the advanced search in the nouveau search.
+    static  $local_nouveau_map_button = 'Search By Map Instead of Text';    ///< The button name for the map search in the nouveau search.
+    static  $local_nouveau_text_button = 'Search By Text instead of Map';   ///< The button name for the text search in the nouveau search.
+    static  $local_nouveau_text_go_button = 'GO';                           ///< The button name for the "GO" button in the text search in the nouveau search.
+    static  $local_nouveau_text_item_default_text = 'Enter Search Text';    ///< The text that fills an empty text item.
+    static  $local_nouveau_text_location_label_text = 'This is a location or postcode';         ///< The label text for the location checkbox.
+    static  $local_nouveau_advanced_map_radius_label_1 = 'Find Meetings Within';                ///< The label text for the radius popup.
+    static  $local_nouveau_advanced_map_radius_label_2 = 'of the Marker Location.';             ///< The second part of the label.
+    static  $local_nouveau_advanced_map_radius_value_auto = 'An Automatically Chosen Radius';   ///< The second part of the label, if Miles
+    static  $local_nouveau_advanced_map_radius_value_km = 'Km';                                 ///< The second part of the popup value, if Kilometers
+    static  $local_nouveau_advanced_map_radius_value_mi = 'Miles';                              ///< The second part of the popup value, if Miles
+    static  $local_nouveau_advanced_weekdays_disclosure_text = 'Selected Weekdays';             ///< The text that is used for the weekdays disclosure link.
+    static  $local_nouveau_advanced_formats_disclosure_text = 'Selected Formats';               ///< The text that is used for the formats disclosure link.
+    static  $local_nouveau_advanced_service_bodies_disclosure_text = 'Selected Service Bodies'; ///< The text that is used for the service bodies disclosure link.
+    static  $local_nouveau_select_search_spec_text = 'Specify A New Search';                    ///< The text that is used for the link that tells you to select the search specification.
+    static  $local_nouveau_select_search_results_text = 'View the Results of the Last Search';  ///< The text that is used for the link that tells you to select the search results.
+    static  $local_nouveau_cant_find_meetings_display = 'No Meetings Found In This Search';     ///< When the new map search cannot find any meetings.
+    static  $local_nouveau_cant_lookup_display = 'Unable to determine your location.';          ///< Displayed if the app is unable to determine the location.
+    static  $local_nouveau_display_map_results_text = 'Display the Search Results in a Map';    ///< The text for the display map results disclosure link.
+    static  $local_nouveau_display_list_results_text = 'Display the Search Results in a List';  ///< The text for the display list results disclosure link.
+    static  $local_nouveau_table_header_array = array ( 'Nation', 'State', 'County', 'Town', 'Meeting Name', 'Weekday', 'Start Time', 'Location', 'Format', ' ' );
+    static  $local_nouveau_weekday_long_array = array ( 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' );
+    static  $local_nouveau_weekday_short_array = array ( 'Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat' );
+    
+    static  $local_nouveau_meeting_results_count_sprintf_format = '%s Meetings Found';
+    static  $local_nouveau_meeting_results_selection_count_sprintf_format = '%s Meetings Selected, From %s Meetings Found';
+    static  $local_nouveau_meeting_results_single_selection_count_sprintf_format = '1 Meeting Selected, From %s Meetings Found';
+    static  $local_nouveau_single_time_sprintf_format = 'Meeting gathers every %s, at %s, and lasts for %s.';
+    static  $local_nouveau_single_duration_sprintf_format_1_hr = '1 hour';
+    static  $local_nouveau_single_duration_sprintf_format_mins = '%s minutes';
+    static  $local_nouveau_single_duration_sprintf_format_hrs = '%s hours';
+    static  $local_nouveau_single_duration_sprintf_format_hr_mins = '1 hour and %s minutes';
+    static  $local_nouveau_single_duration_sprintf_format_hrs_mins = '%s hours and %s minutes';
+    
+    /// These are all variants of the text that explains the location of a single meeting (Details View).
+    static  $local_nouveau_location_sprintf_format_loc_street_info = '%s, %s (%s)';
+    static  $local_nouveau_location_sprintf_format_loc_street = '%s, %s';
+    static  $local_nouveau_location_sprintf_format_street_info = '%s (%s)';
+    static  $local_nouveau_location_sprintf_format_loc_info = '%s (%s)';
+    static  $local_nouveau_location_sprintf_format_street = '%s';
+    static  $local_nouveau_location_sprintf_format_loc = '%s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_town_province_zip = '%s, %s (%s), %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_town_province_zip = '%s, %s, %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_town_province_zip = '%s (%s), %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_town_province_zip = '%s (%s), %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_town_province_zip = '%s, %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_town_province_zip = '%s, %s, %s %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_town_province = '%s, %s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_town_province = '%s, %s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_town_province = '%s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_town_province = '%s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_town_province = '%s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_town_province = '%s, %s %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_town_zip = '%s, %s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_town_zip = '%s, %s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_town_zip = '%s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_town_zip = '%s (%s), %s %s';
+    static  $local_nouveau_location_sprintf_format_single_street_town_zip = '%s, %s %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_town_zip = '%s, %s %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_province_zip = '%s, %s (%s), %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_province_zip = '%s, %s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_province_zip = '%s (%s), %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_province_zip = '%s (%s), %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_province_zip = '%s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_province_zip = '%s, %s, %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_province = '%s, %s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_province = '%s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_province = '%s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_province = '%s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_street_province = '%s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_province = '%s, %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info_zip = '%s, %s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_street_zip = '%s, %s, %s';
+    static  $local_nouveau_location_sprintf_format_single_street_info_zip = '%s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_info_zip = '%s (%s), %s';
+    static  $local_nouveau_location_sprintf_format_single_street_zip = '%s, %s';
+    static  $local_nouveau_location_sprintf_format_single_loc_zip = '%s, %s';
+    
+    static  $local_nouveau_location_sprintf_format_single_loc_street_info = '%s, %s (%s)';
+    static  $local_nouveau_location_sprintf_format_single_loc_street = '%s, %s,';
+    static  $local_nouveau_location_sprintf_format_single_street_info = '%s (%s)';
+    static  $local_nouveau_location_sprintf_format_single_loc_info = '%s (%s)';
+    static  $local_nouveau_location_sprintf_format_single_street = '%s';
+    static  $local_nouveau_location_sprintf_format_single_loc = '%s';
+    
+    static  $local_nouveau_location_sprintf_format_wtf = 'No Location Given';
+    
+    static  $local_nouveau_location_services_set_my_location_advanced_button = 'Set the Marker to My Current Location';
+    static  $local_nouveau_location_services_find_all_meetings_nearby_button = 'Find Meetings Near Me';
+    static  $local_nouveau_location_services_find_all_meetings_nearby_later_today_button = 'Find Meetings Near Me Later Today';
+    static  $local_nouveau_location_services_find_all_meetings_nearby_tomorrow_button = 'Find Meetings Near Me Tomorrow';
+    
+    static  $local_nouveau_location_sprintf_format_duration_title = 'This meeting is %s hours and %s minutes long.';
+    static  $local_nouveau_location_sprintf_format_duration_hour_only_title = 'This meeting is 1 hour long.';
+    static  $local_nouveau_location_sprintf_format_duration_hour_only_and_minutes_title = 'This meeting is 1 hour and %s minutes long.';
+    static  $local_nouveau_location_sprintf_format_duration_hours_only_title = 'This meeting is %s hours long.';
+    static  $local_nouveau_lookup_location_failed = "The address lookup was not completed successfully.";
+    static  $local_nouveau_lookup_location_server_error = "The address lookup was not completed successfully, due to a server error.";
+    static  $local_nouveau_time_sprintf_format = '%d:%02d %s';
+    static  $local_nouveau_am = 'AM';
+    static  $local_nouveau_pm = 'PM';
+    static  $local_nouveau_default_duration = '1:30';
+    static  $local_nouveau_noon = 'Noon';
+    static  $local_nouveau_midnight = 'Midnight';
+    static  $local_nouveau_advanced_map_radius_value_array = "0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 50.0, 100.0";
+    static  $local_nouveau_meeting_details_link_title = 'Get more details about this meeting.';
+
+    static  $local_nouveau_single_formats_label = 'Meeting Formats:';
+    static  $local_nouveau_single_service_body_label = 'Service Body:';
+
+    static  $local_nouveau_prompt_array = array (
+                                                'weekday_tinyint' => 'Weekday',
+                                                'start_time' => 'Start Time',
+                                                'duration_time' => 'Duration',
+                                                'formats' => 'Format',
+                                                'distance_in_miles' => 'Distance In Miles',
+                                                'distance_in_km' => 'Distance In Kilometers',
+                                                'meeting_name' => 'Meeting Name',
+                                                'location_text' => 'Location Name',
+                                                'location_street' => 'Street Address',
+                                                'location_city_subsection' => 'Borough',
+                                                'location_neighborhood' => 'Neighborhood',
+                                                'location_municipality' => 'Town',
+                                                'location_sub_province' => 'County',
+                                                'location_province' => 'State',
+                                                'location_nation' => 'Nation',
+                                                'location_postal_code_1' => 'Zip Code',
+                                                'location_info' => 'Extra Information'
+                                                );
+                                                
     /************************************************************************************//**
     *                      STATIC DATA MEMBERS (SPECIAL LOCALIZABLE)                        *
     ****************************************************************************************/
