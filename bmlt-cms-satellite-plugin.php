@@ -1395,6 +1395,17 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                         if ( isset ( $this->my_http_vars['BMLTPlugin_AJAX_Call'] ) )
                             {
                             $ret = trim($test->get_server_version());
+                            
+                            $ret = explode ( ".", $ret );
+                            
+                            if ( (intval ( $ret[0] ) < 1) || ((intval ( $ret[0] ) == 1) && (intval ( $ret[1] ) < 10))  || ((intval ( $ret[0] ) == 1) && (intval ( $ret[1] ) == 10) && (intval ( $ret[2] ) < 3)) )
+                                {
+                                $ret = '';
+                                }
+                            else
+                                {
+                                $ret = implode ( '.', $ret );
+                                }
                             }
                         else
                             {
