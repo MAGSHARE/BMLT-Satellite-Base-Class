@@ -3289,7 +3289,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                     )
         {
         var center = new google.maps.LatLng ( in_meeting_object.latitude, in_meeting_object.longitude );
-        var zoom = this.m_map_search_results_map.getZoom() + 1; // g_Nouveau_default_details_map_zoom;
+        var zoom = g_Nouveau_default_details_map_zoom;
         
         if ( !this.m_details_map )
             {
