@@ -1078,7 +1078,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
         
         if ( is_array ( $options ) && count ( $options ) && isset ( $options['id'] ) )
             {
-
+            $ret .= '<script src="'.htmlspecialchars ( $this->get_plugin_path() ).(!defined ( '_DEBUG_MODE_' ) ? 'js_stripper.php?filename=' : '').'javascript.js" type="text/javascript"></script>';
             $ret .= '<div class="BMLTPlugin_option_sheet" id="BMLTPlugin_option_sheet_'.$in_options_index.'_div" style="display:'.htmlspecialchars ( $display_mode ).'">';
                 $ret .= '<h2 class="BMLTPlugin_option_id_h2">'.$this->process_text ( self::$local_options_settings_id_prompt ).htmlspecialchars ( $options['id'] ).'</h2>';
                 $ret .= '<div class="BMLTPlugin_option_sheet_line_div">';
