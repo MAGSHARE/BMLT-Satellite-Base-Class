@@ -9,7 +9,7 @@
 *   little is done before execution time. A great deal of care has been taken to allow      *
 *   robust, complete CSS presentation management.                                           *
 *                                                                                           *
-*   \version 2.0                                                                            *
+*   \version 3.0                                                                            *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -535,6 +535,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         this.m_location_checkbox.id = this.m_uid + '_location_checkbox';
         this.m_location_checkbox.className = 'bmlt_nouveau_text_loc_checkbox';
         this.m_location_checkbox.checked = this.m_checked_location;
+        this.m_location_checkbox.defaultChecked = this.m_location_checkbox.checked; // For IE9.
         var uid = this.m_uid;
         this.m_location_checkbox.onchange = function () { NouveauMapSearch.prototype.sLocationCheckboxHit ( uid ); };
                 
@@ -3877,8 +3878,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     this.m_theme_dir = in_theme_dir;
     this.m_root_server_uri = in_root_server_uri;
     this.m_initial_text = in_initial_text;
-    this.m_checked_location = in_checked_location;
-    this.m_show_location = in_show_location;
+    this.m_checked_location = in_checked_location ? true : false;
+    this.m_show_location = in_show_location ? true : false;
     this.m_single_meeting_id = in_single_meeting_id;
     this.m_grace_period = in_grace_period;
     

@@ -25,9 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
-= 2.0 =
+= 3.0 =
 * TBD
 * Substantial rework to support new functionality.
+* Decided to make it version 3.0, in order to coincide with the new plugins.
 
 = 1.2.4 =
 * May 13, 2012
