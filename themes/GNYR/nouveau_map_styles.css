@@ -1588,6 +1588,34 @@ div#bmlt_page_items.bmlt_page_items
     
     div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_div
+            div.bmlt_nouveau_details_map_container_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_details_inner_container_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_map_container_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_map_inner_container_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_map_div,
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
+            div.bmlt_nouveau_search_results_list_container_div
+    {
+        background-color:white;
+        border:none;
+        -moz-box-shadow: none;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=0, Direction=0, Color='#000000')";
+        filter: progid:DXImageTransform.Microsoft.Shadow(Strength=0, Direction=0, Color='#000000');
+    }
+    
+    div#bmlt_page_items.bmlt_page_items
+        div.bmlt_nouveau_div
             a,
     div#bmlt_page_items.bmlt_page_items
         div.bmlt_nouveau_div
