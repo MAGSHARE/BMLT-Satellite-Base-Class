@@ -2230,13 +2230,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                                                     'draggable':    true
                                                                     } );
                 var id = this.m_uid;
-                google.maps.event.addListener ( this.m_main_map.map_marker, 'dragstart', function() { NouveauMapSearch.prototype.sAdvancedMapDragStart( id ); } );
                 google.maps.event.addListener ( this.m_main_map.map_marker, 'dragend', function(in_event) { NouveauMapSearch.prototype.sAdvancedMapDragEnd( in_event, id ); } );
                 }
             else
                 {
                 this.m_main_map.map_marker.setPosition ( position );
-                this.m_main_map.setCenter ( position );
+                this.m_main_map.panTo ( position );
                 };
             
             if ( this.m_search_radius > 0 )
@@ -2256,7 +2255,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                                         'clickable': false
                                         };
 
-                    this.m_main_map._circle_overlay = new google.maps.Circle(circle_options);
+                    this.m_main_map._circle_overlay = new google.maps.Circle ( circle_options );
+                    this.m_main_map._circle_overlay.bindTo ( 'center', this.m_main_map.map_marker, 'position' );
                     }
                 else
                     {
@@ -4092,21 +4092,6 @@ NouveauMapSearch.prototype.sResultsMapDragend = function (  in_event,   ///< The
     
     context.m_semaphore_lookup_location_services = true;
     context.basicMapClicked();
-    };
-
-/****************************************************************************************//**
-*	\brief Responds to the start of the marker drag in the advanced map.                    *
-********************************************************************************************/
-NouveauMapSearch.prototype.sAdvancedMapDragStart = function (   in_id       ///< The unique ID of the object (establishes context).
-                                                            )
-    {
-    eval ('var context = g_instance_' + in_id + '_js_handler');
-
-    if ( context.m_main_map._circle_overlay )
-        {
-        context.m_main_map._circle_overlay.setMap(null);
-        context.m_main_map._circle_overlay = null;
-        };
     };
 
 /****************************************************************************************//**
