@@ -220,7 +220,7 @@ class BMLT_Localized_BaseClass
     static  $local_nouveau_default_duration = '1:30';
     static  $local_nouveau_noon = 'Noon';
     static  $local_nouveau_midnight = 'Midnight';
-    static  $local_nouveau_advanced_map_radius_value_array = "0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 50.0, 100.0";
+    static  $local_nouveau_advanced_map_radius_value_array = "0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 50.0, 100.0, 200.0";
     static  $local_nouveau_meeting_details_link_title = 'Get more details about this meeting.';
 
     static  $local_nouveau_single_formats_label = 'Meeting Formats:';
