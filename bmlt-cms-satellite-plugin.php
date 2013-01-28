@@ -3,7 +3,7 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 3.0                                                                            *
+*   \version 3.0.1                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -26,7 +26,7 @@
 *   along with this code.  If not, see <http://www.gnu.org/licenses/>.                      *
 ********************************************************************************************/
 
-define ( '_DEBUG_MODE_', 1 ); //Uncomment for easier JavaScript debugging.
+// define ( '_DEBUG_MODE_', 1 ); //Uncomment for easier JavaScript debugging.
 
 // Include the satellite driver class.
 require_once ( dirname ( __FILE__ ).'/BMLT-Satellite-Driver/bmlt_satellite_controller.class.php' );
@@ -156,6 +156,12 @@ function array2json (
 		return '{' . $json . '}'; //Return associative JSON
 		}
 	}
+
+function BMLTPlugin_weAreMobile($in_http_vars)
+    {
+    $language = BMLTPlugin::mobile_sniff_ua($in_http_vars);
+    return ($language == 'wml') || ($language == 'xhtml_mp') || ($language == 'smartphone');
+    }
 
 /****************************************************************************************//**
 *   \class BMLTPlugin                                                                       *
@@ -1677,13 +1683,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
     ****************************************************************************************/
     function display_bmlt_nouveau ($in_content      ///< This is the content to be filtered.
                                     )
-        {
-        function weAreMobile($in_http_vars)
-            {
-            $language = BMLTPlugin::mobile_sniff_ua($in_http_vars);
-            return ($language == 'wml') || ($language == 'xhtml_mp') || ($language == 'smartphone');
-            }
-        
+        {        
         $theshortcode = 'bmlt';
         
         $options_id = $this->cms_get_page_settings_id( $in_content );
@@ -1698,12 +1698,12 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 {
                 $options_id = intval ( $params );
                 }
-            
+        
             $options = $this->getBMLTOptions_by_id ( $options_id );
             $uid = htmlspecialchars ( 'bmlt_nouveau_'.uniqid() );
-            
+        
             $the_new_content = '<noscript>'.$this->process_text ( self::$local_noscript ).'</noscript>';    // We let non-JS browsers know that this won't work for them.
-            
+        
             if ( $first )   // We only load this the first time.
                 {
                 // These are the basic global JavaScript properties.
@@ -1725,7 +1725,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_select_search_results_text ='".$this->process_text ( self::$local_nouveau_select_search_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_map_results_text ='".$this->process_text ( self::$local_nouveau_display_map_results_text )."';";
                 $the_new_content .= "var g_Nouveau_display_list_results_text ='".$this->process_text ( self::$local_nouveau_display_list_results_text )."';";
-                
+            
                 $the_new_content .= "var g_Nouveau_location_services_set_my_location_advanced_button ='".$this->process_text ( self::$local_nouveau_location_services_set_my_location_advanced_button )."';";
                 $the_new_content .= "var g_Nouveau_location_services_find_all_meetings_nearby_button ='".$this->process_text ( self::$local_nouveau_location_services_find_all_meetings_nearby_button )."';";
                 $the_new_content .= "var g_Nouveau_location_services_find_all_meetings_nearby_later_today_button ='".$this->process_text ( self::$local_nouveau_location_services_find_all_meetings_nearby_later_today_button )."';";
@@ -1740,7 +1740,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_hrs ='".self:: $local_nouveau_single_duration_sprintf_format_hrs."';";
                 $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_hr_mins ='".self:: $local_nouveau_single_duration_sprintf_format_hr_mins."';";
                 $the_new_content .= "var g_Nouveau_single_duration_sprintf_format_hrs_mins ='".self:: $local_nouveau_single_duration_sprintf_format_hrs_mins."';";
-                
+            
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_loc_street_info = '".self::$local_nouveau_location_sprintf_format_loc_street_info."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_loc_street = '".self::$local_nouveau_location_sprintf_format_loc_street."';";
                 $the_new_content .= "var g_Nouveau_location_sprintf_format_street_info = '".self::$local_nouveau_location_sprintf_format_street_info."';";
@@ -1828,7 +1828,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                         $the_new_content .= '"'.$this->process_text ( $value ).'"';
                         }
                 $the_new_content .= "};";
-                
+            
                 $the_new_content .= 'var g_Nouveau_array_header_text = new Array ( "'.join ( '","', self::$local_nouveau_table_header_array ).'");';
                 $the_new_content .= 'var g_Nouveau_weekday_long_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_long_array ).'");';
                 $the_new_content .= 'var g_Nouveau_weekday_short_array = new Array ( "'.join ( '","', self::$local_nouveau_weekday_short_array ).'");';
@@ -1841,19 +1841,19 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
 
                 $the_new_content .= "var g_Nouveau_single_formats_label = '".$this->process_text ( self::$local_nouveau_single_formats_label )."';";
                 $the_new_content .= "var g_Nouveau_single_service_body_label = '".$this->process_text ( self::$local_nouveau_single_service_body_label )."';";
-                
+            
                 $the_new_content .= '</script>';
                 $first = false;
                 }
-            
+        
             $in_options_id = $options['id'];
-            
+        
             if ( defined ( '_DEBUG_MODE_' ) ) $the_new_content .= "\n"; // These just make the code easier to look at.
             // This is the overall container div.
             $the_new_content .= '<div id="'.$uid.'_container" class="bmlt_nouveau_container">';
                 $single_meeting_id = isset ( $this->my_http_vars['single_meeting_id'] ) ? intval($this->my_http_vars['single_meeting_id']) : 0;
                 // What we do here, is tell the client to create a global variable (in JS DOM), with a unique handler for this instance of the Nouveau search.
-                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options['bmlt_initial_view'].'\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".$this->get_plugin_path()."themes/".$options['theme']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=', '', ".($options['bmlt_location_checked'] ? 'true' : 'false').", ".($options['bmlt_location_services'] == 0 || ($options['bmlt_location_services'] == 1 && weAreMobile($this->my_http_vars)) ? 'true' : 'false').", ".$single_meeting_id.", ".$options['grace_period'].");</script>";
+                $the_new_content .= '<script type="text/javascript">var g_instance_'.$uid.'_js_handler = new NouveauMapSearch ( \''.$uid.'\', \''.$options['bmlt_initial_view'].'\','.$options['map_center_latitude'].",".$options['map_center_longitude'].",".$options['map_zoom'].",'".$options['distance_units']."','".$this->get_plugin_path()."themes/".$options['theme']."','".htmlspecialchars ( $this->get_ajax_base_uri() )."?bmlt_settings_id=$in_options_id&redirect_ajax_json=', '', ".($options['bmlt_location_checked'] ? 'true' : 'false').", ".($options['bmlt_location_services'] == 0 || ($options['bmlt_location_services'] == 1 && BMLTPlugin_weAreMobile($this->my_http_vars)) ? 'true' : 'false').", ".$single_meeting_id.", ".$options['grace_period'].");</script>";
             $the_new_content .= '</div>';
 
             $in_content = self::replace_shortcode ( $in_content, $theshortcode, $the_new_content );
