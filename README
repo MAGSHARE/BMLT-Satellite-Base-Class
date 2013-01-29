@@ -25,6 +25,11 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 3.0.2 =
+* TBD
+* Added a default duration.
+* Uncommented the adjustment for grace period.
+
 = 3.0.1 =
 * January 28, 2013
 * Fixed an issue that caused conflicts with some installations.
