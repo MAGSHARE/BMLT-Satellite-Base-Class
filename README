@@ -29,6 +29,7 @@ CHANGELIST
 * TBD
 * Added a default duration.
 * Uncommented the adjustment for grace period.
+* Added a link to the Google Maps for each meeting's details.
 
 = 3.0.1 =
 * January 28, 2013

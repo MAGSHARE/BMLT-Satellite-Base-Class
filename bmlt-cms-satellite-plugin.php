@@ -1851,6 +1851,8 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_advanced_map_radius_value_auto ='".$this->process_text ( self::$local_nouveau_advanced_map_radius_value_auto )."';";
                 $the_new_content .= "var g_Nouveau_advanced_map_radius_value_array = [ ".self::$local_nouveau_advanced_map_radius_value_array." ];";
                 $the_new_content .= "var g_Nouveau_meeting_details_link_title = '".$this->process_text ( self::$local_nouveau_meeting_details_link_title )."';";
+                $the_new_content .= "var g_Nouveau_meeting_details_map_link_uri_format = '".htmlspecialchars ( self::$local_nouveau_meeting_details_map_link_uri_format )."';";
+                $the_new_content .= "var g_Nouveau_meeting_details_map_link_text = '".$this->process_text ( self::$local_nouveau_meeting_details_map_link_text )."';";
                 $the_new_content .= "var g_Nouveau_array_keys = {";
                     $first = true;
                     foreach ( self::$local_nouveau_prompt_array as $key => $value )

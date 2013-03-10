@@ -519,6 +519,28 @@ div#bmlt_page_items.bmlt_page_items
 
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div
+        a.bmlt_satellite_meeting_map_link,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_satellite_meeting_map_link:visited
+{
+    color:#99f;
+    text-decoration:underline;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_satellite_meeting_map_link:hover,
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
+        a.bmlt_satellite_meeting_map_link:active
+{
+    color:#f96;
+    text-decoration:none;
+}
+
+div#bmlt_page_items.bmlt_page_items
+    div.bmlt_nouveau_div
         a.bmlt_nouveau_switch_a,
 div#bmlt_page_items.bmlt_page_items
     div.bmlt_nouveau_div

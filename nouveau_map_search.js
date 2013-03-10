@@ -3145,7 +3145,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
         
             var loc_text = this.constructAddressString ( in_meeting_object );
 
-            this.m_details_meeting_location_div.appendChild ( document.createTextNode( loc_text ) );
+            this.m_details_meeting_location_div.innerHTML = loc_text;
             
             if ( !this.m_details_map_container_div )
                 {
@@ -3558,6 +3558,14 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 {
                 ret = g_Nouveau_location_sprintf_format_wtf;
                 };
+            };
+        
+        var longitude = in_meeting_object['longitude'];
+        var latitude = in_meeting_object['latitude'];
+        
+        if ( (ret != g_Nouveau_location_sprintf_format_wtf) && latitude && longitude )
+            {
+            ret += ' (<a class="bmlt_satellite_meeting_map_link" href="' + sprintf ( g_Nouveau_meeting_details_map_link_uri_format, parseFloat ( latitude ), parseFloat ( longitude ) ) + '">' + g_Nouveau_meeting_details_map_link_text + '</a>)';
             };
         
         return ret;
