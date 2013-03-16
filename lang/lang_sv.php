@@ -1,37 +1,37 @@
 <?php
 // Sverige
 /****************************************************************************************//**
-* \file lang_sv.php *
-* *
-* \brief This file contains Swedish localizations. *
-* \version 3.0 *
-* *
-* This file is part of the BMLT Common Satellite Base Class Project. The project GitHub *
-* page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class *
-* *
-* This file is part of the Basic Meeting List Toolbox (BMLT). *
-* *
-* Find out more at: http://bmlt.magshare.org *
-* *
-* BMLT is free software: you can redistribute it and/or modify *
-* it under the terms of the GNU General Public License as published by *
-* the Free Software Foundation, either version 3 of the License, or *
-* (at your option) any later version. *
-* *
-* BMLT is distributed in the hope that it will be useful, *
-* but WITHOUT ANY WARRANTY; without even the implied warranty of *
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the *
-* GNU General Public License for more details. *
-* *
-* You should have received a copy of the GNU General Public License *
-* along with this code. If not, see <http://www.gnu.org/licenses/>. *
+* \file lang_sv.php                                                                         *
+*                                                                                           *
+* \brief This file contains Swedish localizations.                                          *
+* \version 3.0 2                                                                            *
+*                                                                                           *
+* This file is part of the BMLT Common Satellite Base Class Project. The project GitHub     *
+* page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class          *
+*                                                                                           *
+* This file is part of the Basic Meeting List Toolbox (BMLT).                               *
+*                                                                                           *
+* Find out more at: http://bmlt.magshare.org                                                *
+*                                                                                           *
+* BMLT is free software: you can redistribute it and/or modify                              *
+* it under the terms of the GNU General Public License as published by                      *
+* the Free Software Foundation, either version 3 of the License, or                         *
+* (at your option) any later version.                                                       *
+*                                                                                           *
+* BMLT is distributed in the hope that it will be useful,                                   *
+* but WITHOUT ANY WARRANTY; without even the implied warranty of                            *
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the                              *
+* GNU General Public License for more details.                                              *
+*                                                                                           *
+* You should have received a copy of the GNU General Public License                         *
+* along with this code. If not, see <http://www.gnu.org/licenses/>.                         *
 ********************************************************************************************/
 
 class BMLT_Localized_BaseClass
     {
     /************************************************************************************//**
-* STATIC DATA MEMBERS (LOCALIZABLE) *
-****************************************************************************************/
+    * STATIC DATA MEMBERS (LOCALIZABLE)                                                     *
+    ****************************************************************************************/
     
     /// These are all for the admin pages.
     static $local_options_title = 'Inställningar för BMLT'; ///< This is the title that is displayed over the options.
@@ -106,8 +106,8 @@ class BMLT_Localized_BaseClass
     static $local_noscript = 'Utan javascript aktiverad kommer du få en jobbig tid på nätet. aktivera javascript!.'; ///< The string displayed in a <noscript> element.
     
     /************************************************************************************//**
-* NEW SHORTCODE STATIC DATA MEMBERS (LOCALIZABLE) *
-****************************************************************************************/
+    * NEW SHORTCODE STATIC DATA MEMBERS (LOCALIZABLE)                                       *
+    ****************************************************************************************/
     
     /// These are all for the [[bmlt_nouveau]] shortcode.
     static $local_nouveau_advanced_button = 'Mera valmöjligheter'; ///< The button name for the advanced search in the nouveau search.
@@ -247,15 +247,15 @@ class BMLT_Localized_BaseClass
                                                 );
                                                 
     /************************************************************************************//**
-* STATIC DATA MEMBERS (SPECIAL LOCALIZABLE) *
-****************************************************************************************/
+    * STATIC DATA MEMBERS (SPECIAL LOCALIZABLE)                                             *
+    ****************************************************************************************/
     
     /// This is the only localizable string that is not processed. This is because it contains HTML. However, it is also a "hidden" string that is only displayed when the browser does not support JS.
     static $local_no_js_warning = '<noscript class="no_js">Denna funktion kräver java. Du kan köra en nerskalad sökning utan java här <a rel="external nofollow" href="###ROOT_SERVER###">huvudserver</a>.</noscript>'; ///< This is the noscript presented for the old-style meeting search. It directs the user to the root server, which will support non-JS browsers.
                                     
     /************************************************************************************//**
-* STATIC DATA MEMBERS (NEW MAP LOCALIZABLE) *
-****************************************************************************************/
+    * STATIC DATA MEMBERS (NEW MAP LOCALIZABLE)                                             *
+    ****************************************************************************************/
                                     
     static $local_new_map_option_1_label = 'Inställningar sökning (Ej aktiva om fliken ej öppnats):';
     static $local_new_map_weekdays = 'Möten är på dessa dagar:';
@@ -283,8 +283,8 @@ class BMLT_Localized_BaseClass
     static $local_new_map_location_submit_button_text = 'Sök möten nära denna plats';
     
     /************************************************************************************//**
-* STATIC DATA MEMBERS (MOBILE LOCALIZABLE) *
-****************************************************************************************/
+    * STATIC DATA MEMBERS (MOBILE LOCALIZABLE)                                              *
+    ****************************************************************************************/
     
     /// The units for distance.
     static $local_mobile_kilometers = 'Kilometer';

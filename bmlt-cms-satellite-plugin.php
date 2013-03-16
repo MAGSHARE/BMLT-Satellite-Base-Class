@@ -35,7 +35,7 @@ global $bmlt_localization;  ///< Use this to control the localization.
 
 $tmp_local = 'en';  ///< We will always fall back to English. It is possible that the plugin may not be localized to the desired language.
 
-if ( isset ( $bmlt_localization ) && $bmlt_localization && file_exists ( dirname ( __FILE__ )."lang/lang_".$bmlt_localization.".php" ) )
+if ( isset ( $bmlt_localization ) && $bmlt_localization && file_exists ( dirname ( __FILE__ )."/lang/lang_".$bmlt_localization.".php" ) )
     {
     $tmp_local = $bmlt_localization;
     }
