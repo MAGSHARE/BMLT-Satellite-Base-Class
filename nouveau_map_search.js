@@ -3219,6 +3219,8 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             // If the user is logged in, we will display all fields.
             if ( g_Nouveau_user_logged_in )
                 {
+                var outer_container = null;
+                
                 for ( var key in in_meeting_object )
                     {
                     if ( in_meeting_object.hasOwnProperty ( key ) )
@@ -3228,6 +3230,12 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                         // We only display the hidden ones.
                         if ( meeting_property.length == 3 )
                             {
+                            if ( !outer_container )
+                                {
+                                outer_container = document.createElement ( 'div' );
+                                outer_container.className = 'bmlt_nouveau_details_hidden_element_outer_container_div';
+                                };
+                            
                             var prompt = meeting_property[1];
                             var value = meeting_property[2];
                             var line_container = document.createElement ( 'div' );
@@ -3241,9 +3249,17 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                             
                             line_container.appendChild ( hidden_prompt );
                             line_container.appendChild ( hidden_value );
-                            this.m_single_meeting_display_div.appendChild ( line_container );
+                            var breaker_breaker = document.createElement ( 'div' );
+                            breaker_breaker.className = 'clear_both';
+                            line_container.appendChild ( breaker_breaker );
+                            outer_container.appendChild ( line_container );
                             };
                         };
+                    };
+                
+                if ( outer_container )
+                    {
+                    this.m_single_meeting_display_div.appendChild ( outer_container );
                     };
                 };
             

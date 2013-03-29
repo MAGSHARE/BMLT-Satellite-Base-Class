@@ -751,3 +751,39 @@ div.bmlt_map_container_div .bmlt_info_win_container .bmlt_selected_weekday_info 
     font-weight:bold;
     cursor:default;
 }
+
+div.bmlt_nouveau_details_hidden_element_outer_container_div
+{
+    margin:0.25em;
+    padding:0.1em;
+    background-color:#ffefef;
+    border:1px solid #009;
+    color:#009;
+    border-radius: 5px;
+	-moz-border-radius:5px;
+	-webkit-border-radius: 5px;
+}
+
+div.bmlt_nouveau_details_hidden_element_line_div
+{
+    clear:both;
+    margin-top:0.1em;
+    margin-bottom:0.1em;
+}
+
+div.bmlt_nouveau_details_hidden_element_prompt_div
+{
+    width:49%;
+    font-weight:bold;
+    text-align:right;
+    float:left;
+}
+
+div.bmlt_nouveau_details_hidden_element_value_div
+{
+    margin-left: 0.9%;
+    width:49%;
+    font-style:italic;
+    text-align:left;
+    float:left;
+}

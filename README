@@ -33,6 +33,7 @@ CHANGELIST
 * Fixed a bug that screwed up localizations.
 * Added a new Swedish localization.
 * Updated the driver to preserve the session across the curl call.
+* Added support for a "logged in" mode. This allows the plugin base class to be used by observers, in the root server.
 
 = 3.0.1 =
 * January 28, 2013
