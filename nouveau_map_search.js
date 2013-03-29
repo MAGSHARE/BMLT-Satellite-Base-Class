@@ -3216,6 +3216,37 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_details_comments_div.appendChild ( document.createTextNode ( in_meeting_object.comments ) );
                 };
             
+            // If the user is logged in, we will display all fields.
+            if ( g_Nouveau_user_logged_in )
+                {
+                for ( var key in in_meeting_object )
+                    {
+                    if ( in_meeting_object.hasOwnProperty ( key ) )
+                        {
+                        var meeting_property = in_meeting_object[key].split ( '#@-@#' );
+                        
+                        // We only display the hidden ones.
+                        if ( meeting_property.length == 3 )
+                            {
+                            var prompt = meeting_property[1];
+                            var value = meeting_property[2];
+                            var line_container = document.createElement ( 'div' );
+                            line_container.className = 'bmlt_nouveau_details_hidden_element_line_div';
+                            var hidden_prompt = document.createElement ( 'div' );
+                            hidden_prompt.className = 'bmlt_nouveau_details_hidden_element_prompt_div';
+                            hidden_prompt.appendChild ( document.createTextNode ( prompt ) );
+                            var hidden_value = document.createElement ( 'div' );
+                            hidden_value.className = 'bmlt_nouveau_details_hidden_element_value_div';
+                            hidden_value.appendChild ( document.createTextNode ( value ) );
+                            
+                            line_container.appendChild ( hidden_prompt );
+                            line_container.appendChild ( hidden_value );
+                            this.m_single_meeting_display_div.appendChild ( line_container );
+                            };
+                        };
+                    };
+                };
+            
             if ( !this.m_details_formats_div )
                 {
                 this.m_details_formats_div = document.createElement ( 'div' );
