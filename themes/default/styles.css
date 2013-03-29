@@ -759,3 +759,8 @@ div.bmlt_nouveau_details_hidden_element_value_div
     text-align:left;
     float:left;
 }
+
+div.bmlt_nouveau_text_inner_div
+{
+    display:table;
+}
