@@ -189,6 +189,7 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     var m_details_comments_div = null;          ///< The div that will show the meeting comments.
     var m_details_formats_div = null;           ///< The div that will list the meeting formats.
     var m_details_formats_contents_div = null;  ///< The div that will list the meeting formats.
+    var m_details_observer_only_div = null;     ///< The div that will list the items only visible to logged-in Observers.
     
     var m_search_results = null;                ///< If there are any search results, they are kept here (JSON object).
     var m_selected_search_results = null;       ///< This contains the number of meetings selected in the list.
@@ -2599,6 +2600,11 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
     ****************************************************************************************/
     this.closeSingle = function()
         {
+        if ( this.m_details_observer_only_div )
+            {
+            this.m_details_observer_only_div.innerHTML = '';
+            };
+        
         this.hideDetails();
         if ( this.m_single_meeting_id )
             {
@@ -3160,6 +3166,61 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
                 this.m_details_map_div.className = 'bmlt_nouveau_details_map_div';
                 this.m_details_map_container_div.appendChild ( this.m_details_map_div );
                 };
+            
+            // If the user is logged in, we will display all fields.
+            if ( g_Nouveau_user_logged_in && !this.m_details_observer_only_div || (this.m_details_observer_only_div.innerHTML == '') )
+                {
+                var has_hidden_fields = false;
+                
+                for ( var key in in_meeting_object )
+                    {
+                    if ( in_meeting_object.hasOwnProperty ( key ) )
+                        {
+                        var meeting_property = in_meeting_object[key].split ( '#@-@#' );
+                        
+                        // We only display the hidden ones.
+                        if ( meeting_property.length == 3 )
+                            {
+                            has_hidden_fields = true;
+                            if ( !this.m_details_observer_only_div )
+                                {
+                                this.m_details_observer_only_div = document.createElement ( 'div' );
+                                this.m_single_meeting_display_div.appendChild ( this.m_details_observer_only_div );
+                                };
+                            
+                            var prompt = meeting_property[1];
+                            var value = meeting_property[2];
+                            var line_container = document.createElement ( 'div' );
+                            line_container.className = 'bmlt_nouveau_details_hidden_element_line_div';
+                            var hidden_prompt = document.createElement ( 'div' );
+                            hidden_prompt.className = 'bmlt_nouveau_details_hidden_element_prompt_div';
+                            hidden_prompt.appendChild ( document.createTextNode ( prompt ) );
+                            var hidden_value = document.createElement ( 'div' );
+                            hidden_value.className = 'bmlt_nouveau_details_hidden_element_value_div';
+                            hidden_value.appendChild ( document.createTextNode ( value ) );
+                            
+                            line_container.appendChild ( hidden_prompt );
+                            line_container.appendChild ( hidden_value );
+                            var breaker_breaker = document.createElement ( 'div' );
+                            breaker_breaker.className = 'clear_both';
+                            line_container.appendChild ( breaker_breaker );
+                            this.m_details_observer_only_div.appendChild ( line_container );
+                            };
+                        };
+                    };
+                
+                if ( this.m_details_observer_only_div )
+                    {
+                    if ( has_hidden_fields )
+                        {
+                        this.m_details_observer_only_div.className = 'bmlt_nouveau_details_hidden_element_outer_container_div';
+                        }
+                    else
+                        {
+                        this.m_details_observer_only_div.className = 'item_hidden';
+                        };
+                    };
+                };
                 
             if ( !this.m_details_service_body_div )
                 {
@@ -3214,53 +3275,6 @@ function NouveauMapSearch ( in_unique_id,           ///< The UID of the containe
             if ( in_meeting_object.comments )
                 {
                 this.m_details_comments_div.appendChild ( document.createTextNode ( in_meeting_object.comments ) );
-                };
-            
-            // If the user is logged in, we will display all fields.
-            if ( g_Nouveau_user_logged_in )
-                {
-                var outer_container = null;
-                
-                for ( var key in in_meeting_object )
-                    {
-                    if ( in_meeting_object.hasOwnProperty ( key ) )
-                        {
-                        var meeting_property = in_meeting_object[key].split ( '#@-@#' );
-                        
-                        // We only display the hidden ones.
-                        if ( meeting_property.length == 3 )
-                            {
-                            if ( !outer_container )
-                                {
-                                outer_container = document.createElement ( 'div' );
-                                outer_container.className = 'bmlt_nouveau_details_hidden_element_outer_container_div';
-                                };
-                            
-                            var prompt = meeting_property[1];
-                            var value = meeting_property[2];
-                            var line_container = document.createElement ( 'div' );
-                            line_container.className = 'bmlt_nouveau_details_hidden_element_line_div';
-                            var hidden_prompt = document.createElement ( 'div' );
-                            hidden_prompt.className = 'bmlt_nouveau_details_hidden_element_prompt_div';
-                            hidden_prompt.appendChild ( document.createTextNode ( prompt ) );
-                            var hidden_value = document.createElement ( 'div' );
-                            hidden_value.className = 'bmlt_nouveau_details_hidden_element_value_div';
-                            hidden_value.appendChild ( document.createTextNode ( value ) );
-                            
-                            line_container.appendChild ( hidden_prompt );
-                            line_container.appendChild ( hidden_value );
-                            var breaker_breaker = document.createElement ( 'div' );
-                            breaker_breaker.className = 'clear_both';
-                            line_container.appendChild ( breaker_breaker );
-                            outer_container.appendChild ( line_container );
-                            };
-                        };
-                    };
-                
-                if ( outer_container )
-                    {
-                    this.m_single_meeting_display_div.appendChild ( outer_container );
-                    };
                 };
             
             if ( !this.m_details_formats_div )
