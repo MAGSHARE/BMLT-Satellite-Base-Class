@@ -26,7 +26,7 @@ INSTALLATION
 CHANGELIST
 ----------
 = 3.0.2 =
-* March 29, 2013
+* March 30, 2013
 * Added a default duration.
 * Uncommented the adjustment for grace period.
 * Added a link to the Google Maps for each meeting's details.
