@@ -3,7 +3,7 @@
 *   \file   bmlt-cms-satellite-plugin.php                                                   *
 *                                                                                           *
 *   \brief  This is a generic CMS plugin class for a BMLT satellite client.                 *
-*   \version 3.0.3                                                                          *
+*   \version 3.0.4                                                                          *
 *                                                                                           *
 *   This file is part of the BMLT Common Satellite Base Class Project. The project GitHub   *
 *   page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class        *
@@ -1880,11 +1880,8 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_single_formats_label = '".$this->process_text ( self::$local_nouveau_single_formats_label )."';";
                 $the_new_content .= "var g_Nouveau_single_service_body_label = '".$this->process_text ( self::$local_nouveau_single_service_body_label )."';";
                 
-                if ( isset ( $this->m_is_logged_in_user ) && $this->m_is_logged_in_user )
-                    {
-                    $the_new_content .= "var g_Nouveau_user_logged_in = 'true';";
-                    }
-            
+                $the_new_content .= "var g_Nouveau_user_logged_in = '".((isset ( $this->m_is_logged_in_user ) && $this->m_is_logged_in_user) ? "true" : "false" )."';";
+                
                 $the_new_content .= '</script>';
                 $first = false;
                 }

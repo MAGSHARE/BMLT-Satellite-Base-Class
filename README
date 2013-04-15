@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 3.0.4 =
+* April 15, 2013
+* Fixed a bug caused by the modifications for the new admin browser.
+
 = 3.0.3 =
 * April 15, 2013
 * Fixed a bug in the new Swedish localization.
