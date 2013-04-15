@@ -4,7 +4,7 @@
 * \file lang_sv.php                                                                         *
 *                                                                                           *
 * \brief This file contains Swedish localizations.                                          *
-* \version 3.0 2                                                                            *
+* \version 3.0 3                                                                            *
 *                                                                                           *
 * This file is part of the BMLT Common Satellite Base Class Project. The project GitHub     *
 * page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class          *
@@ -223,7 +223,7 @@ class BMLT_Localized_BaseClass
     static $local_nouveau_advanced_map_radius_value_array = "0.25, 0.5, 1.0, 2.0, 5.0, 10.0, 15.0, 20.0, 50.0, 100.0, 200.0";
     static $local_nouveau_meeting_details_link_title = 'Mer info.';
     static $local_nouveau_meeting_details_map_link_uri_format = 'https://maps.google.com/maps?q=%f,%f';
-    static $local_nouveau_meeting_details_map_link_text = 'Map To Meeting';
+    static $local_nouveau_meeting_details_map_link_text = 'Karta till möte';
 
     static $local_nouveau_single_formats_label = 'Mötestyper:';
     static $local_nouveau_single_service_body_label = 'Serviceenhet:';
