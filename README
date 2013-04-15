@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 3.0.3b0 =
+* April 14, 2013
+* Fixed a bug in the new Swedish localization. It is temporarily patched with English, but will be replaced with Swedish soon.
+
 = 3.0.2 =
 * March 30, 2013
 * Added a default duration.
