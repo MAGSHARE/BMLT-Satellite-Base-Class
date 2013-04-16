@@ -4,7 +4,7 @@
 * \file lang_sv.php                                                                         *
 *                                                                                           *
 * \brief This file contains Swedish localizations.                                          *
-* \version 3.0 3                                                                            *
+* \version 3.0 5                                                                            *
 *                                                                                           *
 * This file is part of the BMLT Common Satellite Base Class Project. The project GitHub     *
 * page is available here: https://github.com/MAGSHARE/BMLT-Common-CMS-Plugin-Class          *
@@ -69,6 +69,7 @@ class BMLT_Localized_BaseClass
     static $local_options_map_label = 'välj mittpunkt och zoomnivå'; ///< The Label for the map.
     static $local_options_mobile_legend = 'Dessa påverkar olika vyer(som karta mobil och avanserad)'; ///< This indicates that the enclosed settings are for the fast mobile lookup.
     static $local_options_mobile_grace_period_label = 'Extratid på mötets starttid vid sökning:'; ///< When you do a "later today" search, you get a "Grace Period."
+    static $local_options_mobile_default_duration_label = 'Default Meeting Duration:';     ///< If the meeting has no duration, use this as a default.
     static $local_options_mobile_time_offset_label = 'Tids Offset:'; ///< This may have an offset (time zone difference) from the main server.
     static $local_options_initial_view = array ( ///< The list of choices for presentation in the popup.
                                                 'karta' => 'Karta', 'text' => 'Text', 'avanserad_karta' => 'Avanserad karta', 'avanserad_text' => 'Avanserad Text'
