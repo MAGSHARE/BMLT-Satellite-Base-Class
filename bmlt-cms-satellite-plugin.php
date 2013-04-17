@@ -1875,7 +1875,7 @@ class BMLTPlugin extends BMLT_Localized_BaseClass
                 $the_new_content .= "var g_Nouveau_default_geo_width = -10;";
                 $the_new_content .= "var g_Nouveau_default_details_map_zoom = ".self::$default_details_map_zoom.';';
                 $the_new_content .= "var g_Nouveau_default_marker_aggregation_threshold_in_pixels = 8;";
-                $the_new_content .= "var g_Nouveau_default_duration = '".$options['default_duration']."';";
+                $the_new_content .= "var g_Nouveau_default_duration = '".(isset ( $options['default_duration'] ) ? $options['default_duration'] : '')."';";
 
                 $the_new_content .= "var g_Nouveau_single_formats_label = '".$this->process_text ( self::$local_nouveau_single_formats_label )."';";
                 $the_new_content .= "var g_Nouveau_single_service_body_label = '".$this->process_text ( self::$local_nouveau_single_service_body_label )."';";
