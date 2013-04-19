@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 3.0.6 =
+* April 18, 2013
+* Improved the curl call functionality.
+
 = 3.0.5 =
 * April 16, 2013
 * Fixed a bug in the Swedish translation.
