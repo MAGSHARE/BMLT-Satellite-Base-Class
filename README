@@ -25,6 +25,10 @@ INSTALLATION
 
 CHANGELIST
 ----------
+= 3.0.7 =
+* April 21, 2013
+* The string search was being improperly handled. This has been fixed.
+
 = 3.0.6 =
 * April 18, 2013
 * Improved the curl call functionality.
