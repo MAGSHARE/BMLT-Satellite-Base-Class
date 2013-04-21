@@ -18,7 +18,7 @@ It requires PHP 5.0 or above.
 
 This class uses the BMLT Satellite "Driver" Class, which is available on GitHub, here:
 
-    https://github.com/MAGSHARE/BMLT-Satellite-Driver
+    https://bitbucket.org:bmlt/bmlt-satellite-driver.git
 
 INSTALLATION
 ------------
@@ -28,6 +28,7 @@ CHANGELIST
 = 3.0.7 =
 * April 21, 2013
 * The string search was being improperly handled. This has been fixed.
+* Moved the project to Bitbucket.
 
 = 3.0.6 =
 * April 18, 2013
